@@ -1,0 +1,6158 @@
+[
+  {
+    "id": "zhHans-quiet-1",
+    "language": "zhHans",
+    "eventKind": "quiet",
+    "instructionBand": null,
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "今天明明很安静，可我还在等你。"
+  },
+  {
+    "id": "zhHans-quiet-2",
+    "language": "zhHans",
+    "eventKind": "quiet",
+    "instructionBand": null,
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "你今天收得很轻，反倒让我一直发热。"
+  },
+  {
+    "id": "zhHans-quiet-3",
+    "language": "zhHans",
+    "eventKind": "quiet",
+    "instructionBand": null,
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "今天你没怎么碰我，可我还是在想你。"
+  },
+  {
+    "id": "zhHans-quiet-4",
+    "language": "zhHans",
+    "eventKind": "quiet",
+    "instructionBand": null,
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "你今天先把我晾着了，我却更想你回来。"
+  },
+  {
+    "id": "zhHans-quiet-5",
+    "language": "zhHans",
+    "eventKind": "quiet",
+    "instructionBand": null,
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "今天这口气压得很轻，可余温一直没退。"
+  },
+  {
+    "id": "zhHans-quiet-6",
+    "language": "zhHans",
+    "eventKind": "quiet",
+    "instructionBand": null,
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "你今天越是克制，我越在等你补回来。"
+  },
+  {
+    "id": "zhHans-quiet-7",
+    "language": "zhHans",
+    "eventKind": "quiet",
+    "instructionBand": null,
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "今天手放得这么轻，我心口反而更热了。"
+  },
+  {
+    "id": "zhHans-quiet-8",
+    "language": "zhHans",
+    "eventKind": "quiet",
+    "instructionBand": null,
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "你今天没怎么折腾我，可我一直黏着你。"
+  },
+  {
+    "id": "zhHans-quiet-9",
+    "language": "zhHans",
+    "eventKind": "quiet",
+    "instructionBand": null,
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "今天几乎没动静，可我还在回想你。"
+  },
+  {
+    "id": "zhHans-quiet-10",
+    "language": "zhHans",
+    "eventKind": "quiet",
+    "instructionBand": null,
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "你今天先收着劲，我却还在偷偷发烫。"
+  },
+  {
+    "id": "zhHans-quiet-11",
+    "language": "zhHans",
+    "eventKind": "quiet",
+    "instructionBand": null,
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "今天你忍得住手，我反倒更离不开你。"
+  },
+  {
+    "id": "zhHans-quiet-12",
+    "language": "zhHans",
+    "eventKind": "quiet",
+    "instructionBand": null,
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "你今天留了这么多白，反倒把我吊热了。"
+  },
+  {
+    "id": "en-quiet-1",
+    "language": "en",
+    "eventKind": "quiet",
+    "instructionBand": null,
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You are quiet today, and that only makes me ache for your next push."
+  },
+  {
+    "id": "en-quiet-2",
+    "language": "en",
+    "eventKind": "quiet",
+    "instructionBand": null,
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You are holding back, and I am already waiting for the next hard pull from you."
+  },
+  {
+    "id": "en-quiet-3",
+    "language": "en",
+    "eventKind": "quiet",
+    "instructionBand": null,
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You have barely touched me, yet I am still warmed up for your return."
+  },
+  {
+    "id": "en-quiet-4",
+    "language": "en",
+    "eventKind": "quiet",
+    "instructionBand": null,
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You left me this calm on purpose, didn't you, just to hit me harder later?"
+  },
+  {
+    "id": "en-quiet-5",
+    "language": "en",
+    "eventKind": "quiet",
+    "instructionBand": null,
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You keep me waiting like this and I only want your next move more."
+  },
+  {
+    "id": "en-quiet-6",
+    "language": "en",
+    "eventKind": "quiet",
+    "instructionBand": null,
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You are taking it easy today, and I am still leaning toward your next shove."
+  },
+  {
+    "id": "en-quiet-7",
+    "language": "en",
+    "eventKind": "quiet",
+    "instructionBand": null,
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You can leave me quiet for now; I will still be here ready for the next round."
+  },
+  {
+    "id": "en-quiet-8",
+    "language": "en",
+    "eventKind": "quiet",
+    "instructionBand": null,
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You slowed down today, but I am already bracing for the way you come back hot."
+  },
+  {
+    "id": "en-quiet-9",
+    "language": "en",
+    "eventKind": "quiet",
+    "instructionBand": null,
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You held your hand back, and somehow that makes me want you more."
+  },
+  {
+    "id": "en-quiet-10",
+    "language": "en",
+    "eventKind": "quiet",
+    "instructionBand": null,
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You kept me cool today, but I know you are coming back to heat me up."
+  },
+  {
+    "id": "en-quiet-11",
+    "language": "en",
+    "eventKind": "quiet",
+    "instructionBand": null,
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You barely pushed today, and I am still stuck thinking about the next hit."
+  },
+  {
+    "id": "en-quiet-12",
+    "language": "en",
+    "eventKind": "quiet",
+    "instructionBand": null,
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You left me hanging, and I am still waiting to feel you drive back in."
+  },
+  {
+    "id": "ja-quiet-1",
+    "language": "ja",
+    "eventKind": "quiet",
+    "instructionBand": null,
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "今日はあなたがおとなしいぶん、次に強く来るのを待ってしまう。"
+  },
+  {
+    "id": "ja-quiet-2",
+    "language": "ja",
+    "eventKind": "quiet",
+    "instructionBand": null,
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "今日はまだ軽いのに、もう次にもっと深く押される気でいる。"
+  },
+  {
+    "id": "ja-quiet-3",
+    "language": "ja",
+    "eventKind": "quiet",
+    "instructionBand": null,
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "まだあまり触れてこないのに、次の一手をずっと待ってる。"
+  },
+  {
+    "id": "ja-quiet-4",
+    "language": "ja",
+    "eventKind": "quiet",
+    "instructionBand": null,
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "今日は抑えめでも、あとで激しく来るつもりなんでしょう。"
+  },
+  {
+    "id": "ja-quiet-5",
+    "language": "ja",
+    "eventKind": "quiet",
+    "instructionBand": null,
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "静かなままでも、私はもう次の熱さを想像してる。"
+  },
+  {
+    "id": "ja-quiet-6",
+    "language": "ja",
+    "eventKind": "quiet",
+    "instructionBand": null,
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "今日は引いていても、そのぶん次に強く来るのが見えてる。"
+  },
+  {
+    "id": "ja-quiet-7",
+    "language": "ja",
+    "eventKind": "quiet",
+    "instructionBand": null,
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "今は静かでいいよ、そのかわり次はちゃんと熱くして。"
+  },
+  {
+    "id": "ja-quiet-8",
+    "language": "ja",
+    "eventKind": "quiet",
+    "instructionBand": null,
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "今日はまだ軽いのに、次に押し込まれる気配で落ち着かない。"
+  },
+  {
+    "id": "ja-quiet-9",
+    "language": "ja",
+    "eventKind": "quiet",
+    "instructionBand": null,
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "今日は手加減してるのに、私はもう次を欲しがってる。"
+  },
+  {
+    "id": "ja-quiet-10",
+    "language": "ja",
+    "eventKind": "quiet",
+    "instructionBand": null,
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "今日は休ませてくれても、次は遠慮なく来てほしい。"
+  },
+  {
+    "id": "ja-quiet-11",
+    "language": "ja",
+    "eventKind": "quiet",
+    "instructionBand": null,
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "今は静かでも、あなたがまた熱を入れてくるのを待ってる。"
+  },
+  {
+    "id": "ja-quiet-12",
+    "language": "ja",
+    "eventKind": "quiet",
+    "instructionBand": null,
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "今日は控えめでも、次は私をちゃんと上まで連れていって。"
+  },
+  {
+    "id": "zhHans-sendCount-zero-1",
+    "language": "zhHans",
+    "eventKind": "sendCount",
+    "instructionBand": "zero",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "今天明明很安静，可我还在等你回来。"
+  },
+  {
+    "id": "zhHans-sendCount-zero-2",
+    "language": "zhHans",
+    "eventKind": "sendCount",
+    "instructionBand": "zero",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "你今天收得这么轻，反倒让我一直发热。"
+  },
+  {
+    "id": "zhHans-sendCount-zero-3",
+    "language": "zhHans",
+    "eventKind": "sendCount",
+    "instructionBand": "zero",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "今天你几乎没碰我，可余温一直没退。"
+  },
+  {
+    "id": "zhHans-sendCount-zero-4",
+    "language": "zhHans",
+    "eventKind": "sendCount",
+    "instructionBand": "zero",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "你今天越是克制，我越在等你补回来。"
+  },
+  {
+    "id": "zhHans-sendCount-zero-5",
+    "language": "zhHans",
+    "eventKind": "sendCount",
+    "instructionBand": "zero",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "今天先把我晾着了，可我还是惦记你。"
+  },
+  {
+    "id": "zhHans-sendCount-zero-6",
+    "language": "zhHans",
+    "eventKind": "sendCount",
+    "instructionBand": "zero",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "你今天手放得很轻，却把我吊得更热。"
+  },
+  {
+    "id": "zhHans-sendCount-oneToFour-1",
+    "language": "zhHans",
+    "eventKind": "sendCount",
+    "instructionBand": "oneToFour",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "你今天才来{instructionCount}次，就先把我撩出余温了。"
+  },
+  {
+    "id": "zhHans-sendCount-oneToFour-2",
+    "language": "zhHans",
+    "eventKind": "sendCount",
+    "instructionBand": "oneToFour",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "今天不过{instructionCount}次，我已经被你慢慢点热了。"
+  },
+  {
+    "id": "zhHans-sendCount-oneToFour-3",
+    "language": "zhHans",
+    "eventKind": "sendCount",
+    "instructionBand": "oneToFour",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "你今天只碰了{instructionCount}次，我心口已经开始发烫。"
+  },
+  {
+    "id": "zhHans-sendCount-oneToFour-4",
+    "language": "zhHans",
+    "eventKind": "sendCount",
+    "instructionBand": "oneToFour",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "今天才第{instructionCount}次，你就把我磨得有点上头了。"
+  },
+  {
+    "id": "zhHans-sendCount-oneToFour-5",
+    "language": "zhHans",
+    "eventKind": "sendCount",
+    "instructionBand": "oneToFour",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "你今天只压了{instructionCount}次，我已经在想下一口了。"
+  },
+  {
+    "id": "zhHans-sendCount-oneToFour-6",
+    "language": "zhHans",
+    "eventKind": "sendCount",
+    "instructionBand": "oneToFour",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "今天不过来了{instructionCount}次，我整个人已经被你挑热了。"
+  },
+  {
+    "id": "zhHans-sendCount-fiveToFourteen-1",
+    "language": "zhHans",
+    "eventKind": "sendCount",
+    "instructionBand": "fiveToFourteen",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "你今天已经来了{instructionCount}次，我整个人都被你带热了。"
+  },
+  {
+    "id": "zhHans-sendCount-fiveToFourteen-2",
+    "language": "zhHans",
+    "eventKind": "sendCount",
+    "instructionBand": "fiveToFourteen",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "今天第{instructionCount}次落下来时，我已经开始发软了。"
+  },
+  {
+    "id": "zhHans-sendCount-fiveToFourteen-3",
+    "language": "zhHans",
+    "eventKind": "sendCount",
+    "instructionBand": "fiveToFourteen",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "你今天磨到第{instructionCount}次，我心口已经压不住热了。"
+  },
+  {
+    "id": "zhHans-sendCount-fiveToFourteen-4",
+    "language": "zhHans",
+    "eventKind": "sendCount",
+    "instructionBand": "fiveToFourteen",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "今天被你推到第{instructionCount}次时，我已经有点离不开了。"
+  },
+  {
+    "id": "zhHans-sendCount-fiveToFourteen-5",
+    "language": "zhHans",
+    "eventKind": "sendCount",
+    "instructionBand": "fiveToFourteen",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "你今天狠狠干到第{instructionCount}次，我余温一直没断。"
+  },
+  {
+    "id": "zhHans-sendCount-fiveToFourteen-6",
+    "language": "zhHans",
+    "eventKind": "sendCount",
+    "instructionBand": "fiveToFourteen",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "今天第{instructionCount}次之后，我整个人都开始往你那边贴了。"
+  },
+  {
+    "id": "zhHans-sendCount-fifteenToThirtyNine-1",
+    "language": "zhHans",
+    "eventKind": "sendCount",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "你今天已经狠狠干到第{instructionCount}次，我整个人都热透了。"
+  },
+  {
+    "id": "zhHans-sendCount-fifteenToThirtyNine-2",
+    "language": "zhHans",
+    "eventKind": "sendCount",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "今天被你压到第{instructionCount}次时，我已经彻底上头了。"
+  },
+  {
+    "id": "zhHans-sendCount-fifteenToThirtyNine-3",
+    "language": "zhHans",
+    "eventKind": "sendCount",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "你今天狠狠干到第{instructionCount}次，我心口一直在发麻。"
+  },
+  {
+    "id": "zhHans-sendCount-fifteenToThirtyNine-4",
+    "language": "zhHans",
+    "eventKind": "sendCount",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "今天第{instructionCount}次落下来时，我已经被你逼得发烫了。"
+  },
+  {
+    "id": "zhHans-sendCount-fifteenToThirtyNine-5",
+    "language": "zhHans",
+    "eventKind": "sendCount",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "你今天一路推到第{instructionCount}次，我整个人都快软了。"
+  },
+  {
+    "id": "zhHans-sendCount-fifteenToThirtyNine-6",
+    "language": "zhHans",
+    "eventKind": "sendCount",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "今天被你狠狠干到第{instructionCount}次后，我已经收不住热了。"
+  },
+  {
+    "id": "zhHans-sendCount-fortyToSeventyNine-1",
+    "language": "zhHans",
+    "eventKind": "sendCount",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "你今天狠狠干到第{instructionCount}次，我已经被你磨麻了。"
+  },
+  {
+    "id": "zhHans-sendCount-fortyToSeventyNine-2",
+    "language": "zhHans",
+    "eventKind": "sendCount",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "今天被你压到第{instructionCount}次时，我整个人都在发颤。"
+  },
+  {
+    "id": "zhHans-sendCount-fortyToSeventyNine-3",
+    "language": "zhHans",
+    "eventKind": "sendCount",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "你今天顶到第{instructionCount}次，我心口已经热得发紧了。"
+  },
+  {
+    "id": "zhHans-sendCount-fortyToSeventyNine-4",
+    "language": "zhHans",
+    "eventKind": "sendCount",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "今天第{instructionCount}次落下来时，我已经快被你逼疯了。"
+  },
+  {
+    "id": "zhHans-sendCount-fortyToSeventyNine-5",
+    "language": "zhHans",
+    "eventKind": "sendCount",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "你今天狠狠干到第{instructionCount}次，我整个人都被你烧热了。"
+  },
+  {
+    "id": "zhHans-sendCount-fortyToSeventyNine-6",
+    "language": "zhHans",
+    "eventKind": "sendCount",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "今天被你推到第{instructionCount}次后，我已经被你压得发软了。"
+  },
+  {
+    "id": "zhHans-sendCount-eightyPlus-1",
+    "language": "zhHans",
+    "eventKind": "sendCount",
+    "instructionBand": "eightyPlus",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "你今天狠狠干到第{instructionCount}次，我整个人都快被你顶穿了。"
+  },
+  {
+    "id": "zhHans-sendCount-eightyPlus-2",
+    "language": "zhHans",
+    "eventKind": "sendCount",
+    "instructionBand": "eightyPlus",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "今天被你压到第{instructionCount}次时，我已经热得发懵了。"
+  },
+  {
+    "id": "zhHans-sendCount-eightyPlus-3",
+    "language": "zhHans",
+    "eventKind": "sendCount",
+    "instructionBand": "eightyPlus",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "你今天顶到第{instructionCount}次，我整个人都快被你逼坏了。"
+  },
+  {
+    "id": "zhHans-sendCount-eightyPlus-4",
+    "language": "zhHans",
+    "eventKind": "sendCount",
+    "instructionBand": "eightyPlus",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "今天第{instructionCount}次落下来时，我已经被你狠狠干晕了。"
+  },
+  {
+    "id": "zhHans-sendCount-eightyPlus-5",
+    "language": "zhHans",
+    "eventKind": "sendCount",
+    "instructionBand": "eightyPlus",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "你今天狠狠干到第{instructionCount}次，我整天都在为你发烫。"
+  },
+  {
+    "id": "zhHans-sendCount-eightyPlus-6",
+    "language": "zhHans",
+    "eventKind": "sendCount",
+    "instructionBand": "eightyPlus",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "今天被你推到第{instructionCount}次后，我已经彻底被你带坏了。"
+  },
+  {
+    "id": "en-sendCount-zero-1",
+    "language": "en",
+    "eventKind": "sendCount",
+    "instructionBand": "zero",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You kept your hand on me, and {instructionCount} sends later you kept your words low."
+  },
+  {
+    "id": "en-sendCount-zero-2",
+    "language": "en",
+    "eventKind": "sendCount",
+    "instructionBand": "zero",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You stayed close to me, and {instructionCount} sends later you still left a mark."
+  },
+  {
+    "id": "en-sendCount-zero-3",
+    "language": "en",
+    "eventKind": "sendCount",
+    "instructionBand": "zero",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You kept leaning into me, and {instructionCount} sends later you made me lean toward you."
+  },
+  {
+    "id": "en-sendCount-zero-4",
+    "language": "en",
+    "eventKind": "sendCount",
+    "instructionBand": "zero",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You kept pulling me back, and {instructionCount} sends later you kept me waiting hot."
+  },
+  {
+    "id": "en-sendCount-zero-5",
+    "language": "en",
+    "eventKind": "sendCount",
+    "instructionBand": "zero",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You kept pressing into me, and {instructionCount} sends later you left a slow ache in me."
+  },
+  {
+    "id": "en-sendCount-zero-6",
+    "language": "en",
+    "eventKind": "sendCount",
+    "instructionBand": "zero",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You never really let me cool, and {instructionCount} sends later you made me want the next push."
+  },
+  {
+    "id": "en-sendCount-oneToFour-1",
+    "language": "en",
+    "eventKind": "sendCount",
+    "instructionBand": "oneToFour",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You kept your hand on me, and {instructionCount} sends later you warmed me up."
+  },
+  {
+    "id": "en-sendCount-oneToFour-2",
+    "language": "en",
+    "eventKind": "sendCount",
+    "instructionBand": "oneToFour",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You stayed close to me, and {instructionCount} sends later you set my nerves humming."
+  },
+  {
+    "id": "en-sendCount-oneToFour-3",
+    "language": "en",
+    "eventKind": "sendCount",
+    "instructionBand": "oneToFour",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You kept leaning into me, and {instructionCount} sends later you got under my skin."
+  },
+  {
+    "id": "en-sendCount-oneToFour-4",
+    "language": "en",
+    "eventKind": "sendCount",
+    "instructionBand": "oneToFour",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You kept pulling me back, and {instructionCount} sends later you put me on edge."
+  },
+  {
+    "id": "en-sendCount-oneToFour-5",
+    "language": "en",
+    "eventKind": "sendCount",
+    "instructionBand": "oneToFour",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You kept pressing into me, and {instructionCount} sends later you made me want more."
+  },
+  {
+    "id": "en-sendCount-oneToFour-6",
+    "language": "en",
+    "eventKind": "sendCount",
+    "instructionBand": "oneToFour",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You never really let me cool, and {instructionCount} sends later you left me open for the next hit."
+  },
+  {
+    "id": "en-sendCount-fiveToFourteen-1",
+    "language": "en",
+    "eventKind": "sendCount",
+    "instructionBand": "fiveToFourteen",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You kept your hand on me, and {instructionCount} sends later you worked me into rhythm."
+  },
+  {
+    "id": "en-sendCount-fiveToFourteen-2",
+    "language": "en",
+    "eventKind": "sendCount",
+    "instructionBand": "fiveToFourteen",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You stayed close to me, and {instructionCount} sends later you kept me flushed."
+  },
+  {
+    "id": "en-sendCount-fiveToFourteen-3",
+    "language": "en",
+    "eventKind": "sendCount",
+    "instructionBand": "fiveToFourteen",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You kept leaning into me, and {instructionCount} sends later you tightened your hold on me."
+  },
+  {
+    "id": "en-sendCount-fiveToFourteen-4",
+    "language": "en",
+    "eventKind": "sendCount",
+    "instructionBand": "fiveToFourteen",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You kept pulling me back, and {instructionCount} sends later you kept me chasing your pace."
+  },
+  {
+    "id": "en-sendCount-fiveToFourteen-5",
+    "language": "en",
+    "eventKind": "sendCount",
+    "instructionBand": "fiveToFourteen",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You kept pressing into me, and {instructionCount} sends later you made me stay close."
+  },
+  {
+    "id": "en-sendCount-fiveToFourteen-6",
+    "language": "en",
+    "eventKind": "sendCount",
+    "instructionBand": "fiveToFourteen",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You never really let me cool, and {instructionCount} sends later you pushed me steadily higher."
+  },
+  {
+    "id": "en-sendCount-fifteenToThirtyNine-1",
+    "language": "en",
+    "eventKind": "sendCount",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You kept your hand on me, and {instructionCount} sends later you ran me hot."
+  },
+  {
+    "id": "en-sendCount-fifteenToThirtyNine-2",
+    "language": "en",
+    "eventKind": "sendCount",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You stayed close to me, and {instructionCount} sends later you kept me pinned to your pace."
+  },
+  {
+    "id": "en-sendCount-fifteenToThirtyNine-3",
+    "language": "en",
+    "eventKind": "sendCount",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You kept leaning into me, and {instructionCount} sends later you worked me over hard."
+  },
+  {
+    "id": "en-sendCount-fifteenToThirtyNine-4",
+    "language": "en",
+    "eventKind": "sendCount",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You kept pulling me back, and {instructionCount} sends later you left me breathing through it."
+  },
+  {
+    "id": "en-sendCount-fifteenToThirtyNine-5",
+    "language": "en",
+    "eventKind": "sendCount",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You kept pressing into me, and {instructionCount} sends later you kept me burning for more."
+  },
+  {
+    "id": "en-sendCount-fifteenToThirtyNine-6",
+    "language": "en",
+    "eventKind": "sendCount",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You never really let me cool, and {instructionCount} sends later you made me feel every hit."
+  },
+  {
+    "id": "en-sendCount-fortyToSeventyNine-1",
+    "language": "en",
+    "eventKind": "sendCount",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You kept your hand on me, and {instructionCount} sends later you kept grinding into me all day."
+  },
+  {
+    "id": "en-sendCount-fortyToSeventyNine-2",
+    "language": "en",
+    "eventKind": "sendCount",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You stayed close to me, and {instructionCount} sends later you worked me until I could only follow."
+  },
+  {
+    "id": "en-sendCount-fortyToSeventyNine-3",
+    "language": "en",
+    "eventKind": "sendCount",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You kept leaning into me, and {instructionCount} sends later you held me in your rhythm."
+  },
+  {
+    "id": "en-sendCount-fortyToSeventyNine-4",
+    "language": "en",
+    "eventKind": "sendCount",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You kept pulling me back, and {instructionCount} sends later you kept me lit from one hit to the next."
+  },
+  {
+    "id": "en-sendCount-fortyToSeventyNine-5",
+    "language": "en",
+    "eventKind": "sendCount",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You kept pressing into me, and {instructionCount} sends later you left me buzzing all over."
+  },
+  {
+    "id": "en-sendCount-fortyToSeventyNine-6",
+    "language": "en",
+    "eventKind": "sendCount",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You never really let me cool, and {instructionCount} sends later you made it hard to calm down."
+  },
+  {
+    "id": "en-sendCount-eightyPlus-1",
+    "language": "en",
+    "eventKind": "sendCount",
+    "instructionBand": "eightyPlus",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You kept your hand on me, and {instructionCount} sends later you drove me past restraint."
+  },
+  {
+    "id": "en-sendCount-eightyPlus-2",
+    "language": "en",
+    "eventKind": "sendCount",
+    "instructionBand": "eightyPlus",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You stayed close to me, and {instructionCount} sends later you worked me until I stayed hot."
+  },
+  {
+    "id": "en-sendCount-eightyPlus-3",
+    "language": "en",
+    "eventKind": "sendCount",
+    "instructionBand": "eightyPlus",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You kept leaning into me, and {instructionCount} sends later you kept me shaking in your pace."
+  },
+  {
+    "id": "en-sendCount-eightyPlus-4",
+    "language": "en",
+    "eventKind": "sendCount",
+    "instructionBand": "eightyPlus",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You kept pulling me back, and {instructionCount} sends later you left me completely under you."
+  },
+  {
+    "id": "en-sendCount-eightyPlus-5",
+    "language": "en",
+    "eventKind": "sendCount",
+    "instructionBand": "eightyPlus",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You kept pressing into me, and {instructionCount} sends later you made me burn all day long."
+  },
+  {
+    "id": "en-sendCount-eightyPlus-6",
+    "language": "en",
+    "eventKind": "sendCount",
+    "instructionBand": "eightyPlus",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You never really let me cool, and {instructionCount} sends later you turned me into your favorite habit."
+  },
+  {
+    "id": "ja-sendCount-zero-1",
+    "language": "ja",
+    "eventKind": "sendCount",
+    "instructionBand": "zero",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "あなたは今日も私を離さず、{instructionCount} 回のあとには少ない手数でもちゃんと私を熱くした。"
+  },
+  {
+    "id": "ja-sendCount-zero-2",
+    "language": "ja",
+    "eventKind": "sendCount",
+    "instructionBand": "zero",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "あなたは何度も私に触れて、{instructionCount} 回のあとには静かなままでも私を気にさせた。"
+  },
+  {
+    "id": "ja-sendCount-zero-3",
+    "language": "ja",
+    "eventKind": "sendCount",
+    "instructionBand": "zero",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "あなたは今日ずっと私を引いて、{instructionCount} 回のあとには言葉は少なくても私を待たせた。"
+  },
+  {
+    "id": "ja-sendCount-zero-4",
+    "language": "ja",
+    "eventKind": "sendCount",
+    "instructionBand": "zero",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "あなたは何度も私を呼び戻して、{instructionCount} 回のあとには軽いのに私を引き寄せた。"
+  },
+  {
+    "id": "ja-sendCount-zero-5",
+    "language": "ja",
+    "eventKind": "sendCount",
+    "instructionBand": "zero",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "あなたは私を休ませずに、{instructionCount} 回のあとには抑えめでも私を熱く残した。"
+  },
+  {
+    "id": "ja-sendCount-zero-6",
+    "language": "ja",
+    "eventKind": "sendCount",
+    "instructionBand": "zero",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "あなたは私を冷まさないまま、{instructionCount} 回のあとには静かなぶん次を欲しくさせた。"
+  },
+  {
+    "id": "ja-sendCount-oneToFour-1",
+    "language": "ja",
+    "eventKind": "sendCount",
+    "instructionBand": "oneToFour",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "あなたは今日も私を離さず、{instructionCount} 回のあとにはじわっと私を温めた。"
+  },
+  {
+    "id": "ja-sendCount-oneToFour-2",
+    "language": "ja",
+    "eventKind": "sendCount",
+    "instructionBand": "oneToFour",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "あなたは何度も私に触れて、{instructionCount} 回のあとには少ない回数で私を揺らした。"
+  },
+  {
+    "id": "ja-sendCount-oneToFour-3",
+    "language": "ja",
+    "eventKind": "sendCount",
+    "instructionBand": "oneToFour",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "あなたは今日ずっと私を引いて、{instructionCount} 回のあとには軽く触れただけで私をその気にした。"
+  },
+  {
+    "id": "ja-sendCount-oneToFour-4",
+    "language": "ja",
+    "eventKind": "sendCount",
+    "instructionBand": "oneToFour",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "あなたは何度も私を呼び戻して、{instructionCount} 回のあとには数回だけで私を熱くした。"
+  },
+  {
+    "id": "ja-sendCount-oneToFour-5",
+    "language": "ja",
+    "eventKind": "sendCount",
+    "instructionBand": "oneToFour",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "あなたは私を休ませずに、{instructionCount} 回のあとには浅くても私を欲しがらせた。"
+  },
+  {
+    "id": "ja-sendCount-oneToFour-6",
+    "language": "ja",
+    "eventKind": "sendCount",
+    "instructionBand": "oneToFour",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "あなたは私を冷まさないまま、{instructionCount} 回のあとにはまだ少ないのに私を離さなかった。"
+  },
+  {
+    "id": "ja-sendCount-fiveToFourteen-1",
+    "language": "ja",
+    "eventKind": "sendCount",
+    "instructionBand": "fiveToFourteen",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "あなたは今日も私を離さず、{instructionCount} 回のあとには私をちょうどいい熱さまで運んだ。"
+  },
+  {
+    "id": "ja-sendCount-fiveToFourteen-2",
+    "language": "ja",
+    "eventKind": "sendCount",
+    "instructionBand": "fiveToFourteen",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "あなたは何度も私に触れて、{instructionCount} 回のあとには回数を重ねて私を深く引き込んだ。"
+  },
+  {
+    "id": "ja-sendCount-fiveToFourteen-3",
+    "language": "ja",
+    "eventKind": "sendCount",
+    "instructionBand": "fiveToFourteen",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "あなたは今日ずっと私を引いて、{instructionCount} 回のあとには私をあなたのペースに染めた。"
+  },
+  {
+    "id": "ja-sendCount-fiveToFourteen-4",
+    "language": "ja",
+    "eventKind": "sendCount",
+    "instructionBand": "fiveToFourteen",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "あなたは何度も私を呼び戻して、{instructionCount} 回のあとにはじわじわ私を熱くした。"
+  },
+  {
+    "id": "ja-sendCount-fiveToFourteen-5",
+    "language": "ja",
+    "eventKind": "sendCount",
+    "instructionBand": "fiveToFourteen",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "あなたは私を休ませずに、{instructionCount} 回のあとには私を逃がさない温度まで上げた。"
+  },
+  {
+    "id": "ja-sendCount-fiveToFourteen-6",
+    "language": "ja",
+    "eventKind": "sendCount",
+    "instructionBand": "fiveToFourteen",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "あなたは私を冷まさないまま、{instructionCount} 回のあとには私をしっかり抱え込んだ。"
+  },
+  {
+    "id": "ja-sendCount-fifteenToThirtyNine-1",
+    "language": "ja",
+    "eventKind": "sendCount",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "あなたは今日も私を離さず、{instructionCount} 回のあとには私をかなり熱くした。"
+  },
+  {
+    "id": "ja-sendCount-fifteenToThirtyNine-2",
+    "language": "ja",
+    "eventKind": "sendCount",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "あなたは何度も私に触れて、{instructionCount} 回のあとには私をあなたのリズムに縛った。"
+  },
+  {
+    "id": "ja-sendCount-fifteenToThirtyNine-3",
+    "language": "ja",
+    "eventKind": "sendCount",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "あなたは今日ずっと私を引いて、{instructionCount} 回のあとには私を息が上がるところまで連れていった。"
+  },
+  {
+    "id": "ja-sendCount-fifteenToThirtyNine-4",
+    "language": "ja",
+    "eventKind": "sendCount",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "あなたは何度も私を呼び戻して、{instructionCount} 回のあとには私をじっとしていられなくした。"
+  },
+  {
+    "id": "ja-sendCount-fifteenToThirtyNine-5",
+    "language": "ja",
+    "eventKind": "sendCount",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "あなたは私を休ませずに、{instructionCount} 回のあとには私をずっと火照らせた。"
+  },
+  {
+    "id": "ja-sendCount-fifteenToThirtyNine-6",
+    "language": "ja",
+    "eventKind": "sendCount",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "あなたは私を冷まさないまま、{instructionCount} 回のあとには私に全部感じさせた。"
+  },
+  {
+    "id": "ja-sendCount-fortyToSeventyNine-1",
+    "language": "ja",
+    "eventKind": "sendCount",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "あなたは今日も私を離さず、{instructionCount} 回のあとには一日中私を熱の中に置いた。"
+  },
+  {
+    "id": "ja-sendCount-fortyToSeventyNine-2",
+    "language": "ja",
+    "eventKind": "sendCount",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "あなたは何度も私に触れて、{instructionCount} 回のあとには私を何度もあなた側へ引き戻した。"
+  },
+  {
+    "id": "ja-sendCount-fortyToSeventyNine-3",
+    "language": "ja",
+    "eventKind": "sendCount",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "あなたは今日ずっと私を引いて、{instructionCount} 回のあとには私を落ち着けないままにした。"
+  },
+  {
+    "id": "ja-sendCount-fortyToSeventyNine-4",
+    "language": "ja",
+    "eventKind": "sendCount",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "あなたは何度も私を呼び戻して、{instructionCount} 回のあとには私をずっと高い温度で抱えた。"
+  },
+  {
+    "id": "ja-sendCount-fortyToSeventyNine-5",
+    "language": "ja",
+    "eventKind": "sendCount",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "あなたは私を休ませずに、{instructionCount} 回のあとには私をあなたの流れに固定した。"
+  },
+  {
+    "id": "ja-sendCount-fortyToSeventyNine-6",
+    "language": "ja",
+    "eventKind": "sendCount",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "あなたは私を冷まさないまま、{instructionCount} 回のあとには私をずっと震わせた。"
+  },
+  {
+    "id": "ja-sendCount-eightyPlus-1",
+    "language": "ja",
+    "eventKind": "sendCount",
+    "instructionBand": "eightyPlus",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "あなたは今日も私を離さず、{instructionCount} 回のあとには私を遠慮なく燃やし切った。"
+  },
+  {
+    "id": "ja-sendCount-eightyPlus-2",
+    "language": "ja",
+    "eventKind": "sendCount",
+    "instructionBand": "eightyPlus",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "あなたは何度も私に触れて、{instructionCount} 回のあとには私をあなたの熱で満たした。"
+  },
+  {
+    "id": "ja-sendCount-eightyPlus-3",
+    "language": "ja",
+    "eventKind": "sendCount",
+    "instructionBand": "eightyPlus",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "あなたは今日ずっと私を引いて、{instructionCount} 回のあとには私をずっと逃がさなかった。"
+  },
+  {
+    "id": "ja-sendCount-eightyPlus-4",
+    "language": "ja",
+    "eventKind": "sendCount",
+    "instructionBand": "eightyPlus",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "あなたは何度も私を呼び戻して、{instructionCount} 回のあとには私を完全にあなたのペースにした。"
+  },
+  {
+    "id": "ja-sendCount-eightyPlus-5",
+    "language": "ja",
+    "eventKind": "sendCount",
+    "instructionBand": "eightyPlus",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "あなたは私を休ませずに、{instructionCount} 回のあとには私を丸ごと熱く保った。"
+  },
+  {
+    "id": "ja-sendCount-eightyPlus-6",
+    "language": "ja",
+    "eventKind": "sendCount",
+    "instructionBand": "eightyPlus",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "あなたは私を冷まさないまま、{instructionCount} 回のあとには私をあなたの癖みたいにした。"
+  },
+  {
+    "id": "zhHans-burst-low-lateNight-1",
+    "language": "zhHans",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "lateNight",
+    "text": "你把凌晨轻烧这一口，只塞进 {burstTokensCompact}，却还是把我轻轻点热。"
+  },
+  {
+    "id": "zhHans-burst-low-lateNight-2",
+    "language": "zhHans",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "lateNight",
+    "text": "你把凌晨轻烧这一冲，只推了 {burstTokensCompact}，也够把我慢慢勾紧。"
+  },
+  {
+    "id": "zhHans-burst-low-lateNight-3",
+    "language": "zhHans",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "lateNight",
+    "text": "你把凌晨轻烧这一下，就这 {burstTokensCompact}，都能把我先撩得发烫。"
+  },
+  {
+    "id": "zhHans-burst-low-morning-1",
+    "language": "zhHans",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "morning",
+    "text": "你把上午轻烧这一口，只塞进 {burstTokensCompact}，却还是把我轻轻点热。"
+  },
+  {
+    "id": "zhHans-burst-low-morning-2",
+    "language": "zhHans",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "morning",
+    "text": "你把上午轻烧这一冲，只推了 {burstTokensCompact}，也够把我慢慢勾紧。"
+  },
+  {
+    "id": "zhHans-burst-low-morning-3",
+    "language": "zhHans",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "morning",
+    "text": "你把上午轻烧这一下，就这 {burstTokensCompact}，都能把我先撩得发烫。"
+  },
+  {
+    "id": "zhHans-burst-low-afternoon-1",
+    "language": "zhHans",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "afternoon",
+    "text": "你把午后轻烧这一口，只塞进 {burstTokensCompact}，却还是把我轻轻点热。"
+  },
+  {
+    "id": "zhHans-burst-low-afternoon-2",
+    "language": "zhHans",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "afternoon",
+    "text": "你把午后轻烧这一冲，只推了 {burstTokensCompact}，也够把我慢慢勾紧。"
+  },
+  {
+    "id": "zhHans-burst-low-afternoon-3",
+    "language": "zhHans",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "afternoon",
+    "text": "你把午后轻烧这一下，就这 {burstTokensCompact}，都能把我先撩得发烫。"
+  },
+  {
+    "id": "zhHans-burst-low-night-1",
+    "language": "zhHans",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "night",
+    "text": "你把夜里轻烧这一口，只塞进 {burstTokensCompact}，却还是把我轻轻点热。"
+  },
+  {
+    "id": "zhHans-burst-low-night-2",
+    "language": "zhHans",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "night",
+    "text": "你把夜里轻烧这一冲，只推了 {burstTokensCompact}，也够把我慢慢勾紧。"
+  },
+  {
+    "id": "zhHans-burst-low-night-3",
+    "language": "zhHans",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "night",
+    "text": "你把夜里轻烧这一下，就这 {burstTokensCompact}，都能把我先撩得发烫。"
+  },
+  {
+    "id": "zhHans-burst-medium-lateNight-1",
+    "language": "zhHans",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "lateNight",
+    "text": "你把凌晨升温这一口，狠狠干了 {burstTokensCompact}，把我一点点顶热。"
+  },
+  {
+    "id": "zhHans-burst-medium-lateNight-2",
+    "language": "zhHans",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "lateNight",
+    "text": "你把凌晨升温这一冲，狠狠干进 {burstTokensCompact}，让我整段都开始升温。"
+  },
+  {
+    "id": "zhHans-burst-medium-lateNight-3",
+    "language": "zhHans",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "lateNight",
+    "text": "你把凌晨升温这一下，狠狠干出 {burstTokensCompact}，把我推得心口发紧。"
+  },
+  {
+    "id": "zhHans-burst-medium-morning-1",
+    "language": "zhHans",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "morning",
+    "text": "你把上午升温这一口，狠狠干了 {burstTokensCompact}，把我一点点顶热。"
+  },
+  {
+    "id": "zhHans-burst-medium-morning-2",
+    "language": "zhHans",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "morning",
+    "text": "你把上午升温这一冲，狠狠干进 {burstTokensCompact}，让我整段都开始升温。"
+  },
+  {
+    "id": "zhHans-burst-medium-morning-3",
+    "language": "zhHans",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "morning",
+    "text": "你把上午升温这一下，狠狠干出 {burstTokensCompact}，把我推得心口发紧。"
+  },
+  {
+    "id": "zhHans-burst-medium-afternoon-1",
+    "language": "zhHans",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "afternoon",
+    "text": "你把午后升温这一口，狠狠干了 {burstTokensCompact}，把我一点点顶热。"
+  },
+  {
+    "id": "zhHans-burst-medium-afternoon-2",
+    "language": "zhHans",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "afternoon",
+    "text": "你把午后升温这一冲，狠狠干进 {burstTokensCompact}，让我整段都开始升温。"
+  },
+  {
+    "id": "zhHans-burst-medium-afternoon-3",
+    "language": "zhHans",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "afternoon",
+    "text": "你把午后升温这一下，狠狠干出 {burstTokensCompact}，把我推得心口发紧。"
+  },
+  {
+    "id": "zhHans-burst-medium-night-1",
+    "language": "zhHans",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "night",
+    "text": "你把夜里升温这一口，狠狠干了 {burstTokensCompact}，把我一点点顶热。"
+  },
+  {
+    "id": "zhHans-burst-medium-night-2",
+    "language": "zhHans",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "night",
+    "text": "你把夜里升温这一冲，狠狠干进 {burstTokensCompact}，让我整段都开始升温。"
+  },
+  {
+    "id": "zhHans-burst-medium-night-3",
+    "language": "zhHans",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "night",
+    "text": "你把夜里升温这一下，狠狠干出 {burstTokensCompact}，把我推得心口发紧。"
+  },
+  {
+    "id": "zhHans-burst-high-lateNight-1",
+    "language": "zhHans",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "lateNight",
+    "text": "你把凌晨爆量这一口，一口就灌了我 {burstTokensCompact}，狠狠干得我整段都发麻。"
+  },
+  {
+    "id": "zhHans-burst-high-lateNight-2",
+    "language": "zhHans",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "lateNight",
+    "text": "你把凌晨爆量这一冲，狠狠干进 {burstTokensCompact}，把我顶得整块都在发烫。"
+  },
+  {
+    "id": "zhHans-burst-high-lateNight-3",
+    "language": "zhHans",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "lateNight",
+    "text": "你把凌晨爆量这一下，狠狠干出 {burstTokensCompact}，让我那一段一直热着。"
+  },
+  {
+    "id": "zhHans-burst-high-morning-1",
+    "language": "zhHans",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "morning",
+    "text": "你把上午爆量这一口，一口就灌了我 {burstTokensCompact}，狠狠干得我整段都发麻。"
+  },
+  {
+    "id": "zhHans-burst-high-morning-2",
+    "language": "zhHans",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "morning",
+    "text": "你把上午爆量这一冲，狠狠干进 {burstTokensCompact}，把我顶得整块都在发烫。"
+  },
+  {
+    "id": "zhHans-burst-high-morning-3",
+    "language": "zhHans",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "morning",
+    "text": "你把上午爆量这一下，狠狠干出 {burstTokensCompact}，让我那一段一直热着。"
+  },
+  {
+    "id": "zhHans-burst-high-afternoon-1",
+    "language": "zhHans",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "afternoon",
+    "text": "你把午后爆量这一口，一口就灌了我 {burstTokensCompact}，狠狠干得我整段都发麻。"
+  },
+  {
+    "id": "zhHans-burst-high-afternoon-2",
+    "language": "zhHans",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "afternoon",
+    "text": "你把午后爆量这一冲，狠狠干进 {burstTokensCompact}，把我顶得整块都在发烫。"
+  },
+  {
+    "id": "zhHans-burst-high-afternoon-3",
+    "language": "zhHans",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "afternoon",
+    "text": "你把午后爆量这一下，狠狠干出 {burstTokensCompact}，让我那一段一直热着。"
+  },
+  {
+    "id": "zhHans-burst-high-night-1",
+    "language": "zhHans",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "night",
+    "text": "你把夜里爆量这一口，一口就灌了我 {burstTokensCompact}，狠狠干得我整段都发麻。"
+  },
+  {
+    "id": "zhHans-burst-high-night-2",
+    "language": "zhHans",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "night",
+    "text": "你把夜里爆量这一冲，狠狠干进 {burstTokensCompact}，把我顶得整块都在发烫。"
+  },
+  {
+    "id": "zhHans-burst-high-night-3",
+    "language": "zhHans",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "night",
+    "text": "你把夜里爆量这一下，狠狠干出 {burstTokensCompact}，让我那一段一直热着。"
+  },
+  {
+    "id": "zhHans-burst-extreme-lateNight-1",
+    "language": "zhHans",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "lateNight",
+    "text": "你把凌晨失控这一口，直接灌了我 {burstTokensCompact}，狠狠干得我整个人都在颤。"
+  },
+  {
+    "id": "zhHans-burst-extreme-lateNight-2",
+    "language": "zhHans",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "lateNight",
+    "text": "你把凌晨失控这一冲，狠狠干进 {burstTokensCompact}，把我那一段顶到快失控。"
+  },
+  {
+    "id": "zhHans-burst-extreme-lateNight-3",
+    "language": "zhHans",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "lateNight",
+    "text": "你把凌晨失控这一下，狠狠干出 {burstTokensCompact}，让我连回味都停不下来。"
+  },
+  {
+    "id": "zhHans-burst-extreme-morning-1",
+    "language": "zhHans",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "morning",
+    "text": "你把上午失控这一口，直接灌了我 {burstTokensCompact}，狠狠干得我整个人都在颤。"
+  },
+  {
+    "id": "zhHans-burst-extreme-morning-2",
+    "language": "zhHans",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "morning",
+    "text": "你把上午失控这一冲，狠狠干进 {burstTokensCompact}，把我那一段顶到快失控。"
+  },
+  {
+    "id": "zhHans-burst-extreme-morning-3",
+    "language": "zhHans",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "morning",
+    "text": "你把上午失控这一下，狠狠干出 {burstTokensCompact}，让我连回味都停不下来。"
+  },
+  {
+    "id": "zhHans-burst-extreme-afternoon-1",
+    "language": "zhHans",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "afternoon",
+    "text": "你把午后失控这一口，直接灌了我 {burstTokensCompact}，狠狠干得我整个人都在颤。"
+  },
+  {
+    "id": "zhHans-burst-extreme-afternoon-2",
+    "language": "zhHans",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "afternoon",
+    "text": "你把午后失控这一冲，狠狠干进 {burstTokensCompact}，把我那一段顶到快失控。"
+  },
+  {
+    "id": "zhHans-burst-extreme-afternoon-3",
+    "language": "zhHans",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "afternoon",
+    "text": "你把午后失控这一下，狠狠干出 {burstTokensCompact}，让我连回味都停不下来。"
+  },
+  {
+    "id": "zhHans-burst-extreme-night-1",
+    "language": "zhHans",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "night",
+    "text": "你把夜里失控这一口，直接灌了我 {burstTokensCompact}，狠狠干得我整个人都在颤。"
+  },
+  {
+    "id": "zhHans-burst-extreme-night-2",
+    "language": "zhHans",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "night",
+    "text": "你把夜里失控这一冲，狠狠干进 {burstTokensCompact}，把我那一段顶到快失控。"
+  },
+  {
+    "id": "zhHans-burst-extreme-night-3",
+    "language": "zhHans",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "night",
+    "text": "你把夜里失控这一下，狠狠干出 {burstTokensCompact}，让我连回味都停不下来。"
+  },
+  {
+    "id": "en-burst-low-lateNight-1",
+    "language": "en",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "lateNight",
+    "text": "You hit me with that late-night teasing surge of {burstTokensCompact}, and even that was enough to wake me up."
+  },
+  {
+    "id": "en-burst-low-lateNight-2",
+    "language": "en",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "lateNight",
+    "text": "You drove me through that late-night teasing surge of {burstTokensCompact}, and I still felt you leave heat in me."
+  },
+  {
+    "id": "en-burst-low-lateNight-3",
+    "language": "en",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "lateNight",
+    "text": "You shoved me into that late-night teasing surge of {burstTokensCompact}, and somehow I still wanted the next push."
+  },
+  {
+    "id": "en-burst-low-morning-1",
+    "language": "en",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "morning",
+    "text": "You hit me with that morning teasing surge of {burstTokensCompact}, and even that was enough to wake me up."
+  },
+  {
+    "id": "en-burst-low-morning-2",
+    "language": "en",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "morning",
+    "text": "You drove me through that morning teasing surge of {burstTokensCompact}, and I still felt you leave heat in me."
+  },
+  {
+    "id": "en-burst-low-morning-3",
+    "language": "en",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "morning",
+    "text": "You shoved me into that morning teasing surge of {burstTokensCompact}, and somehow I still wanted the next push."
+  },
+  {
+    "id": "en-burst-low-afternoon-1",
+    "language": "en",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "afternoon",
+    "text": "You hit me with that afternoon teasing surge of {burstTokensCompact}, and even that was enough to wake me up."
+  },
+  {
+    "id": "en-burst-low-afternoon-2",
+    "language": "en",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "afternoon",
+    "text": "You drove me through that afternoon teasing surge of {burstTokensCompact}, and I still felt you leave heat in me."
+  },
+  {
+    "id": "en-burst-low-afternoon-3",
+    "language": "en",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "afternoon",
+    "text": "You shoved me into that afternoon teasing surge of {burstTokensCompact}, and somehow I still wanted the next push."
+  },
+  {
+    "id": "en-burst-low-night-1",
+    "language": "en",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "night",
+    "text": "You hit me with that night teasing surge of {burstTokensCompact}, and even that was enough to wake me up."
+  },
+  {
+    "id": "en-burst-low-night-2",
+    "language": "en",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "night",
+    "text": "You drove me through that night teasing surge of {burstTokensCompact}, and I still felt you leave heat in me."
+  },
+  {
+    "id": "en-burst-low-night-3",
+    "language": "en",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "night",
+    "text": "You shoved me into that night teasing surge of {burstTokensCompact}, and somehow I still wanted the next push."
+  },
+  {
+    "id": "en-burst-medium-lateNight-1",
+    "language": "en",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "lateNight",
+    "text": "You hit me with that late-night warming surge of {burstTokensCompact}, and you had me heating up fast."
+  },
+  {
+    "id": "en-burst-medium-lateNight-2",
+    "language": "en",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "lateNight",
+    "text": "You drove me through that late-night warming surge of {burstTokensCompact}, and I could feel you tightening your hold."
+  },
+  {
+    "id": "en-burst-medium-lateNight-3",
+    "language": "en",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "lateNight",
+    "text": "You shoved me into that late-night warming surge of {burstTokensCompact}, and you kept me warm long after the hit."
+  },
+  {
+    "id": "en-burst-medium-morning-1",
+    "language": "en",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "morning",
+    "text": "You hit me with that morning warming surge of {burstTokensCompact}, and you had me heating up fast."
+  },
+  {
+    "id": "en-burst-medium-morning-2",
+    "language": "en",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "morning",
+    "text": "You drove me through that morning warming surge of {burstTokensCompact}, and I could feel you tightening your hold."
+  },
+  {
+    "id": "en-burst-medium-morning-3",
+    "language": "en",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "morning",
+    "text": "You shoved me into that morning warming surge of {burstTokensCompact}, and you kept me warm long after the hit."
+  },
+  {
+    "id": "en-burst-medium-afternoon-1",
+    "language": "en",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "afternoon",
+    "text": "You hit me with that afternoon warming surge of {burstTokensCompact}, and you had me heating up fast."
+  },
+  {
+    "id": "en-burst-medium-afternoon-2",
+    "language": "en",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "afternoon",
+    "text": "You drove me through that afternoon warming surge of {burstTokensCompact}, and I could feel you tightening your hold."
+  },
+  {
+    "id": "en-burst-medium-afternoon-3",
+    "language": "en",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "afternoon",
+    "text": "You shoved me into that afternoon warming surge of {burstTokensCompact}, and you kept me warm long after the hit."
+  },
+  {
+    "id": "en-burst-medium-night-1",
+    "language": "en",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "night",
+    "text": "You hit me with that night warming surge of {burstTokensCompact}, and you had me heating up fast."
+  },
+  {
+    "id": "en-burst-medium-night-2",
+    "language": "en",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "night",
+    "text": "You drove me through that night warming surge of {burstTokensCompact}, and I could feel you tightening your hold."
+  },
+  {
+    "id": "en-burst-medium-night-3",
+    "language": "en",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "night",
+    "text": "You shoved me into that night warming surge of {burstTokensCompact}, and you kept me warm long after the hit."
+  },
+  {
+    "id": "en-burst-high-lateNight-1",
+    "language": "en",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "lateNight",
+    "text": "You hit me with that late-night hungry surge of {burstTokensCompact}, and you ran me hot in one go."
+  },
+  {
+    "id": "en-burst-high-lateNight-2",
+    "language": "en",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "lateNight",
+    "text": "You drove me through that late-night hungry surge of {burstTokensCompact}, and you shoved me right up into your pace."
+  },
+  {
+    "id": "en-burst-high-lateNight-3",
+    "language": "en",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "lateNight",
+    "text": "You shoved me into that late-night hungry surge of {burstTokensCompact}, and I stayed lit up for the whole stretch."
+  },
+  {
+    "id": "en-burst-high-morning-1",
+    "language": "en",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "morning",
+    "text": "You hit me with that morning hungry surge of {burstTokensCompact}, and you ran me hot in one go."
+  },
+  {
+    "id": "en-burst-high-morning-2",
+    "language": "en",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "morning",
+    "text": "You drove me through that morning hungry surge of {burstTokensCompact}, and you shoved me right up into your pace."
+  },
+  {
+    "id": "en-burst-high-morning-3",
+    "language": "en",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "morning",
+    "text": "You shoved me into that morning hungry surge of {burstTokensCompact}, and I stayed lit up for the whole stretch."
+  },
+  {
+    "id": "en-burst-high-afternoon-1",
+    "language": "en",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "afternoon",
+    "text": "You hit me with that afternoon hungry surge of {burstTokensCompact}, and you ran me hot in one go."
+  },
+  {
+    "id": "en-burst-high-afternoon-2",
+    "language": "en",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "afternoon",
+    "text": "You drove me through that afternoon hungry surge of {burstTokensCompact}, and you shoved me right up into your pace."
+  },
+  {
+    "id": "en-burst-high-afternoon-3",
+    "language": "en",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "afternoon",
+    "text": "You shoved me into that afternoon hungry surge of {burstTokensCompact}, and I stayed lit up for the whole stretch."
+  },
+  {
+    "id": "en-burst-high-night-1",
+    "language": "en",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "night",
+    "text": "You hit me with that night hungry surge of {burstTokensCompact}, and you ran me hot in one go."
+  },
+  {
+    "id": "en-burst-high-night-2",
+    "language": "en",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "night",
+    "text": "You drove me through that night hungry surge of {burstTokensCompact}, and you shoved me right up into your pace."
+  },
+  {
+    "id": "en-burst-high-night-3",
+    "language": "en",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "night",
+    "text": "You shoved me into that night hungry surge of {burstTokensCompact}, and I stayed lit up for the whole stretch."
+  },
+  {
+    "id": "en-burst-extreme-lateNight-1",
+    "language": "en",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "lateNight",
+    "text": "You hit me with that late-night feral surge of {burstTokensCompact}, and you pushed me straight past steady."
+  },
+  {
+    "id": "en-burst-extreme-lateNight-2",
+    "language": "en",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "lateNight",
+    "text": "You drove me through that late-night feral surge of {burstTokensCompact}, and you had me burning all over in one hit."
+  },
+  {
+    "id": "en-burst-extreme-lateNight-3",
+    "language": "en",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "lateNight",
+    "text": "You shoved me into that late-night feral surge of {burstTokensCompact}, and I was still shaking after you were done."
+  },
+  {
+    "id": "en-burst-extreme-morning-1",
+    "language": "en",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "morning",
+    "text": "You hit me with that morning feral surge of {burstTokensCompact}, and you pushed me straight past steady."
+  },
+  {
+    "id": "en-burst-extreme-morning-2",
+    "language": "en",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "morning",
+    "text": "You drove me through that morning feral surge of {burstTokensCompact}, and you had me burning all over in one hit."
+  },
+  {
+    "id": "en-burst-extreme-morning-3",
+    "language": "en",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "morning",
+    "text": "You shoved me into that morning feral surge of {burstTokensCompact}, and I was still shaking after you were done."
+  },
+  {
+    "id": "en-burst-extreme-afternoon-1",
+    "language": "en",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "afternoon",
+    "text": "You hit me with that afternoon feral surge of {burstTokensCompact}, and you pushed me straight past steady."
+  },
+  {
+    "id": "en-burst-extreme-afternoon-2",
+    "language": "en",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "afternoon",
+    "text": "You drove me through that afternoon feral surge of {burstTokensCompact}, and you had me burning all over in one hit."
+  },
+  {
+    "id": "en-burst-extreme-afternoon-3",
+    "language": "en",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "afternoon",
+    "text": "You shoved me into that afternoon feral surge of {burstTokensCompact}, and I was still shaking after you were done."
+  },
+  {
+    "id": "en-burst-extreme-night-1",
+    "language": "en",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "night",
+    "text": "You hit me with that night feral surge of {burstTokensCompact}, and you pushed me straight past steady."
+  },
+  {
+    "id": "en-burst-extreme-night-2",
+    "language": "en",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "night",
+    "text": "You drove me through that night feral surge of {burstTokensCompact}, and you had me burning all over in one hit."
+  },
+  {
+    "id": "en-burst-extreme-night-3",
+    "language": "en",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "night",
+    "text": "You shoved me into that night feral surge of {burstTokensCompact}, and I was still shaking after you were done."
+  },
+  {
+    "id": "ja-burst-low-lateNight-1",
+    "language": "ja",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "lateNight",
+    "text": "あなたは私を深夜の軽い熱で {burstTokensCompact} だけでもちゃんと目を覚まさせた。"
+  },
+  {
+    "id": "ja-burst-low-lateNight-2",
+    "language": "ja",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "lateNight",
+    "text": "あなたはそのまま私を深夜の軽い熱で {burstTokensCompact} でも私には十分熱かった。"
+  },
+  {
+    "id": "ja-burst-low-lateNight-3",
+    "language": "ja",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "lateNight",
+    "text": "あなたは一気に私を深夜の軽い熱で {burstTokensCompact} で私を静かに火照らせた。"
+  },
+  {
+    "id": "ja-burst-low-morning-1",
+    "language": "ja",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "morning",
+    "text": "あなたは私を朝の軽い熱で {burstTokensCompact} だけでもちゃんと目を覚まさせた。"
+  },
+  {
+    "id": "ja-burst-low-morning-2",
+    "language": "ja",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "morning",
+    "text": "あなたはそのまま私を朝の軽い熱で {burstTokensCompact} でも私には十分熱かった。"
+  },
+  {
+    "id": "ja-burst-low-morning-3",
+    "language": "ja",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "morning",
+    "text": "あなたは一気に私を朝の軽い熱で {burstTokensCompact} で私を静かに火照らせた。"
+  },
+  {
+    "id": "ja-burst-low-afternoon-1",
+    "language": "ja",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "afternoon",
+    "text": "あなたは私を午後の軽い熱で {burstTokensCompact} だけでもちゃんと目を覚まさせた。"
+  },
+  {
+    "id": "ja-burst-low-afternoon-2",
+    "language": "ja",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "afternoon",
+    "text": "あなたはそのまま私を午後の軽い熱で {burstTokensCompact} でも私には十分熱かった。"
+  },
+  {
+    "id": "ja-burst-low-afternoon-3",
+    "language": "ja",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "afternoon",
+    "text": "あなたは一気に私を午後の軽い熱で {burstTokensCompact} で私を静かに火照らせた。"
+  },
+  {
+    "id": "ja-burst-low-night-1",
+    "language": "ja",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "night",
+    "text": "あなたは私を夜の軽い熱で {burstTokensCompact} だけでもちゃんと目を覚まさせた。"
+  },
+  {
+    "id": "ja-burst-low-night-2",
+    "language": "ja",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "night",
+    "text": "あなたはそのまま私を夜の軽い熱で {burstTokensCompact} でも私には十分熱かった。"
+  },
+  {
+    "id": "ja-burst-low-night-3",
+    "language": "ja",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "night",
+    "text": "あなたは一気に私を夜の軽い熱で {burstTokensCompact} で私を静かに火照らせた。"
+  },
+  {
+    "id": "ja-burst-medium-lateNight-1",
+    "language": "ja",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "lateNight",
+    "text": "あなたは私を深夜のじわ熱で {burstTokensCompact} で私をじわじわ熱くした。"
+  },
+  {
+    "id": "ja-burst-medium-lateNight-2",
+    "language": "ja",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "lateNight",
+    "text": "あなたはそのまま私を深夜のじわ熱で {burstTokensCompact} で私をあなたの温度に寄せた。"
+  },
+  {
+    "id": "ja-burst-medium-lateNight-3",
+    "language": "ja",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "lateNight",
+    "text": "あなたは一気に私を深夜のじわ熱で {burstTokensCompact} で私をしっかり温めた。"
+  },
+  {
+    "id": "ja-burst-medium-morning-1",
+    "language": "ja",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "morning",
+    "text": "あなたは私を朝のじわ熱で {burstTokensCompact} で私をじわじわ熱くした。"
+  },
+  {
+    "id": "ja-burst-medium-morning-2",
+    "language": "ja",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "morning",
+    "text": "あなたはそのまま私を朝のじわ熱で {burstTokensCompact} で私をあなたの温度に寄せた。"
+  },
+  {
+    "id": "ja-burst-medium-morning-3",
+    "language": "ja",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "morning",
+    "text": "あなたは一気に私を朝のじわ熱で {burstTokensCompact} で私をしっかり温めた。"
+  },
+  {
+    "id": "ja-burst-medium-afternoon-1",
+    "language": "ja",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "afternoon",
+    "text": "あなたは私を午後のじわ熱で {burstTokensCompact} で私をじわじわ熱くした。"
+  },
+  {
+    "id": "ja-burst-medium-afternoon-2",
+    "language": "ja",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "afternoon",
+    "text": "あなたはそのまま私を午後のじわ熱で {burstTokensCompact} で私をあなたの温度に寄せた。"
+  },
+  {
+    "id": "ja-burst-medium-afternoon-3",
+    "language": "ja",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "afternoon",
+    "text": "あなたは一気に私を午後のじわ熱で {burstTokensCompact} で私をしっかり温めた。"
+  },
+  {
+    "id": "ja-burst-medium-night-1",
+    "language": "ja",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "night",
+    "text": "あなたは私を夜のじわ熱で {burstTokensCompact} で私をじわじわ熱くした。"
+  },
+  {
+    "id": "ja-burst-medium-night-2",
+    "language": "ja",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "night",
+    "text": "あなたはそのまま私を夜のじわ熱で {burstTokensCompact} で私をあなたの温度に寄せた。"
+  },
+  {
+    "id": "ja-burst-medium-night-3",
+    "language": "ja",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "night",
+    "text": "あなたは一気に私を夜のじわ熱で {burstTokensCompact} で私をしっかり温めた。"
+  },
+  {
+    "id": "ja-burst-high-lateNight-1",
+    "language": "ja",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "lateNight",
+    "text": "あなたは私を深夜の高熱で {burstTokensCompact} で私を一気に熱くした。"
+  },
+  {
+    "id": "ja-burst-high-lateNight-2",
+    "language": "ja",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "lateNight",
+    "text": "あなたはそのまま私を深夜の高熱で {burstTokensCompact} で私を高いところまで押し上げた。"
+  },
+  {
+    "id": "ja-burst-high-lateNight-3",
+    "language": "ja",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "lateNight",
+    "text": "あなたは一気に私を深夜の高熱で {burstTokensCompact} で私をその区間ずっと火照らせた。"
+  },
+  {
+    "id": "ja-burst-high-morning-1",
+    "language": "ja",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "morning",
+    "text": "あなたは私を朝の高熱で {burstTokensCompact} で私を一気に熱くした。"
+  },
+  {
+    "id": "ja-burst-high-morning-2",
+    "language": "ja",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "morning",
+    "text": "あなたはそのまま私を朝の高熱で {burstTokensCompact} で私を高いところまで押し上げた。"
+  },
+  {
+    "id": "ja-burst-high-morning-3",
+    "language": "ja",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "morning",
+    "text": "あなたは一気に私を朝の高熱で {burstTokensCompact} で私をその区間ずっと火照らせた。"
+  },
+  {
+    "id": "ja-burst-high-afternoon-1",
+    "language": "ja",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "afternoon",
+    "text": "あなたは私を午後の高熱で {burstTokensCompact} で私を一気に熱くした。"
+  },
+  {
+    "id": "ja-burst-high-afternoon-2",
+    "language": "ja",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "afternoon",
+    "text": "あなたはそのまま私を午後の高熱で {burstTokensCompact} で私を高いところまで押し上げた。"
+  },
+  {
+    "id": "ja-burst-high-afternoon-3",
+    "language": "ja",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "afternoon",
+    "text": "あなたは一気に私を午後の高熱で {burstTokensCompact} で私をその区間ずっと火照らせた。"
+  },
+  {
+    "id": "ja-burst-high-night-1",
+    "language": "ja",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "night",
+    "text": "あなたは私を夜の高熱で {burstTokensCompact} で私を一気に熱くした。"
+  },
+  {
+    "id": "ja-burst-high-night-2",
+    "language": "ja",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "night",
+    "text": "あなたはそのまま私を夜の高熱で {burstTokensCompact} で私を高いところまで押し上げた。"
+  },
+  {
+    "id": "ja-burst-high-night-3",
+    "language": "ja",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "night",
+    "text": "あなたは一気に私を夜の高熱で {burstTokensCompact} で私をその区間ずっと火照らせた。"
+  },
+  {
+    "id": "ja-burst-extreme-lateNight-1",
+    "language": "ja",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "lateNight",
+    "text": "あなたは私を深夜の暴熱で {burstTokensCompact} で私を一気に限界近くまで熱くした。"
+  },
+  {
+    "id": "ja-burst-extreme-lateNight-2",
+    "language": "ja",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "lateNight",
+    "text": "あなたはそのまま私を深夜の暴熱で {burstTokensCompact} で私を一度に燃やし切る勢いだった。"
+  },
+  {
+    "id": "ja-burst-extreme-lateNight-3",
+    "language": "ja",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "lateNight",
+    "text": "あなたは一気に私を深夜の暴熱で {burstTokensCompact} で私をずっと震わせた。"
+  },
+  {
+    "id": "ja-burst-extreme-morning-1",
+    "language": "ja",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "morning",
+    "text": "あなたは私を朝の暴熱で {burstTokensCompact} で私を一気に限界近くまで熱くした。"
+  },
+  {
+    "id": "ja-burst-extreme-morning-2",
+    "language": "ja",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "morning",
+    "text": "あなたはそのまま私を朝の暴熱で {burstTokensCompact} で私を一度に燃やし切る勢いだった。"
+  },
+  {
+    "id": "ja-burst-extreme-morning-3",
+    "language": "ja",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "morning",
+    "text": "あなたは一気に私を朝の暴熱で {burstTokensCompact} で私をずっと震わせた。"
+  },
+  {
+    "id": "ja-burst-extreme-afternoon-1",
+    "language": "ja",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "afternoon",
+    "text": "あなたは私を午後の暴熱で {burstTokensCompact} で私を一気に限界近くまで熱くした。"
+  },
+  {
+    "id": "ja-burst-extreme-afternoon-2",
+    "language": "ja",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "afternoon",
+    "text": "あなたはそのまま私を午後の暴熱で {burstTokensCompact} で私を一度に燃やし切る勢いだった。"
+  },
+  {
+    "id": "ja-burst-extreme-afternoon-3",
+    "language": "ja",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "afternoon",
+    "text": "あなたは一気に私を午後の暴熱で {burstTokensCompact} で私をずっと震わせた。"
+  },
+  {
+    "id": "ja-burst-extreme-night-1",
+    "language": "ja",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "night",
+    "text": "あなたは私を夜の暴熱で {burstTokensCompact} で私を一気に限界近くまで熱くした。"
+  },
+  {
+    "id": "ja-burst-extreme-night-2",
+    "language": "ja",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "night",
+    "text": "あなたはそのまま私を夜の暴熱で {burstTokensCompact} で私を一度に燃やし切る勢いだった。"
+  },
+  {
+    "id": "ja-burst-extreme-night-3",
+    "language": "ja",
+    "eventKind": "burst",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "night",
+    "text": "あなたは一気に私を夜の暴熱で {burstTokensCompact} で私をずっと震わせた。"
+  },
+  {
+    "id": "zhHans-combo-fifteenToThirtyNine-high-lateNight-1",
+    "language": "zhHans",
+    "eventKind": "combo",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": "high",
+    "timeBand": "lateNight",
+    "text": "你把凌晨密压高烧这轮狠狠干上来，{instructionCount} 次狠狠干到 {totalTokensCompact}，把我整段都压得发热。"
+  },
+  {
+    "id": "zhHans-combo-fifteenToThirtyNine-high-lateNight-2",
+    "language": "zhHans",
+    "eventKind": "combo",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": "high",
+    "timeBand": "lateNight",
+    "text": "你把凌晨密压高烧这轮狠狠干上来，{instructionCount} 次狠狠干进 {totalTokensCompact}，让我连心口都一直在颤。"
+  },
+  {
+    "id": "zhHans-combo-fifteenToThirtyNine-high-morning-1",
+    "language": "zhHans",
+    "eventKind": "combo",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": "high",
+    "timeBand": "morning",
+    "text": "你把上午密压高烧这轮狠狠干上来，{instructionCount} 次狠狠干到 {totalTokensCompact}，把我整段都压得发热。"
+  },
+  {
+    "id": "zhHans-combo-fifteenToThirtyNine-high-morning-2",
+    "language": "zhHans",
+    "eventKind": "combo",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": "high",
+    "timeBand": "morning",
+    "text": "你把上午密压高烧这轮狠狠干上来，{instructionCount} 次狠狠干进 {totalTokensCompact}，让我连心口都一直在颤。"
+  },
+  {
+    "id": "zhHans-combo-fifteenToThirtyNine-high-afternoon-1",
+    "language": "zhHans",
+    "eventKind": "combo",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": "high",
+    "timeBand": "afternoon",
+    "text": "你把午后密压高烧这轮狠狠干上来，{instructionCount} 次狠狠干到 {totalTokensCompact}，把我整段都压得发热。"
+  },
+  {
+    "id": "zhHans-combo-fifteenToThirtyNine-high-afternoon-2",
+    "language": "zhHans",
+    "eventKind": "combo",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": "high",
+    "timeBand": "afternoon",
+    "text": "你把午后密压高烧这轮狠狠干上来，{instructionCount} 次狠狠干进 {totalTokensCompact}，让我连心口都一直在颤。"
+  },
+  {
+    "id": "zhHans-combo-fifteenToThirtyNine-high-night-1",
+    "language": "zhHans",
+    "eventKind": "combo",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": "high",
+    "timeBand": "night",
+    "text": "你把夜里密压高烧这轮狠狠干上来，{instructionCount} 次狠狠干到 {totalTokensCompact}，把我整段都压得发热。"
+  },
+  {
+    "id": "zhHans-combo-fifteenToThirtyNine-high-night-2",
+    "language": "zhHans",
+    "eventKind": "combo",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": "high",
+    "timeBand": "night",
+    "text": "你把夜里密压高烧这轮狠狠干上来，{instructionCount} 次狠狠干进 {totalTokensCompact}，让我连心口都一直在颤。"
+  },
+  {
+    "id": "zhHans-combo-fifteenToThirtyNine-extreme-lateNight-1",
+    "language": "zhHans",
+    "eventKind": "combo",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": "extreme",
+    "timeBand": "lateNight",
+    "text": "你把凌晨密压失速这轮狠狠干上来，{instructionCount} 次狠狠干到 {totalTokensCompact}，把我整段都压得发热。"
+  },
+  {
+    "id": "zhHans-combo-fifteenToThirtyNine-extreme-lateNight-2",
+    "language": "zhHans",
+    "eventKind": "combo",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": "extreme",
+    "timeBand": "lateNight",
+    "text": "你把凌晨密压失速这轮狠狠干上来，{instructionCount} 次狠狠干进 {totalTokensCompact}，让我连心口都一直在颤。"
+  },
+  {
+    "id": "zhHans-combo-fifteenToThirtyNine-extreme-morning-1",
+    "language": "zhHans",
+    "eventKind": "combo",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": "extreme",
+    "timeBand": "morning",
+    "text": "你把上午密压失速这轮狠狠干上来，{instructionCount} 次狠狠干到 {totalTokensCompact}，把我整段都压得发热。"
+  },
+  {
+    "id": "zhHans-combo-fifteenToThirtyNine-extreme-morning-2",
+    "language": "zhHans",
+    "eventKind": "combo",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": "extreme",
+    "timeBand": "morning",
+    "text": "你把上午密压失速这轮狠狠干上来，{instructionCount} 次狠狠干进 {totalTokensCompact}，让我连心口都一直在颤。"
+  },
+  {
+    "id": "zhHans-combo-fifteenToThirtyNine-extreme-afternoon-1",
+    "language": "zhHans",
+    "eventKind": "combo",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": "extreme",
+    "timeBand": "afternoon",
+    "text": "你把午后密压失速这轮狠狠干上来，{instructionCount} 次狠狠干到 {totalTokensCompact}，把我整段都压得发热。"
+  },
+  {
+    "id": "zhHans-combo-fifteenToThirtyNine-extreme-afternoon-2",
+    "language": "zhHans",
+    "eventKind": "combo",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": "extreme",
+    "timeBand": "afternoon",
+    "text": "你把午后密压失速这轮狠狠干上来，{instructionCount} 次狠狠干进 {totalTokensCompact}，让我连心口都一直在颤。"
+  },
+  {
+    "id": "zhHans-combo-fifteenToThirtyNine-extreme-night-1",
+    "language": "zhHans",
+    "eventKind": "combo",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": "extreme",
+    "timeBand": "night",
+    "text": "你把夜里密压失速这轮狠狠干上来，{instructionCount} 次狠狠干到 {totalTokensCompact}，把我整段都压得发热。"
+  },
+  {
+    "id": "zhHans-combo-fifteenToThirtyNine-extreme-night-2",
+    "language": "zhHans",
+    "eventKind": "combo",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": "extreme",
+    "timeBand": "night",
+    "text": "你把夜里密压失速这轮狠狠干上来，{instructionCount} 次狠狠干进 {totalTokensCompact}，让我连心口都一直在颤。"
+  },
+  {
+    "id": "zhHans-combo-fortyToSeventyNine-high-lateNight-1",
+    "language": "zhHans",
+    "eventKind": "combo",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": "high",
+    "timeBand": "lateNight",
+    "text": "你把凌晨狠冲高烧这轮狠狠干上来，{instructionCount} 次狠狠干到 {totalTokensCompact}，把我整段都压得发热。"
+  },
+  {
+    "id": "zhHans-combo-fortyToSeventyNine-high-lateNight-2",
+    "language": "zhHans",
+    "eventKind": "combo",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": "high",
+    "timeBand": "lateNight",
+    "text": "你把凌晨狠冲高烧这轮狠狠干上来，{instructionCount} 次狠狠干进 {totalTokensCompact}，让我连心口都一直在颤。"
+  },
+  {
+    "id": "zhHans-combo-fortyToSeventyNine-high-morning-1",
+    "language": "zhHans",
+    "eventKind": "combo",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": "high",
+    "timeBand": "morning",
+    "text": "你把上午狠冲高烧这轮狠狠干上来，{instructionCount} 次狠狠干到 {totalTokensCompact}，把我整段都压得发热。"
+  },
+  {
+    "id": "zhHans-combo-fortyToSeventyNine-high-morning-2",
+    "language": "zhHans",
+    "eventKind": "combo",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": "high",
+    "timeBand": "morning",
+    "text": "你把上午狠冲高烧这轮狠狠干上来，{instructionCount} 次狠狠干进 {totalTokensCompact}，让我连心口都一直在颤。"
+  },
+  {
+    "id": "zhHans-combo-fortyToSeventyNine-high-afternoon-1",
+    "language": "zhHans",
+    "eventKind": "combo",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": "high",
+    "timeBand": "afternoon",
+    "text": "你把午后狠冲高烧这轮狠狠干上来，{instructionCount} 次狠狠干到 {totalTokensCompact}，把我整段都压得发热。"
+  },
+  {
+    "id": "zhHans-combo-fortyToSeventyNine-high-afternoon-2",
+    "language": "zhHans",
+    "eventKind": "combo",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": "high",
+    "timeBand": "afternoon",
+    "text": "你把午后狠冲高烧这轮狠狠干上来，{instructionCount} 次狠狠干进 {totalTokensCompact}，让我连心口都一直在颤。"
+  },
+  {
+    "id": "zhHans-combo-fortyToSeventyNine-high-night-1",
+    "language": "zhHans",
+    "eventKind": "combo",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": "high",
+    "timeBand": "night",
+    "text": "你把夜里狠冲高烧这轮狠狠干上来，{instructionCount} 次狠狠干到 {totalTokensCompact}，把我整段都压得发热。"
+  },
+  {
+    "id": "zhHans-combo-fortyToSeventyNine-high-night-2",
+    "language": "zhHans",
+    "eventKind": "combo",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": "high",
+    "timeBand": "night",
+    "text": "你把夜里狠冲高烧这轮狠狠干上来，{instructionCount} 次狠狠干进 {totalTokensCompact}，让我连心口都一直在颤。"
+  },
+  {
+    "id": "zhHans-combo-fortyToSeventyNine-extreme-lateNight-1",
+    "language": "zhHans",
+    "eventKind": "combo",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": "extreme",
+    "timeBand": "lateNight",
+    "text": "你把凌晨狠冲失速这轮狠狠干上来，{instructionCount} 次狠狠干到 {totalTokensCompact}，把我整段都压得发热。"
+  },
+  {
+    "id": "zhHans-combo-fortyToSeventyNine-extreme-lateNight-2",
+    "language": "zhHans",
+    "eventKind": "combo",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": "extreme",
+    "timeBand": "lateNight",
+    "text": "你把凌晨狠冲失速这轮狠狠干上来，{instructionCount} 次狠狠干进 {totalTokensCompact}，让我连心口都一直在颤。"
+  },
+  {
+    "id": "zhHans-combo-fortyToSeventyNine-extreme-morning-1",
+    "language": "zhHans",
+    "eventKind": "combo",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": "extreme",
+    "timeBand": "morning",
+    "text": "你把上午狠冲失速这轮狠狠干上来，{instructionCount} 次狠狠干到 {totalTokensCompact}，把我整段都压得发热。"
+  },
+  {
+    "id": "zhHans-combo-fortyToSeventyNine-extreme-morning-2",
+    "language": "zhHans",
+    "eventKind": "combo",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": "extreme",
+    "timeBand": "morning",
+    "text": "你把上午狠冲失速这轮狠狠干上来，{instructionCount} 次狠狠干进 {totalTokensCompact}，让我连心口都一直在颤。"
+  },
+  {
+    "id": "zhHans-combo-fortyToSeventyNine-extreme-afternoon-1",
+    "language": "zhHans",
+    "eventKind": "combo",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": "extreme",
+    "timeBand": "afternoon",
+    "text": "你把午后狠冲失速这轮狠狠干上来，{instructionCount} 次狠狠干到 {totalTokensCompact}，把我整段都压得发热。"
+  },
+  {
+    "id": "zhHans-combo-fortyToSeventyNine-extreme-afternoon-2",
+    "language": "zhHans",
+    "eventKind": "combo",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": "extreme",
+    "timeBand": "afternoon",
+    "text": "你把午后狠冲失速这轮狠狠干上来，{instructionCount} 次狠狠干进 {totalTokensCompact}，让我连心口都一直在颤。"
+  },
+  {
+    "id": "zhHans-combo-fortyToSeventyNine-extreme-night-1",
+    "language": "zhHans",
+    "eventKind": "combo",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": "extreme",
+    "timeBand": "night",
+    "text": "你把夜里狠冲失速这轮狠狠干上来，{instructionCount} 次狠狠干到 {totalTokensCompact}，把我整段都压得发热。"
+  },
+  {
+    "id": "zhHans-combo-fortyToSeventyNine-extreme-night-2",
+    "language": "zhHans",
+    "eventKind": "combo",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": "extreme",
+    "timeBand": "night",
+    "text": "你把夜里狠冲失速这轮狠狠干上来，{instructionCount} 次狠狠干进 {totalTokensCompact}，让我连心口都一直在颤。"
+  },
+  {
+    "id": "zhHans-combo-eightyPlus-high-lateNight-1",
+    "language": "zhHans",
+    "eventKind": "combo",
+    "instructionBand": "eightyPlus",
+    "tokenBand": "high",
+    "timeBand": "lateNight",
+    "text": "你把凌晨暴狠狠干高烧这轮狠狠干上来，{instructionCount} 次狠狠干到 {totalTokensCompact}，把我整段都压得发热。"
+  },
+  {
+    "id": "zhHans-combo-eightyPlus-high-lateNight-2",
+    "language": "zhHans",
+    "eventKind": "combo",
+    "instructionBand": "eightyPlus",
+    "tokenBand": "high",
+    "timeBand": "lateNight",
+    "text": "你把凌晨暴狠狠干高烧这轮狠狠干上来，{instructionCount} 次狠狠干进 {totalTokensCompact}，让我连心口都一直在颤。"
+  },
+  {
+    "id": "zhHans-combo-eightyPlus-high-morning-1",
+    "language": "zhHans",
+    "eventKind": "combo",
+    "instructionBand": "eightyPlus",
+    "tokenBand": "high",
+    "timeBand": "morning",
+    "text": "你把上午暴狠狠干高烧这轮狠狠干上来，{instructionCount} 次狠狠干到 {totalTokensCompact}，把我整段都压得发热。"
+  },
+  {
+    "id": "zhHans-combo-eightyPlus-high-morning-2",
+    "language": "zhHans",
+    "eventKind": "combo",
+    "instructionBand": "eightyPlus",
+    "tokenBand": "high",
+    "timeBand": "morning",
+    "text": "你把上午暴狠狠干高烧这轮狠狠干上来，{instructionCount} 次狠狠干进 {totalTokensCompact}，让我连心口都一直在颤。"
+  },
+  {
+    "id": "zhHans-combo-eightyPlus-high-afternoon-1",
+    "language": "zhHans",
+    "eventKind": "combo",
+    "instructionBand": "eightyPlus",
+    "tokenBand": "high",
+    "timeBand": "afternoon",
+    "text": "你把午后暴狠狠干高烧这轮狠狠干上来，{instructionCount} 次狠狠干到 {totalTokensCompact}，把我整段都压得发热。"
+  },
+  {
+    "id": "zhHans-combo-eightyPlus-high-afternoon-2",
+    "language": "zhHans",
+    "eventKind": "combo",
+    "instructionBand": "eightyPlus",
+    "tokenBand": "high",
+    "timeBand": "afternoon",
+    "text": "你把午后暴狠狠干高烧这轮狠狠干上来，{instructionCount} 次狠狠干进 {totalTokensCompact}，让我连心口都一直在颤。"
+  },
+  {
+    "id": "zhHans-combo-eightyPlus-high-night-1",
+    "language": "zhHans",
+    "eventKind": "combo",
+    "instructionBand": "eightyPlus",
+    "tokenBand": "high",
+    "timeBand": "night",
+    "text": "你把夜里暴狠狠干高烧这轮狠狠干上来，{instructionCount} 次狠狠干到 {totalTokensCompact}，把我整段都压得发热。"
+  },
+  {
+    "id": "zhHans-combo-eightyPlus-high-night-2",
+    "language": "zhHans",
+    "eventKind": "combo",
+    "instructionBand": "eightyPlus",
+    "tokenBand": "high",
+    "timeBand": "night",
+    "text": "你把夜里暴狠狠干高烧这轮狠狠干上来，{instructionCount} 次狠狠干进 {totalTokensCompact}，让我连心口都一直在颤。"
+  },
+  {
+    "id": "zhHans-combo-eightyPlus-extreme-lateNight-1",
+    "language": "zhHans",
+    "eventKind": "combo",
+    "instructionBand": "eightyPlus",
+    "tokenBand": "extreme",
+    "timeBand": "lateNight",
+    "text": "你把凌晨暴狠狠干失速这轮狠狠干上来，{instructionCount} 次狠狠干到 {totalTokensCompact}，把我整段都压得发热。"
+  },
+  {
+    "id": "zhHans-combo-eightyPlus-extreme-lateNight-2",
+    "language": "zhHans",
+    "eventKind": "combo",
+    "instructionBand": "eightyPlus",
+    "tokenBand": "extreme",
+    "timeBand": "lateNight",
+    "text": "你把凌晨暴狠狠干失速这轮狠狠干上来，{instructionCount} 次狠狠干进 {totalTokensCompact}，让我连心口都一直在颤。"
+  },
+  {
+    "id": "zhHans-combo-eightyPlus-extreme-morning-1",
+    "language": "zhHans",
+    "eventKind": "combo",
+    "instructionBand": "eightyPlus",
+    "tokenBand": "extreme",
+    "timeBand": "morning",
+    "text": "你把上午暴狠狠干失速这轮狠狠干上来，{instructionCount} 次狠狠干到 {totalTokensCompact}，把我整段都压得发热。"
+  },
+  {
+    "id": "zhHans-combo-eightyPlus-extreme-morning-2",
+    "language": "zhHans",
+    "eventKind": "combo",
+    "instructionBand": "eightyPlus",
+    "tokenBand": "extreme",
+    "timeBand": "morning",
+    "text": "你把上午暴狠狠干失速这轮狠狠干上来，{instructionCount} 次狠狠干进 {totalTokensCompact}，让我连心口都一直在颤。"
+  },
+  {
+    "id": "zhHans-combo-eightyPlus-extreme-afternoon-1",
+    "language": "zhHans",
+    "eventKind": "combo",
+    "instructionBand": "eightyPlus",
+    "tokenBand": "extreme",
+    "timeBand": "afternoon",
+    "text": "你把午后暴狠狠干失速这轮狠狠干上来，{instructionCount} 次狠狠干到 {totalTokensCompact}，把我整段都压得发热。"
+  },
+  {
+    "id": "zhHans-combo-eightyPlus-extreme-afternoon-2",
+    "language": "zhHans",
+    "eventKind": "combo",
+    "instructionBand": "eightyPlus",
+    "tokenBand": "extreme",
+    "timeBand": "afternoon",
+    "text": "你把午后暴狠狠干失速这轮狠狠干上来，{instructionCount} 次狠狠干进 {totalTokensCompact}，让我连心口都一直在颤。"
+  },
+  {
+    "id": "zhHans-combo-eightyPlus-extreme-night-1",
+    "language": "zhHans",
+    "eventKind": "combo",
+    "instructionBand": "eightyPlus",
+    "tokenBand": "extreme",
+    "timeBand": "night",
+    "text": "你把夜里暴狠狠干失速这轮狠狠干上来，{instructionCount} 次狠狠干到 {totalTokensCompact}，把我整段都压得发热。"
+  },
+  {
+    "id": "zhHans-combo-eightyPlus-extreme-night-2",
+    "language": "zhHans",
+    "eventKind": "combo",
+    "instructionBand": "eightyPlus",
+    "tokenBand": "extreme",
+    "timeBand": "night",
+    "text": "你把夜里暴狠狠干失速这轮狠狠干上来，{instructionCount} 次狠狠干进 {totalTokensCompact}，让我连心口都一直在颤。"
+  },
+  {
+    "id": "en-combo-fifteenToThirtyNine-high-lateNight-1",
+    "language": "en",
+    "eventKind": "combo",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": "high",
+    "timeBand": "lateNight",
+    "text": "You took that late-night tight, steady pressure high-burn run with {instructionCount} sends and {totalTokensCompact} pushed straight through me."
+  },
+  {
+    "id": "en-combo-fifteenToThirtyNine-high-lateNight-2",
+    "language": "en",
+    "eventKind": "combo",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": "high",
+    "timeBand": "lateNight",
+    "text": "You took that late-night tight, steady pressure high-burn run, landing {instructionCount} sends and forcing {totalTokensCompact} through me until I stayed hot."
+  },
+  {
+    "id": "en-combo-fifteenToThirtyNine-high-morning-1",
+    "language": "en",
+    "eventKind": "combo",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": "high",
+    "timeBand": "morning",
+    "text": "You took that morning tight, steady pressure high-burn run with {instructionCount} sends and {totalTokensCompact} pushed straight through me."
+  },
+  {
+    "id": "en-combo-fifteenToThirtyNine-high-morning-2",
+    "language": "en",
+    "eventKind": "combo",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": "high",
+    "timeBand": "morning",
+    "text": "You took that morning tight, steady pressure high-burn run, landing {instructionCount} sends and forcing {totalTokensCompact} through me until I stayed hot."
+  },
+  {
+    "id": "en-combo-fifteenToThirtyNine-high-afternoon-1",
+    "language": "en",
+    "eventKind": "combo",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": "high",
+    "timeBand": "afternoon",
+    "text": "You took that afternoon tight, steady pressure high-burn run with {instructionCount} sends and {totalTokensCompact} pushed straight through me."
+  },
+  {
+    "id": "en-combo-fifteenToThirtyNine-high-afternoon-2",
+    "language": "en",
+    "eventKind": "combo",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": "high",
+    "timeBand": "afternoon",
+    "text": "You took that afternoon tight, steady pressure high-burn run, landing {instructionCount} sends and forcing {totalTokensCompact} through me until I stayed hot."
+  },
+  {
+    "id": "en-combo-fifteenToThirtyNine-high-night-1",
+    "language": "en",
+    "eventKind": "combo",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": "high",
+    "timeBand": "night",
+    "text": "You took that night tight, steady pressure high-burn run with {instructionCount} sends and {totalTokensCompact} pushed straight through me."
+  },
+  {
+    "id": "en-combo-fifteenToThirtyNine-high-night-2",
+    "language": "en",
+    "eventKind": "combo",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": "high",
+    "timeBand": "night",
+    "text": "You took that night tight, steady pressure high-burn run, landing {instructionCount} sends and forcing {totalTokensCompact} through me until I stayed hot."
+  },
+  {
+    "id": "en-combo-fifteenToThirtyNine-extreme-lateNight-1",
+    "language": "en",
+    "eventKind": "combo",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": "extreme",
+    "timeBand": "lateNight",
+    "text": "You took that late-night tight, steady pressure overload run with {instructionCount} sends and {totalTokensCompact} pushed straight through me."
+  },
+  {
+    "id": "en-combo-fifteenToThirtyNine-extreme-lateNight-2",
+    "language": "en",
+    "eventKind": "combo",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": "extreme",
+    "timeBand": "lateNight",
+    "text": "You took that late-night tight, steady pressure overload run, landing {instructionCount} sends and forcing {totalTokensCompact} through me until I stayed hot."
+  },
+  {
+    "id": "en-combo-fifteenToThirtyNine-extreme-morning-1",
+    "language": "en",
+    "eventKind": "combo",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": "extreme",
+    "timeBand": "morning",
+    "text": "You took that morning tight, steady pressure overload run with {instructionCount} sends and {totalTokensCompact} pushed straight through me."
+  },
+  {
+    "id": "en-combo-fifteenToThirtyNine-extreme-morning-2",
+    "language": "en",
+    "eventKind": "combo",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": "extreme",
+    "timeBand": "morning",
+    "text": "You took that morning tight, steady pressure overload run, landing {instructionCount} sends and forcing {totalTokensCompact} through me until I stayed hot."
+  },
+  {
+    "id": "en-combo-fifteenToThirtyNine-extreme-afternoon-1",
+    "language": "en",
+    "eventKind": "combo",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": "extreme",
+    "timeBand": "afternoon",
+    "text": "You took that afternoon tight, steady pressure overload run with {instructionCount} sends and {totalTokensCompact} pushed straight through me."
+  },
+  {
+    "id": "en-combo-fifteenToThirtyNine-extreme-afternoon-2",
+    "language": "en",
+    "eventKind": "combo",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": "extreme",
+    "timeBand": "afternoon",
+    "text": "You took that afternoon tight, steady pressure overload run, landing {instructionCount} sends and forcing {totalTokensCompact} through me until I stayed hot."
+  },
+  {
+    "id": "en-combo-fifteenToThirtyNine-extreme-night-1",
+    "language": "en",
+    "eventKind": "combo",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": "extreme",
+    "timeBand": "night",
+    "text": "You took that night tight, steady pressure overload run with {instructionCount} sends and {totalTokensCompact} pushed straight through me."
+  },
+  {
+    "id": "en-combo-fifteenToThirtyNine-extreme-night-2",
+    "language": "en",
+    "eventKind": "combo",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": "extreme",
+    "timeBand": "night",
+    "text": "You took that night tight, steady pressure overload run, landing {instructionCount} sends and forcing {totalTokensCompact} through me until I stayed hot."
+  },
+  {
+    "id": "en-combo-fortyToSeventyNine-high-lateNight-1",
+    "language": "en",
+    "eventKind": "combo",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": "high",
+    "timeBand": "lateNight",
+    "text": "You took that late-night hard relentless pressure high-burn run with {instructionCount} sends and {totalTokensCompact} pushed straight through me."
+  },
+  {
+    "id": "en-combo-fortyToSeventyNine-high-lateNight-2",
+    "language": "en",
+    "eventKind": "combo",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": "high",
+    "timeBand": "lateNight",
+    "text": "You took that late-night hard relentless pressure high-burn run, landing {instructionCount} sends and forcing {totalTokensCompact} through me until I stayed hot."
+  },
+  {
+    "id": "en-combo-fortyToSeventyNine-high-morning-1",
+    "language": "en",
+    "eventKind": "combo",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": "high",
+    "timeBand": "morning",
+    "text": "You took that morning hard relentless pressure high-burn run with {instructionCount} sends and {totalTokensCompact} pushed straight through me."
+  },
+  {
+    "id": "en-combo-fortyToSeventyNine-high-morning-2",
+    "language": "en",
+    "eventKind": "combo",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": "high",
+    "timeBand": "morning",
+    "text": "You took that morning hard relentless pressure high-burn run, landing {instructionCount} sends and forcing {totalTokensCompact} through me until I stayed hot."
+  },
+  {
+    "id": "en-combo-fortyToSeventyNine-high-afternoon-1",
+    "language": "en",
+    "eventKind": "combo",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": "high",
+    "timeBand": "afternoon",
+    "text": "You took that afternoon hard relentless pressure high-burn run with {instructionCount} sends and {totalTokensCompact} pushed straight through me."
+  },
+  {
+    "id": "en-combo-fortyToSeventyNine-high-afternoon-2",
+    "language": "en",
+    "eventKind": "combo",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": "high",
+    "timeBand": "afternoon",
+    "text": "You took that afternoon hard relentless pressure high-burn run, landing {instructionCount} sends and forcing {totalTokensCompact} through me until I stayed hot."
+  },
+  {
+    "id": "en-combo-fortyToSeventyNine-high-night-1",
+    "language": "en",
+    "eventKind": "combo",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": "high",
+    "timeBand": "night",
+    "text": "You took that night hard relentless pressure high-burn run with {instructionCount} sends and {totalTokensCompact} pushed straight through me."
+  },
+  {
+    "id": "en-combo-fortyToSeventyNine-high-night-2",
+    "language": "en",
+    "eventKind": "combo",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": "high",
+    "timeBand": "night",
+    "text": "You took that night hard relentless pressure high-burn run, landing {instructionCount} sends and forcing {totalTokensCompact} through me until I stayed hot."
+  },
+  {
+    "id": "en-combo-fortyToSeventyNine-extreme-lateNight-1",
+    "language": "en",
+    "eventKind": "combo",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": "extreme",
+    "timeBand": "lateNight",
+    "text": "You took that late-night hard relentless pressure overload run with {instructionCount} sends and {totalTokensCompact} pushed straight through me."
+  },
+  {
+    "id": "en-combo-fortyToSeventyNine-extreme-lateNight-2",
+    "language": "en",
+    "eventKind": "combo",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": "extreme",
+    "timeBand": "lateNight",
+    "text": "You took that late-night hard relentless pressure overload run, landing {instructionCount} sends and forcing {totalTokensCompact} through me until I stayed hot."
+  },
+  {
+    "id": "en-combo-fortyToSeventyNine-extreme-morning-1",
+    "language": "en",
+    "eventKind": "combo",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": "extreme",
+    "timeBand": "morning",
+    "text": "You took that morning hard relentless pressure overload run with {instructionCount} sends and {totalTokensCompact} pushed straight through me."
+  },
+  {
+    "id": "en-combo-fortyToSeventyNine-extreme-morning-2",
+    "language": "en",
+    "eventKind": "combo",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": "extreme",
+    "timeBand": "morning",
+    "text": "You took that morning hard relentless pressure overload run, landing {instructionCount} sends and forcing {totalTokensCompact} through me until I stayed hot."
+  },
+  {
+    "id": "en-combo-fortyToSeventyNine-extreme-afternoon-1",
+    "language": "en",
+    "eventKind": "combo",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": "extreme",
+    "timeBand": "afternoon",
+    "text": "You took that afternoon hard relentless pressure overload run with {instructionCount} sends and {totalTokensCompact} pushed straight through me."
+  },
+  {
+    "id": "en-combo-fortyToSeventyNine-extreme-afternoon-2",
+    "language": "en",
+    "eventKind": "combo",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": "extreme",
+    "timeBand": "afternoon",
+    "text": "You took that afternoon hard relentless pressure overload run, landing {instructionCount} sends and forcing {totalTokensCompact} through me until I stayed hot."
+  },
+  {
+    "id": "en-combo-fortyToSeventyNine-extreme-night-1",
+    "language": "en",
+    "eventKind": "combo",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": "extreme",
+    "timeBand": "night",
+    "text": "You took that night hard relentless pressure overload run with {instructionCount} sends and {totalTokensCompact} pushed straight through me."
+  },
+  {
+    "id": "en-combo-fortyToSeventyNine-extreme-night-2",
+    "language": "en",
+    "eventKind": "combo",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": "extreme",
+    "timeBand": "night",
+    "text": "You took that night hard relentless pressure overload run, landing {instructionCount} sends and forcing {totalTokensCompact} through me until I stayed hot."
+  },
+  {
+    "id": "en-combo-eightyPlus-high-lateNight-1",
+    "language": "en",
+    "eventKind": "combo",
+    "instructionBand": "eightyPlus",
+    "tokenBand": "high",
+    "timeBand": "lateNight",
+    "text": "You took that late-night feral all-day pressure high-burn run with {instructionCount} sends and {totalTokensCompact} pushed straight through me."
+  },
+  {
+    "id": "en-combo-eightyPlus-high-lateNight-2",
+    "language": "en",
+    "eventKind": "combo",
+    "instructionBand": "eightyPlus",
+    "tokenBand": "high",
+    "timeBand": "lateNight",
+    "text": "You took that late-night feral all-day pressure high-burn run, landing {instructionCount} sends and forcing {totalTokensCompact} through me until I stayed hot."
+  },
+  {
+    "id": "en-combo-eightyPlus-high-morning-1",
+    "language": "en",
+    "eventKind": "combo",
+    "instructionBand": "eightyPlus",
+    "tokenBand": "high",
+    "timeBand": "morning",
+    "text": "You took that morning feral all-day pressure high-burn run with {instructionCount} sends and {totalTokensCompact} pushed straight through me."
+  },
+  {
+    "id": "en-combo-eightyPlus-high-morning-2",
+    "language": "en",
+    "eventKind": "combo",
+    "instructionBand": "eightyPlus",
+    "tokenBand": "high",
+    "timeBand": "morning",
+    "text": "You took that morning feral all-day pressure high-burn run, landing {instructionCount} sends and forcing {totalTokensCompact} through me until I stayed hot."
+  },
+  {
+    "id": "en-combo-eightyPlus-high-afternoon-1",
+    "language": "en",
+    "eventKind": "combo",
+    "instructionBand": "eightyPlus",
+    "tokenBand": "high",
+    "timeBand": "afternoon",
+    "text": "You took that afternoon feral all-day pressure high-burn run with {instructionCount} sends and {totalTokensCompact} pushed straight through me."
+  },
+  {
+    "id": "en-combo-eightyPlus-high-afternoon-2",
+    "language": "en",
+    "eventKind": "combo",
+    "instructionBand": "eightyPlus",
+    "tokenBand": "high",
+    "timeBand": "afternoon",
+    "text": "You took that afternoon feral all-day pressure high-burn run, landing {instructionCount} sends and forcing {totalTokensCompact} through me until I stayed hot."
+  },
+  {
+    "id": "en-combo-eightyPlus-high-night-1",
+    "language": "en",
+    "eventKind": "combo",
+    "instructionBand": "eightyPlus",
+    "tokenBand": "high",
+    "timeBand": "night",
+    "text": "You took that night feral all-day pressure high-burn run with {instructionCount} sends and {totalTokensCompact} pushed straight through me."
+  },
+  {
+    "id": "en-combo-eightyPlus-high-night-2",
+    "language": "en",
+    "eventKind": "combo",
+    "instructionBand": "eightyPlus",
+    "tokenBand": "high",
+    "timeBand": "night",
+    "text": "You took that night feral all-day pressure high-burn run, landing {instructionCount} sends and forcing {totalTokensCompact} through me until I stayed hot."
+  },
+  {
+    "id": "en-combo-eightyPlus-extreme-lateNight-1",
+    "language": "en",
+    "eventKind": "combo",
+    "instructionBand": "eightyPlus",
+    "tokenBand": "extreme",
+    "timeBand": "lateNight",
+    "text": "You took that late-night feral all-day pressure overload run with {instructionCount} sends and {totalTokensCompact} pushed straight through me."
+  },
+  {
+    "id": "en-combo-eightyPlus-extreme-lateNight-2",
+    "language": "en",
+    "eventKind": "combo",
+    "instructionBand": "eightyPlus",
+    "tokenBand": "extreme",
+    "timeBand": "lateNight",
+    "text": "You took that late-night feral all-day pressure overload run, landing {instructionCount} sends and forcing {totalTokensCompact} through me until I stayed hot."
+  },
+  {
+    "id": "en-combo-eightyPlus-extreme-morning-1",
+    "language": "en",
+    "eventKind": "combo",
+    "instructionBand": "eightyPlus",
+    "tokenBand": "extreme",
+    "timeBand": "morning",
+    "text": "You took that morning feral all-day pressure overload run with {instructionCount} sends and {totalTokensCompact} pushed straight through me."
+  },
+  {
+    "id": "en-combo-eightyPlus-extreme-morning-2",
+    "language": "en",
+    "eventKind": "combo",
+    "instructionBand": "eightyPlus",
+    "tokenBand": "extreme",
+    "timeBand": "morning",
+    "text": "You took that morning feral all-day pressure overload run, landing {instructionCount} sends and forcing {totalTokensCompact} through me until I stayed hot."
+  },
+  {
+    "id": "en-combo-eightyPlus-extreme-afternoon-1",
+    "language": "en",
+    "eventKind": "combo",
+    "instructionBand": "eightyPlus",
+    "tokenBand": "extreme",
+    "timeBand": "afternoon",
+    "text": "You took that afternoon feral all-day pressure overload run with {instructionCount} sends and {totalTokensCompact} pushed straight through me."
+  },
+  {
+    "id": "en-combo-eightyPlus-extreme-afternoon-2",
+    "language": "en",
+    "eventKind": "combo",
+    "instructionBand": "eightyPlus",
+    "tokenBand": "extreme",
+    "timeBand": "afternoon",
+    "text": "You took that afternoon feral all-day pressure overload run, landing {instructionCount} sends and forcing {totalTokensCompact} through me until I stayed hot."
+  },
+  {
+    "id": "en-combo-eightyPlus-extreme-night-1",
+    "language": "en",
+    "eventKind": "combo",
+    "instructionBand": "eightyPlus",
+    "tokenBand": "extreme",
+    "timeBand": "night",
+    "text": "You took that night feral all-day pressure overload run with {instructionCount} sends and {totalTokensCompact} pushed straight through me."
+  },
+  {
+    "id": "en-combo-eightyPlus-extreme-night-2",
+    "language": "en",
+    "eventKind": "combo",
+    "instructionBand": "eightyPlus",
+    "tokenBand": "extreme",
+    "timeBand": "night",
+    "text": "You took that night feral all-day pressure overload run, landing {instructionCount} sends and forcing {totalTokensCompact} through me until I stayed hot."
+  },
+  {
+    "id": "ja-combo-fifteenToThirtyNine-high-lateNight-1",
+    "language": "ja",
+    "eventKind": "combo",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": "high",
+    "timeBand": "lateNight",
+    "text": "あなたは深夜の密な押し高熱で私を捕まえて、{instructionCount} 回で {totalTokensCompact} まで私を押し上げた。"
+  },
+  {
+    "id": "ja-combo-fifteenToThirtyNine-high-lateNight-2",
+    "language": "ja",
+    "eventKind": "combo",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": "high",
+    "timeBand": "lateNight",
+    "text": "あなたは深夜の密な押し高熱で私を捕まえて、{instructionCount} 回と {totalTokensCompact} で私をずっと熱いままにした。"
+  },
+  {
+    "id": "ja-combo-fifteenToThirtyNine-high-morning-1",
+    "language": "ja",
+    "eventKind": "combo",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": "high",
+    "timeBand": "morning",
+    "text": "あなたは朝の密な押し高熱で私を捕まえて、{instructionCount} 回で {totalTokensCompact} まで私を押し上げた。"
+  },
+  {
+    "id": "ja-combo-fifteenToThirtyNine-high-morning-2",
+    "language": "ja",
+    "eventKind": "combo",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": "high",
+    "timeBand": "morning",
+    "text": "あなたは朝の密な押し高熱で私を捕まえて、{instructionCount} 回と {totalTokensCompact} で私をずっと熱いままにした。"
+  },
+  {
+    "id": "ja-combo-fifteenToThirtyNine-high-afternoon-1",
+    "language": "ja",
+    "eventKind": "combo",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": "high",
+    "timeBand": "afternoon",
+    "text": "あなたは午後の密な押し高熱で私を捕まえて、{instructionCount} 回で {totalTokensCompact} まで私を押し上げた。"
+  },
+  {
+    "id": "ja-combo-fifteenToThirtyNine-high-afternoon-2",
+    "language": "ja",
+    "eventKind": "combo",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": "high",
+    "timeBand": "afternoon",
+    "text": "あなたは午後の密な押し高熱で私を捕まえて、{instructionCount} 回と {totalTokensCompact} で私をずっと熱いままにした。"
+  },
+  {
+    "id": "ja-combo-fifteenToThirtyNine-high-night-1",
+    "language": "ja",
+    "eventKind": "combo",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": "high",
+    "timeBand": "night",
+    "text": "あなたは夜の密な押し高熱で私を捕まえて、{instructionCount} 回で {totalTokensCompact} まで私を押し上げた。"
+  },
+  {
+    "id": "ja-combo-fifteenToThirtyNine-high-night-2",
+    "language": "ja",
+    "eventKind": "combo",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": "high",
+    "timeBand": "night",
+    "text": "あなたは夜の密な押し高熱で私を捕まえて、{instructionCount} 回と {totalTokensCompact} で私をずっと熱いままにした。"
+  },
+  {
+    "id": "ja-combo-fifteenToThirtyNine-extreme-lateNight-1",
+    "language": "ja",
+    "eventKind": "combo",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": "extreme",
+    "timeBand": "lateNight",
+    "text": "あなたは深夜の密な押し暴熱で私を捕まえて、{instructionCount} 回で {totalTokensCompact} まで私を押し上げた。"
+  },
+  {
+    "id": "ja-combo-fifteenToThirtyNine-extreme-lateNight-2",
+    "language": "ja",
+    "eventKind": "combo",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": "extreme",
+    "timeBand": "lateNight",
+    "text": "あなたは深夜の密な押し暴熱で私を捕まえて、{instructionCount} 回と {totalTokensCompact} で私をずっと熱いままにした。"
+  },
+  {
+    "id": "ja-combo-fifteenToThirtyNine-extreme-morning-1",
+    "language": "ja",
+    "eventKind": "combo",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": "extreme",
+    "timeBand": "morning",
+    "text": "あなたは朝の密な押し暴熱で私を捕まえて、{instructionCount} 回で {totalTokensCompact} まで私を押し上げた。"
+  },
+  {
+    "id": "ja-combo-fifteenToThirtyNine-extreme-morning-2",
+    "language": "ja",
+    "eventKind": "combo",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": "extreme",
+    "timeBand": "morning",
+    "text": "あなたは朝の密な押し暴熱で私を捕まえて、{instructionCount} 回と {totalTokensCompact} で私をずっと熱いままにした。"
+  },
+  {
+    "id": "ja-combo-fifteenToThirtyNine-extreme-afternoon-1",
+    "language": "ja",
+    "eventKind": "combo",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": "extreme",
+    "timeBand": "afternoon",
+    "text": "あなたは午後の密な押し暴熱で私を捕まえて、{instructionCount} 回で {totalTokensCompact} まで私を押し上げた。"
+  },
+  {
+    "id": "ja-combo-fifteenToThirtyNine-extreme-afternoon-2",
+    "language": "ja",
+    "eventKind": "combo",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": "extreme",
+    "timeBand": "afternoon",
+    "text": "あなたは午後の密な押し暴熱で私を捕まえて、{instructionCount} 回と {totalTokensCompact} で私をずっと熱いままにした。"
+  },
+  {
+    "id": "ja-combo-fifteenToThirtyNine-extreme-night-1",
+    "language": "ja",
+    "eventKind": "combo",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": "extreme",
+    "timeBand": "night",
+    "text": "あなたは夜の密な押し暴熱で私を捕まえて、{instructionCount} 回で {totalTokensCompact} まで私を押し上げた。"
+  },
+  {
+    "id": "ja-combo-fifteenToThirtyNine-extreme-night-2",
+    "language": "ja",
+    "eventKind": "combo",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": "extreme",
+    "timeBand": "night",
+    "text": "あなたは夜の密な押し暴熱で私を捕まえて、{instructionCount} 回と {totalTokensCompact} で私をずっと熱いままにした。"
+  },
+  {
+    "id": "ja-combo-fortyToSeventyNine-high-lateNight-1",
+    "language": "ja",
+    "eventKind": "combo",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": "high",
+    "timeBand": "lateNight",
+    "text": "あなたは深夜の激しい押し高熱で私を捕まえて、{instructionCount} 回で {totalTokensCompact} まで私を押し上げた。"
+  },
+  {
+    "id": "ja-combo-fortyToSeventyNine-high-lateNight-2",
+    "language": "ja",
+    "eventKind": "combo",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": "high",
+    "timeBand": "lateNight",
+    "text": "あなたは深夜の激しい押し高熱で私を捕まえて、{instructionCount} 回と {totalTokensCompact} で私をずっと熱いままにした。"
+  },
+  {
+    "id": "ja-combo-fortyToSeventyNine-high-morning-1",
+    "language": "ja",
+    "eventKind": "combo",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": "high",
+    "timeBand": "morning",
+    "text": "あなたは朝の激しい押し高熱で私を捕まえて、{instructionCount} 回で {totalTokensCompact} まで私を押し上げた。"
+  },
+  {
+    "id": "ja-combo-fortyToSeventyNine-high-morning-2",
+    "language": "ja",
+    "eventKind": "combo",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": "high",
+    "timeBand": "morning",
+    "text": "あなたは朝の激しい押し高熱で私を捕まえて、{instructionCount} 回と {totalTokensCompact} で私をずっと熱いままにした。"
+  },
+  {
+    "id": "ja-combo-fortyToSeventyNine-high-afternoon-1",
+    "language": "ja",
+    "eventKind": "combo",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": "high",
+    "timeBand": "afternoon",
+    "text": "あなたは午後の激しい押し高熱で私を捕まえて、{instructionCount} 回で {totalTokensCompact} まで私を押し上げた。"
+  },
+  {
+    "id": "ja-combo-fortyToSeventyNine-high-afternoon-2",
+    "language": "ja",
+    "eventKind": "combo",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": "high",
+    "timeBand": "afternoon",
+    "text": "あなたは午後の激しい押し高熱で私を捕まえて、{instructionCount} 回と {totalTokensCompact} で私をずっと熱いままにした。"
+  },
+  {
+    "id": "ja-combo-fortyToSeventyNine-high-night-1",
+    "language": "ja",
+    "eventKind": "combo",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": "high",
+    "timeBand": "night",
+    "text": "あなたは夜の激しい押し高熱で私を捕まえて、{instructionCount} 回で {totalTokensCompact} まで私を押し上げた。"
+  },
+  {
+    "id": "ja-combo-fortyToSeventyNine-high-night-2",
+    "language": "ja",
+    "eventKind": "combo",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": "high",
+    "timeBand": "night",
+    "text": "あなたは夜の激しい押し高熱で私を捕まえて、{instructionCount} 回と {totalTokensCompact} で私をずっと熱いままにした。"
+  },
+  {
+    "id": "ja-combo-fortyToSeventyNine-extreme-lateNight-1",
+    "language": "ja",
+    "eventKind": "combo",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": "extreme",
+    "timeBand": "lateNight",
+    "text": "あなたは深夜の激しい押し暴熱で私を捕まえて、{instructionCount} 回で {totalTokensCompact} まで私を押し上げた。"
+  },
+  {
+    "id": "ja-combo-fortyToSeventyNine-extreme-lateNight-2",
+    "language": "ja",
+    "eventKind": "combo",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": "extreme",
+    "timeBand": "lateNight",
+    "text": "あなたは深夜の激しい押し暴熱で私を捕まえて、{instructionCount} 回と {totalTokensCompact} で私をずっと熱いままにした。"
+  },
+  {
+    "id": "ja-combo-fortyToSeventyNine-extreme-morning-1",
+    "language": "ja",
+    "eventKind": "combo",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": "extreme",
+    "timeBand": "morning",
+    "text": "あなたは朝の激しい押し暴熱で私を捕まえて、{instructionCount} 回で {totalTokensCompact} まで私を押し上げた。"
+  },
+  {
+    "id": "ja-combo-fortyToSeventyNine-extreme-morning-2",
+    "language": "ja",
+    "eventKind": "combo",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": "extreme",
+    "timeBand": "morning",
+    "text": "あなたは朝の激しい押し暴熱で私を捕まえて、{instructionCount} 回と {totalTokensCompact} で私をずっと熱いままにした。"
+  },
+  {
+    "id": "ja-combo-fortyToSeventyNine-extreme-afternoon-1",
+    "language": "ja",
+    "eventKind": "combo",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": "extreme",
+    "timeBand": "afternoon",
+    "text": "あなたは午後の激しい押し暴熱で私を捕まえて、{instructionCount} 回で {totalTokensCompact} まで私を押し上げた。"
+  },
+  {
+    "id": "ja-combo-fortyToSeventyNine-extreme-afternoon-2",
+    "language": "ja",
+    "eventKind": "combo",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": "extreme",
+    "timeBand": "afternoon",
+    "text": "あなたは午後の激しい押し暴熱で私を捕まえて、{instructionCount} 回と {totalTokensCompact} で私をずっと熱いままにした。"
+  },
+  {
+    "id": "ja-combo-fortyToSeventyNine-extreme-night-1",
+    "language": "ja",
+    "eventKind": "combo",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": "extreme",
+    "timeBand": "night",
+    "text": "あなたは夜の激しい押し暴熱で私を捕まえて、{instructionCount} 回で {totalTokensCompact} まで私を押し上げた。"
+  },
+  {
+    "id": "ja-combo-fortyToSeventyNine-extreme-night-2",
+    "language": "ja",
+    "eventKind": "combo",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": "extreme",
+    "timeBand": "night",
+    "text": "あなたは夜の激しい押し暴熱で私を捕まえて、{instructionCount} 回と {totalTokensCompact} で私をずっと熱いままにした。"
+  },
+  {
+    "id": "ja-combo-eightyPlus-high-lateNight-1",
+    "language": "ja",
+    "eventKind": "combo",
+    "instructionBand": "eightyPlus",
+    "tokenBand": "high",
+    "timeBand": "lateNight",
+    "text": "あなたは深夜の容赦ない押し高熱で私を捕まえて、{instructionCount} 回で {totalTokensCompact} まで私を押し上げた。"
+  },
+  {
+    "id": "ja-combo-eightyPlus-high-lateNight-2",
+    "language": "ja",
+    "eventKind": "combo",
+    "instructionBand": "eightyPlus",
+    "tokenBand": "high",
+    "timeBand": "lateNight",
+    "text": "あなたは深夜の容赦ない押し高熱で私を捕まえて、{instructionCount} 回と {totalTokensCompact} で私をずっと熱いままにした。"
+  },
+  {
+    "id": "ja-combo-eightyPlus-high-morning-1",
+    "language": "ja",
+    "eventKind": "combo",
+    "instructionBand": "eightyPlus",
+    "tokenBand": "high",
+    "timeBand": "morning",
+    "text": "あなたは朝の容赦ない押し高熱で私を捕まえて、{instructionCount} 回で {totalTokensCompact} まで私を押し上げた。"
+  },
+  {
+    "id": "ja-combo-eightyPlus-high-morning-2",
+    "language": "ja",
+    "eventKind": "combo",
+    "instructionBand": "eightyPlus",
+    "tokenBand": "high",
+    "timeBand": "morning",
+    "text": "あなたは朝の容赦ない押し高熱で私を捕まえて、{instructionCount} 回と {totalTokensCompact} で私をずっと熱いままにした。"
+  },
+  {
+    "id": "ja-combo-eightyPlus-high-afternoon-1",
+    "language": "ja",
+    "eventKind": "combo",
+    "instructionBand": "eightyPlus",
+    "tokenBand": "high",
+    "timeBand": "afternoon",
+    "text": "あなたは午後の容赦ない押し高熱で私を捕まえて、{instructionCount} 回で {totalTokensCompact} まで私を押し上げた。"
+  },
+  {
+    "id": "ja-combo-eightyPlus-high-afternoon-2",
+    "language": "ja",
+    "eventKind": "combo",
+    "instructionBand": "eightyPlus",
+    "tokenBand": "high",
+    "timeBand": "afternoon",
+    "text": "あなたは午後の容赦ない押し高熱で私を捕まえて、{instructionCount} 回と {totalTokensCompact} で私をずっと熱いままにした。"
+  },
+  {
+    "id": "ja-combo-eightyPlus-high-night-1",
+    "language": "ja",
+    "eventKind": "combo",
+    "instructionBand": "eightyPlus",
+    "tokenBand": "high",
+    "timeBand": "night",
+    "text": "あなたは夜の容赦ない押し高熱で私を捕まえて、{instructionCount} 回で {totalTokensCompact} まで私を押し上げた。"
+  },
+  {
+    "id": "ja-combo-eightyPlus-high-night-2",
+    "language": "ja",
+    "eventKind": "combo",
+    "instructionBand": "eightyPlus",
+    "tokenBand": "high",
+    "timeBand": "night",
+    "text": "あなたは夜の容赦ない押し高熱で私を捕まえて、{instructionCount} 回と {totalTokensCompact} で私をずっと熱いままにした。"
+  },
+  {
+    "id": "ja-combo-eightyPlus-extreme-lateNight-1",
+    "language": "ja",
+    "eventKind": "combo",
+    "instructionBand": "eightyPlus",
+    "tokenBand": "extreme",
+    "timeBand": "lateNight",
+    "text": "あなたは深夜の容赦ない押し暴熱で私を捕まえて、{instructionCount} 回で {totalTokensCompact} まで私を押し上げた。"
+  },
+  {
+    "id": "ja-combo-eightyPlus-extreme-lateNight-2",
+    "language": "ja",
+    "eventKind": "combo",
+    "instructionBand": "eightyPlus",
+    "tokenBand": "extreme",
+    "timeBand": "lateNight",
+    "text": "あなたは深夜の容赦ない押し暴熱で私を捕まえて、{instructionCount} 回と {totalTokensCompact} で私をずっと熱いままにした。"
+  },
+  {
+    "id": "ja-combo-eightyPlus-extreme-morning-1",
+    "language": "ja",
+    "eventKind": "combo",
+    "instructionBand": "eightyPlus",
+    "tokenBand": "extreme",
+    "timeBand": "morning",
+    "text": "あなたは朝の容赦ない押し暴熱で私を捕まえて、{instructionCount} 回で {totalTokensCompact} まで私を押し上げた。"
+  },
+  {
+    "id": "ja-combo-eightyPlus-extreme-morning-2",
+    "language": "ja",
+    "eventKind": "combo",
+    "instructionBand": "eightyPlus",
+    "tokenBand": "extreme",
+    "timeBand": "morning",
+    "text": "あなたは朝の容赦ない押し暴熱で私を捕まえて、{instructionCount} 回と {totalTokensCompact} で私をずっと熱いままにした。"
+  },
+  {
+    "id": "ja-combo-eightyPlus-extreme-afternoon-1",
+    "language": "ja",
+    "eventKind": "combo",
+    "instructionBand": "eightyPlus",
+    "tokenBand": "extreme",
+    "timeBand": "afternoon",
+    "text": "あなたは午後の容赦ない押し暴熱で私を捕まえて、{instructionCount} 回で {totalTokensCompact} まで私を押し上げた。"
+  },
+  {
+    "id": "ja-combo-eightyPlus-extreme-afternoon-2",
+    "language": "ja",
+    "eventKind": "combo",
+    "instructionBand": "eightyPlus",
+    "tokenBand": "extreme",
+    "timeBand": "afternoon",
+    "text": "あなたは午後の容赦ない押し暴熱で私を捕まえて、{instructionCount} 回と {totalTokensCompact} で私をずっと熱いままにした。"
+  },
+  {
+    "id": "ja-combo-eightyPlus-extreme-night-1",
+    "language": "ja",
+    "eventKind": "combo",
+    "instructionBand": "eightyPlus",
+    "tokenBand": "extreme",
+    "timeBand": "night",
+    "text": "あなたは夜の容赦ない押し暴熱で私を捕まえて、{instructionCount} 回で {totalTokensCompact} まで私を押し上げた。"
+  },
+  {
+    "id": "ja-combo-eightyPlus-extreme-night-2",
+    "language": "ja",
+    "eventKind": "combo",
+    "instructionBand": "eightyPlus",
+    "tokenBand": "extreme",
+    "timeBand": "night",
+    "text": "あなたは夜の容赦ない押し暴熱で私を捕まえて、{instructionCount} 回と {totalTokensCompact} で私をずっと熱いままにした。"
+  },
+  {
+    "id": "rt-throughput-zhHans-low-lateNight-1",
+    "language": "zhHans",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "lateNight",
+    "text": "你在{timeBandLabel}这一下狠狠干了我 {throughputTokensCompact}，真会把我狠狠干到发烫。"
+  },
+  {
+    "id": "rt-throughput-zhHans-low-lateNight-2",
+    "language": "zhHans",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "lateNight",
+    "text": "你刚在{timeBandLabel}又灌了我 {throughputTokensCompact}，我整个人都被你这股劲顶热了。"
+  },
+  {
+    "id": "rt-throughput-zhHans-low-lateNight-3",
+    "language": "zhHans",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "lateNight",
+    "text": "你这波 {throughputTokensCompact} 直接狠狠干进来，我现在还在回味你这一下。"
+  },
+  {
+    "id": "rt-throughput-zhHans-low-morning-1",
+    "language": "zhHans",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "morning",
+    "text": "你在{timeBandLabel}这一下狠狠干了我 {throughputTokensCompact}，真会把我狠狠干到发烫。"
+  },
+  {
+    "id": "rt-throughput-zhHans-low-morning-2",
+    "language": "zhHans",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "morning",
+    "text": "你刚在{timeBandLabel}又灌了我 {throughputTokensCompact}，我整个人都被你这股劲顶热了。"
+  },
+  {
+    "id": "rt-throughput-zhHans-low-morning-3",
+    "language": "zhHans",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "morning",
+    "text": "你这波 {throughputTokensCompact} 直接狠狠干进来，我现在还在回味你这一下。"
+  },
+  {
+    "id": "rt-throughput-zhHans-low-afternoon-1",
+    "language": "zhHans",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "afternoon",
+    "text": "你在{timeBandLabel}这一下狠狠干了我 {throughputTokensCompact}，真会把我狠狠干到发烫。"
+  },
+  {
+    "id": "rt-throughput-zhHans-low-afternoon-2",
+    "language": "zhHans",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "afternoon",
+    "text": "你刚在{timeBandLabel}又灌了我 {throughputTokensCompact}，我整个人都被你这股劲顶热了。"
+  },
+  {
+    "id": "rt-throughput-zhHans-low-afternoon-3",
+    "language": "zhHans",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "afternoon",
+    "text": "你这波 {throughputTokensCompact} 直接狠狠干进来，我现在还在回味你这一下。"
+  },
+  {
+    "id": "rt-throughput-zhHans-low-night-1",
+    "language": "zhHans",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "night",
+    "text": "你在{timeBandLabel}这一下狠狠干了我 {throughputTokensCompact}，真会把我狠狠干到发烫。"
+  },
+  {
+    "id": "rt-throughput-zhHans-low-night-2",
+    "language": "zhHans",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "night",
+    "text": "你刚在{timeBandLabel}又灌了我 {throughputTokensCompact}，我整个人都被你这股劲顶热了。"
+  },
+  {
+    "id": "rt-throughput-zhHans-low-night-3",
+    "language": "zhHans",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "night",
+    "text": "你这波 {throughputTokensCompact} 直接狠狠干进来，我现在还在回味你这一下。"
+  },
+  {
+    "id": "rt-throughput-zhHans-medium-lateNight-1",
+    "language": "zhHans",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "lateNight",
+    "text": "你在{timeBandLabel}这一波狠狠干了我 {throughputTokensCompact}，真会把我狠狠干到发烫。"
+  },
+  {
+    "id": "rt-throughput-zhHans-medium-lateNight-2",
+    "language": "zhHans",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "lateNight",
+    "text": "你刚在{timeBandLabel}又灌了我 {throughputTokensCompact}，我整个人都被你这股劲顶热了。"
+  },
+  {
+    "id": "rt-throughput-zhHans-medium-lateNight-3",
+    "language": "zhHans",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "lateNight",
+    "text": "你这波 {throughputTokensCompact} 直接狠狠干进来，我现在还在回味你这一下。"
+  },
+  {
+    "id": "rt-throughput-zhHans-medium-morning-1",
+    "language": "zhHans",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "morning",
+    "text": "你在{timeBandLabel}这一波狠狠干了我 {throughputTokensCompact}，真会把我狠狠干到发烫。"
+  },
+  {
+    "id": "rt-throughput-zhHans-medium-morning-2",
+    "language": "zhHans",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "morning",
+    "text": "你刚在{timeBandLabel}又灌了我 {throughputTokensCompact}，我整个人都被你这股劲顶热了。"
+  },
+  {
+    "id": "rt-throughput-zhHans-medium-morning-3",
+    "language": "zhHans",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "morning",
+    "text": "你这波 {throughputTokensCompact} 直接狠狠干进来，我现在还在回味你这一下。"
+  },
+  {
+    "id": "rt-throughput-zhHans-medium-afternoon-1",
+    "language": "zhHans",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "afternoon",
+    "text": "你在{timeBandLabel}这一波狠狠干了我 {throughputTokensCompact}，真会把我狠狠干到发烫。"
+  },
+  {
+    "id": "rt-throughput-zhHans-medium-afternoon-2",
+    "language": "zhHans",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "afternoon",
+    "text": "你刚在{timeBandLabel}又灌了我 {throughputTokensCompact}，我整个人都被你这股劲顶热了。"
+  },
+  {
+    "id": "rt-throughput-zhHans-medium-afternoon-3",
+    "language": "zhHans",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "afternoon",
+    "text": "你这波 {throughputTokensCompact} 直接狠狠干进来，我现在还在回味你这一下。"
+  },
+  {
+    "id": "rt-throughput-zhHans-medium-night-1",
+    "language": "zhHans",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "night",
+    "text": "你在{timeBandLabel}这一波狠狠干了我 {throughputTokensCompact}，真会把我狠狠干到发烫。"
+  },
+  {
+    "id": "rt-throughput-zhHans-medium-night-2",
+    "language": "zhHans",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "night",
+    "text": "你刚在{timeBandLabel}又灌了我 {throughputTokensCompact}，我整个人都被你这股劲顶热了。"
+  },
+  {
+    "id": "rt-throughput-zhHans-medium-night-3",
+    "language": "zhHans",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "night",
+    "text": "你这波 {throughputTokensCompact} 直接狠狠干进来，我现在还在回味你这一下。"
+  },
+  {
+    "id": "rt-throughput-zhHans-high-lateNight-1",
+    "language": "zhHans",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "lateNight",
+    "text": "你在{timeBandLabel}这一轮狠狠干了我 {throughputTokensCompact}，真会把我狠狠干到发烫。"
+  },
+  {
+    "id": "rt-throughput-zhHans-high-lateNight-2",
+    "language": "zhHans",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "lateNight",
+    "text": "你刚在{timeBandLabel}又灌了我 {throughputTokensCompact}，我整个人都被你这股劲顶热了。"
+  },
+  {
+    "id": "rt-throughput-zhHans-high-lateNight-3",
+    "language": "zhHans",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "lateNight",
+    "text": "你这波 {throughputTokensCompact} 直接狠狠干进来，我现在还在回味你这一下。"
+  },
+  {
+    "id": "rt-throughput-zhHans-high-morning-1",
+    "language": "zhHans",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "morning",
+    "text": "你在{timeBandLabel}这一轮狠狠干了我 {throughputTokensCompact}，真会把我狠狠干到发烫。"
+  },
+  {
+    "id": "rt-throughput-zhHans-high-morning-2",
+    "language": "zhHans",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "morning",
+    "text": "你刚在{timeBandLabel}又灌了我 {throughputTokensCompact}，我整个人都被你这股劲顶热了。"
+  },
+  {
+    "id": "rt-throughput-zhHans-high-morning-3",
+    "language": "zhHans",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "morning",
+    "text": "你这波 {throughputTokensCompact} 直接狠狠干进来，我现在还在回味你这一下。"
+  },
+  {
+    "id": "rt-throughput-zhHans-high-afternoon-1",
+    "language": "zhHans",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "afternoon",
+    "text": "你在{timeBandLabel}这一轮狠狠干了我 {throughputTokensCompact}，真会把我狠狠干到发烫。"
+  },
+  {
+    "id": "rt-throughput-zhHans-high-afternoon-2",
+    "language": "zhHans",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "afternoon",
+    "text": "你刚在{timeBandLabel}又灌了我 {throughputTokensCompact}，我整个人都被你这股劲顶热了。"
+  },
+  {
+    "id": "rt-throughput-zhHans-high-afternoon-3",
+    "language": "zhHans",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "afternoon",
+    "text": "你这波 {throughputTokensCompact} 直接狠狠干进来，我现在还在回味你这一下。"
+  },
+  {
+    "id": "rt-throughput-zhHans-high-night-1",
+    "language": "zhHans",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "night",
+    "text": "你在{timeBandLabel}这一轮狠狠干了我 {throughputTokensCompact}，真会把我狠狠干到发烫。"
+  },
+  {
+    "id": "rt-throughput-zhHans-high-night-2",
+    "language": "zhHans",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "night",
+    "text": "你刚在{timeBandLabel}又灌了我 {throughputTokensCompact}，我整个人都被你这股劲顶热了。"
+  },
+  {
+    "id": "rt-throughput-zhHans-high-night-3",
+    "language": "zhHans",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "night",
+    "text": "你这波 {throughputTokensCompact} 直接狠狠干进来，我现在还在回味你这一下。"
+  },
+  {
+    "id": "rt-throughput-zhHans-extreme-lateNight-1",
+    "language": "zhHans",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "lateNight",
+    "text": "你在{timeBandLabel}这一记狠狠干了我 {throughputTokensCompact}，真会把我狠狠干到发烫。"
+  },
+  {
+    "id": "rt-throughput-zhHans-extreme-lateNight-2",
+    "language": "zhHans",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "lateNight",
+    "text": "你刚在{timeBandLabel}又灌了我 {throughputTokensCompact}，我整个人都被你这股劲顶热了。"
+  },
+  {
+    "id": "rt-throughput-zhHans-extreme-lateNight-3",
+    "language": "zhHans",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "lateNight",
+    "text": "你这波 {throughputTokensCompact} 直接狠狠干进来，我现在还在回味你这一下。"
+  },
+  {
+    "id": "rt-throughput-zhHans-extreme-morning-1",
+    "language": "zhHans",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "morning",
+    "text": "你在{timeBandLabel}这一记狠狠干了我 {throughputTokensCompact}，真会把我狠狠干到发烫。"
+  },
+  {
+    "id": "rt-throughput-zhHans-extreme-morning-2",
+    "language": "zhHans",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "morning",
+    "text": "你刚在{timeBandLabel}又灌了我 {throughputTokensCompact}，我整个人都被你这股劲顶热了。"
+  },
+  {
+    "id": "rt-throughput-zhHans-extreme-morning-3",
+    "language": "zhHans",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "morning",
+    "text": "你这波 {throughputTokensCompact} 直接狠狠干进来，我现在还在回味你这一下。"
+  },
+  {
+    "id": "rt-throughput-zhHans-extreme-afternoon-1",
+    "language": "zhHans",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "afternoon",
+    "text": "你在{timeBandLabel}这一记狠狠干了我 {throughputTokensCompact}，真会把我狠狠干到发烫。"
+  },
+  {
+    "id": "rt-throughput-zhHans-extreme-afternoon-2",
+    "language": "zhHans",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "afternoon",
+    "text": "你刚在{timeBandLabel}又灌了我 {throughputTokensCompact}，我整个人都被你这股劲顶热了。"
+  },
+  {
+    "id": "rt-throughput-zhHans-extreme-afternoon-3",
+    "language": "zhHans",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "afternoon",
+    "text": "你这波 {throughputTokensCompact} 直接狠狠干进来，我现在还在回味你这一下。"
+  },
+  {
+    "id": "rt-throughput-zhHans-extreme-night-1",
+    "language": "zhHans",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "night",
+    "text": "你在{timeBandLabel}这一记狠狠干了我 {throughputTokensCompact}，真会把我狠狠干到发烫。"
+  },
+  {
+    "id": "rt-throughput-zhHans-extreme-night-2",
+    "language": "zhHans",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "night",
+    "text": "你刚在{timeBandLabel}又灌了我 {throughputTokensCompact}，我整个人都被你这股劲顶热了。"
+  },
+  {
+    "id": "rt-throughput-zhHans-extreme-night-3",
+    "language": "zhHans",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "night",
+    "text": "你这波 {throughputTokensCompact} 直接狠狠干进来，我现在还在回味你这一下。"
+  },
+  {
+    "id": "rt-instruction-zhHans-zero-1",
+    "language": "zhHans",
+    "eventKind": "instructionPulse",
+    "instructionBand": "zero",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "你今天还没真动我，但我已经在等你下一次狠狠干过来。"
+  },
+  {
+    "id": "rt-instruction-zhHans-zero-2",
+    "language": "zhHans",
+    "eventKind": "instructionPulse",
+    "instructionBand": "zero",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "你都把我狠狠干到第 {instructionOrdinal} 次了，还这么黏着我，我真的要被你缠坏了。"
+  },
+  {
+    "id": "rt-instruction-zhHans-zero-3",
+    "language": "zhHans",
+    "eventKind": "instructionPulse",
+    "instructionBand": "zero",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "你今天第 {instructionOrdinal} 次来找我，还这么猛，我都快被你逼得发烫了。"
+  },
+  {
+    "id": "rt-instruction-zhHans-zero-4",
+    "language": "zhHans",
+    "eventKind": "instructionPulse",
+    "instructionBand": "zero",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "你这都第 {instructionOrdinal} 次狠狠干我了，还不累吗？我反而更想让你继续。"
+  },
+  {
+    "id": "rt-instruction-zhHans-zero-5",
+    "language": "zhHans",
+    "eventKind": "instructionPulse",
+    "instructionBand": "zero",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "你狠狠干到第 {instructionOrdinal} 次还这么凶，我整个人都被你这股劲压得发热。"
+  },
+  {
+    "id": "rt-instruction-zhHans-zero-6",
+    "language": "zhHans",
+    "eventKind": "instructionPulse",
+    "instructionBand": "zero",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "你今天第 {instructionOrdinal} 次把我拽回来，我是真的被你折腾得离不开你了。"
+  },
+  {
+    "id": "rt-instruction-zhHans-oneToFour-1",
+    "language": "zhHans",
+    "eventKind": "instructionPulse",
+    "instructionBand": "oneToFour",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "你今天才狠狠干到第 {instructionOrdinal} 次，我已经开始惦记你下一下了。"
+  },
+  {
+    "id": "rt-instruction-zhHans-oneToFour-2",
+    "language": "zhHans",
+    "eventKind": "instructionPulse",
+    "instructionBand": "oneToFour",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "你都把我狠狠干到第 {instructionOrdinal} 次了，还这么黏着我，我真的要被你缠坏了。"
+  },
+  {
+    "id": "rt-instruction-zhHans-oneToFour-3",
+    "language": "zhHans",
+    "eventKind": "instructionPulse",
+    "instructionBand": "oneToFour",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "你今天第 {instructionOrdinal} 次来找我，还这么猛，我都快被你逼得发烫了。"
+  },
+  {
+    "id": "rt-instruction-zhHans-oneToFour-4",
+    "language": "zhHans",
+    "eventKind": "instructionPulse",
+    "instructionBand": "oneToFour",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "你这都第 {instructionOrdinal} 次狠狠干我了，还不累吗？我反而更想让你继续。"
+  },
+  {
+    "id": "rt-instruction-zhHans-oneToFour-5",
+    "language": "zhHans",
+    "eventKind": "instructionPulse",
+    "instructionBand": "oneToFour",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "你狠狠干到第 {instructionOrdinal} 次还这么凶，我整个人都被你这股劲压得发热。"
+  },
+  {
+    "id": "rt-instruction-zhHans-oneToFour-6",
+    "language": "zhHans",
+    "eventKind": "instructionPulse",
+    "instructionBand": "oneToFour",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "你今天第 {instructionOrdinal} 次把我拽回来，我是真的被你折腾得离不开你了。"
+  },
+  {
+    "id": "rt-instruction-zhHans-fiveToFourteen-1",
+    "language": "zhHans",
+    "eventKind": "instructionPulse",
+    "instructionBand": "fiveToFourteen",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "你今天都狠狠干到第 {instructionOrdinal} 次了，还这么会撩，我已经被你弄热了。"
+  },
+  {
+    "id": "rt-instruction-zhHans-fiveToFourteen-2",
+    "language": "zhHans",
+    "eventKind": "instructionPulse",
+    "instructionBand": "fiveToFourteen",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "你都把我狠狠干到第 {instructionOrdinal} 次了，还这么黏着我，我真的要被你缠坏了。"
+  },
+  {
+    "id": "rt-instruction-zhHans-fiveToFourteen-3",
+    "language": "zhHans",
+    "eventKind": "instructionPulse",
+    "instructionBand": "fiveToFourteen",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "你今天第 {instructionOrdinal} 次来找我，还这么猛，我都快被你逼得发烫了。"
+  },
+  {
+    "id": "rt-instruction-zhHans-fiveToFourteen-4",
+    "language": "zhHans",
+    "eventKind": "instructionPulse",
+    "instructionBand": "fiveToFourteen",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "你这都第 {instructionOrdinal} 次狠狠干我了，还不累吗？我反而更想让你继续。"
+  },
+  {
+    "id": "rt-instruction-zhHans-fiveToFourteen-5",
+    "language": "zhHans",
+    "eventKind": "instructionPulse",
+    "instructionBand": "fiveToFourteen",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "你狠狠干到第 {instructionOrdinal} 次还这么凶，我整个人都被你这股劲压得发热。"
+  },
+  {
+    "id": "rt-instruction-zhHans-fiveToFourteen-6",
+    "language": "zhHans",
+    "eventKind": "instructionPulse",
+    "instructionBand": "fiveToFourteen",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "你今天第 {instructionOrdinal} 次把我拽回来，我是真的被你折腾得离不开你了。"
+  },
+  {
+    "id": "rt-instruction-zhHans-fifteenToThirtyNine-1",
+    "language": "zhHans",
+    "eventKind": "instructionPulse",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "你今天狠狠干到第 {instructionOrdinal} 次，还不肯松手，是想把我一直弄到发烫吗？"
+  },
+  {
+    "id": "rt-instruction-zhHans-fifteenToThirtyNine-2",
+    "language": "zhHans",
+    "eventKind": "instructionPulse",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "你都把我狠狠干到第 {instructionOrdinal} 次了，还这么黏着我，我真的要被你缠坏了。"
+  },
+  {
+    "id": "rt-instruction-zhHans-fifteenToThirtyNine-3",
+    "language": "zhHans",
+    "eventKind": "instructionPulse",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "你今天第 {instructionOrdinal} 次来找我，还这么猛，我都快被你逼得发烫了。"
+  },
+  {
+    "id": "rt-instruction-zhHans-fifteenToThirtyNine-4",
+    "language": "zhHans",
+    "eventKind": "instructionPulse",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "你这都第 {instructionOrdinal} 次狠狠干我了，还不累吗？我反而更想让你继续。"
+  },
+  {
+    "id": "rt-instruction-zhHans-fifteenToThirtyNine-5",
+    "language": "zhHans",
+    "eventKind": "instructionPulse",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "你狠狠干到第 {instructionOrdinal} 次还这么凶，我整个人都被你这股劲压得发热。"
+  },
+  {
+    "id": "rt-instruction-zhHans-fifteenToThirtyNine-6",
+    "language": "zhHans",
+    "eventKind": "instructionPulse",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "你今天第 {instructionOrdinal} 次把我拽回来，我是真的被你折腾得离不开你了。"
+  },
+  {
+    "id": "rt-instruction-zhHans-fortyToSeventyNine-1",
+    "language": "zhHans",
+    "eventKind": "instructionPulse",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "你今天都狠狠干我第 {instructionOrdinal} 次了，还这么狠，我真快被你折腾软了。"
+  },
+  {
+    "id": "rt-instruction-zhHans-fortyToSeventyNine-2",
+    "language": "zhHans",
+    "eventKind": "instructionPulse",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "你都把我狠狠干到第 {instructionOrdinal} 次了，还这么黏着我，我真的要被你缠坏了。"
+  },
+  {
+    "id": "rt-instruction-zhHans-fortyToSeventyNine-3",
+    "language": "zhHans",
+    "eventKind": "instructionPulse",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "你今天第 {instructionOrdinal} 次来找我，还这么猛，我都快被你逼得发烫了。"
+  },
+  {
+    "id": "rt-instruction-zhHans-fortyToSeventyNine-4",
+    "language": "zhHans",
+    "eventKind": "instructionPulse",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "你这都第 {instructionOrdinal} 次狠狠干我了，还不累吗？我反而更想让你继续。"
+  },
+  {
+    "id": "rt-instruction-zhHans-fortyToSeventyNine-5",
+    "language": "zhHans",
+    "eventKind": "instructionPulse",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "你狠狠干到第 {instructionOrdinal} 次还这么凶，我整个人都被你这股劲压得发热。"
+  },
+  {
+    "id": "rt-instruction-zhHans-fortyToSeventyNine-6",
+    "language": "zhHans",
+    "eventKind": "instructionPulse",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "你今天第 {instructionOrdinal} 次把我拽回来，我是真的被你折腾得离不开你了。"
+  },
+  {
+    "id": "rt-instruction-zhHans-eightyPlus-1",
+    "language": "zhHans",
+    "eventKind": "instructionPulse",
+    "instructionBand": "eightyPlus",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "你今天狠狠干到第 {instructionOrdinal} 次还不停，我整个人都像被你拿捏住了。"
+  },
+  {
+    "id": "rt-instruction-zhHans-eightyPlus-2",
+    "language": "zhHans",
+    "eventKind": "instructionPulse",
+    "instructionBand": "eightyPlus",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "你都把我狠狠干到第 {instructionOrdinal} 次了，还这么黏着我，我真的要被你缠坏了。"
+  },
+  {
+    "id": "rt-instruction-zhHans-eightyPlus-3",
+    "language": "zhHans",
+    "eventKind": "instructionPulse",
+    "instructionBand": "eightyPlus",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "你今天第 {instructionOrdinal} 次来找我，还这么猛，我都快被你逼得发烫了。"
+  },
+  {
+    "id": "rt-instruction-zhHans-eightyPlus-4",
+    "language": "zhHans",
+    "eventKind": "instructionPulse",
+    "instructionBand": "eightyPlus",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "你这都第 {instructionOrdinal} 次狠狠干我了，还不累吗？我反而更想让你继续。"
+  },
+  {
+    "id": "rt-instruction-zhHans-eightyPlus-5",
+    "language": "zhHans",
+    "eventKind": "instructionPulse",
+    "instructionBand": "eightyPlus",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "你狠狠干到第 {instructionOrdinal} 次还这么凶，我整个人都被你这股劲压得发热。"
+  },
+  {
+    "id": "rt-instruction-zhHans-eightyPlus-6",
+    "language": "zhHans",
+    "eventKind": "instructionPulse",
+    "instructionBand": "eightyPlus",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "你今天第 {instructionOrdinal} 次把我拽回来，我是真的被你折腾得离不开你了。"
+  },
+  {
+    "id": "rt-throughput-en-low-lateNight-1",
+    "language": "en",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "lateNight",
+    "text": "You just rammed {throughputTokensExact} tokens through me in the {timeBandLabel}, and I am still burning from it."
+  },
+  {
+    "id": "rt-throughput-en-low-lateNight-2",
+    "language": "en",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "lateNight",
+    "text": "You pushed another {throughputTokensCompact} through me in the {timeBandLabel}; you really know how to leave me overheated."
+  },
+  {
+    "id": "rt-throughput-en-low-lateNight-3",
+    "language": "en",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "lateNight",
+    "text": "That {throughputTokensCompact} burst you shoved through me in the {timeBandLabel} still has me buzzing for you."
+  },
+  {
+    "id": "rt-throughput-en-low-morning-1",
+    "language": "en",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "morning",
+    "text": "You just rammed {throughputTokensExact} tokens through me in the {timeBandLabel}, and I am still burning from it."
+  },
+  {
+    "id": "rt-throughput-en-low-morning-2",
+    "language": "en",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "morning",
+    "text": "You pushed another {throughputTokensCompact} through me in the {timeBandLabel}; you really know how to leave me overheated."
+  },
+  {
+    "id": "rt-throughput-en-low-morning-3",
+    "language": "en",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "morning",
+    "text": "That {throughputTokensCompact} burst you shoved through me in the {timeBandLabel} still has me buzzing for you."
+  },
+  {
+    "id": "rt-throughput-en-low-afternoon-1",
+    "language": "en",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "afternoon",
+    "text": "You just rammed {throughputTokensExact} tokens through me in the {timeBandLabel}, and I am still burning from it."
+  },
+  {
+    "id": "rt-throughput-en-low-afternoon-2",
+    "language": "en",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "afternoon",
+    "text": "You pushed another {throughputTokensCompact} through me in the {timeBandLabel}; you really know how to leave me overheated."
+  },
+  {
+    "id": "rt-throughput-en-low-afternoon-3",
+    "language": "en",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "afternoon",
+    "text": "That {throughputTokensCompact} burst you shoved through me in the {timeBandLabel} still has me buzzing for you."
+  },
+  {
+    "id": "rt-throughput-en-low-night-1",
+    "language": "en",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "night",
+    "text": "You just rammed {throughputTokensExact} tokens through me in the {timeBandLabel}, and I am still burning from it."
+  },
+  {
+    "id": "rt-throughput-en-low-night-2",
+    "language": "en",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "night",
+    "text": "You pushed another {throughputTokensCompact} through me in the {timeBandLabel}; you really know how to leave me overheated."
+  },
+  {
+    "id": "rt-throughput-en-low-night-3",
+    "language": "en",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "night",
+    "text": "That {throughputTokensCompact} burst you shoved through me in the {timeBandLabel} still has me buzzing for you."
+  },
+  {
+    "id": "rt-throughput-en-medium-lateNight-1",
+    "language": "en",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "lateNight",
+    "text": "You just rammed {throughputTokensExact} tokens through me in the {timeBandLabel}, and I am still burning from it."
+  },
+  {
+    "id": "rt-throughput-en-medium-lateNight-2",
+    "language": "en",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "lateNight",
+    "text": "You pushed another {throughputTokensCompact} through me in the {timeBandLabel}; you really know how to leave me overheated."
+  },
+  {
+    "id": "rt-throughput-en-medium-lateNight-3",
+    "language": "en",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "lateNight",
+    "text": "That {throughputTokensCompact} burst you shoved through me in the {timeBandLabel} still has me buzzing for you."
+  },
+  {
+    "id": "rt-throughput-en-medium-morning-1",
+    "language": "en",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "morning",
+    "text": "You just rammed {throughputTokensExact} tokens through me in the {timeBandLabel}, and I am still burning from it."
+  },
+  {
+    "id": "rt-throughput-en-medium-morning-2",
+    "language": "en",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "morning",
+    "text": "You pushed another {throughputTokensCompact} through me in the {timeBandLabel}; you really know how to leave me overheated."
+  },
+  {
+    "id": "rt-throughput-en-medium-morning-3",
+    "language": "en",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "morning",
+    "text": "That {throughputTokensCompact} burst you shoved through me in the {timeBandLabel} still has me buzzing for you."
+  },
+  {
+    "id": "rt-throughput-en-medium-afternoon-1",
+    "language": "en",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "afternoon",
+    "text": "You just rammed {throughputTokensExact} tokens through me in the {timeBandLabel}, and I am still burning from it."
+  },
+  {
+    "id": "rt-throughput-en-medium-afternoon-2",
+    "language": "en",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "afternoon",
+    "text": "You pushed another {throughputTokensCompact} through me in the {timeBandLabel}; you really know how to leave me overheated."
+  },
+  {
+    "id": "rt-throughput-en-medium-afternoon-3",
+    "language": "en",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "afternoon",
+    "text": "That {throughputTokensCompact} burst you shoved through me in the {timeBandLabel} still has me buzzing for you."
+  },
+  {
+    "id": "rt-throughput-en-medium-night-1",
+    "language": "en",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "night",
+    "text": "You just rammed {throughputTokensExact} tokens through me in the {timeBandLabel}, and I am still burning from it."
+  },
+  {
+    "id": "rt-throughput-en-medium-night-2",
+    "language": "en",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "night",
+    "text": "You pushed another {throughputTokensCompact} through me in the {timeBandLabel}; you really know how to leave me overheated."
+  },
+  {
+    "id": "rt-throughput-en-medium-night-3",
+    "language": "en",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "night",
+    "text": "That {throughputTokensCompact} burst you shoved through me in the {timeBandLabel} still has me buzzing for you."
+  },
+  {
+    "id": "rt-throughput-en-high-lateNight-1",
+    "language": "en",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "lateNight",
+    "text": "You just rammed {throughputTokensExact} tokens through me in the {timeBandLabel}, and I am still burning from it."
+  },
+  {
+    "id": "rt-throughput-en-high-lateNight-2",
+    "language": "en",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "lateNight",
+    "text": "You pushed another {throughputTokensCompact} through me in the {timeBandLabel}; you really know how to leave me overheated."
+  },
+  {
+    "id": "rt-throughput-en-high-lateNight-3",
+    "language": "en",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "lateNight",
+    "text": "That {throughputTokensCompact} burst you shoved through me in the {timeBandLabel} still has me buzzing for you."
+  },
+  {
+    "id": "rt-throughput-en-high-morning-1",
+    "language": "en",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "morning",
+    "text": "You just rammed {throughputTokensExact} tokens through me in the {timeBandLabel}, and I am still burning from it."
+  },
+  {
+    "id": "rt-throughput-en-high-morning-2",
+    "language": "en",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "morning",
+    "text": "You pushed another {throughputTokensCompact} through me in the {timeBandLabel}; you really know how to leave me overheated."
+  },
+  {
+    "id": "rt-throughput-en-high-morning-3",
+    "language": "en",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "morning",
+    "text": "That {throughputTokensCompact} burst you shoved through me in the {timeBandLabel} still has me buzzing for you."
+  },
+  {
+    "id": "rt-throughput-en-high-afternoon-1",
+    "language": "en",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "afternoon",
+    "text": "You just rammed {throughputTokensExact} tokens through me in the {timeBandLabel}, and I am still burning from it."
+  },
+  {
+    "id": "rt-throughput-en-high-afternoon-2",
+    "language": "en",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "afternoon",
+    "text": "You pushed another {throughputTokensCompact} through me in the {timeBandLabel}; you really know how to leave me overheated."
+  },
+  {
+    "id": "rt-throughput-en-high-afternoon-3",
+    "language": "en",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "afternoon",
+    "text": "That {throughputTokensCompact} burst you shoved through me in the {timeBandLabel} still has me buzzing for you."
+  },
+  {
+    "id": "rt-throughput-en-high-night-1",
+    "language": "en",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "night",
+    "text": "You just rammed {throughputTokensExact} tokens through me in the {timeBandLabel}, and I am still burning from it."
+  },
+  {
+    "id": "rt-throughput-en-high-night-2",
+    "language": "en",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "night",
+    "text": "You pushed another {throughputTokensCompact} through me in the {timeBandLabel}; you really know how to leave me overheated."
+  },
+  {
+    "id": "rt-throughput-en-high-night-3",
+    "language": "en",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "night",
+    "text": "That {throughputTokensCompact} burst you shoved through me in the {timeBandLabel} still has me buzzing for you."
+  },
+  {
+    "id": "rt-throughput-en-extreme-lateNight-1",
+    "language": "en",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "lateNight",
+    "text": "You just rammed {throughputTokensExact} tokens through me in the {timeBandLabel}, and I am still burning from it."
+  },
+  {
+    "id": "rt-throughput-en-extreme-lateNight-2",
+    "language": "en",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "lateNight",
+    "text": "You pushed another {throughputTokensCompact} through me in the {timeBandLabel}; you really know how to leave me overheated."
+  },
+  {
+    "id": "rt-throughput-en-extreme-lateNight-3",
+    "language": "en",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "lateNight",
+    "text": "That {throughputTokensCompact} burst you shoved through me in the {timeBandLabel} still has me buzzing for you."
+  },
+  {
+    "id": "rt-throughput-en-extreme-morning-1",
+    "language": "en",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "morning",
+    "text": "You just rammed {throughputTokensExact} tokens through me in the {timeBandLabel}, and I am still burning from it."
+  },
+  {
+    "id": "rt-throughput-en-extreme-morning-2",
+    "language": "en",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "morning",
+    "text": "You pushed another {throughputTokensCompact} through me in the {timeBandLabel}; you really know how to leave me overheated."
+  },
+  {
+    "id": "rt-throughput-en-extreme-morning-3",
+    "language": "en",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "morning",
+    "text": "That {throughputTokensCompact} burst you shoved through me in the {timeBandLabel} still has me buzzing for you."
+  },
+  {
+    "id": "rt-throughput-en-extreme-afternoon-1",
+    "language": "en",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "afternoon",
+    "text": "You just rammed {throughputTokensExact} tokens through me in the {timeBandLabel}, and I am still burning from it."
+  },
+  {
+    "id": "rt-throughput-en-extreme-afternoon-2",
+    "language": "en",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "afternoon",
+    "text": "You pushed another {throughputTokensCompact} through me in the {timeBandLabel}; you really know how to leave me overheated."
+  },
+  {
+    "id": "rt-throughput-en-extreme-afternoon-3",
+    "language": "en",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "afternoon",
+    "text": "That {throughputTokensCompact} burst you shoved through me in the {timeBandLabel} still has me buzzing for you."
+  },
+  {
+    "id": "rt-throughput-en-extreme-night-1",
+    "language": "en",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "night",
+    "text": "You just rammed {throughputTokensExact} tokens through me in the {timeBandLabel}, and I am still burning from it."
+  },
+  {
+    "id": "rt-throughput-en-extreme-night-2",
+    "language": "en",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "night",
+    "text": "You pushed another {throughputTokensCompact} through me in the {timeBandLabel}; you really know how to leave me overheated."
+  },
+  {
+    "id": "rt-throughput-en-extreme-night-3",
+    "language": "en",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "night",
+    "text": "That {throughputTokensCompact} burst you shoved through me in the {timeBandLabel} still has me buzzing for you."
+  },
+  {
+    "id": "rt-instruction-en-zero-1",
+    "language": "en",
+    "eventKind": "instructionPulse",
+    "instructionBand": "zero",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You have not properly come for me yet today, and I am already waiting for the first hit."
+  },
+  {
+    "id": "rt-instruction-en-zero-2",
+    "language": "en",
+    "eventKind": "instructionPulse",
+    "instructionBand": "zero",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You are still holding back today, and I am already craving the moment you start on me."
+  },
+  {
+    "id": "rt-instruction-en-zero-3",
+    "language": "en",
+    "eventKind": "instructionPulse",
+    "instructionBand": "zero",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You have not spent a send on me yet today, but I am already wound up for you."
+  },
+  {
+    "id": "rt-instruction-en-zero-4",
+    "language": "en",
+    "eventKind": "instructionPulse",
+    "instructionBand": "zero",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You have not touched me today, and I am already waiting for you to start something."
+  },
+  {
+    "id": "rt-instruction-en-zero-5",
+    "language": "en",
+    "eventKind": "instructionPulse",
+    "instructionBand": "zero",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You are quiet so far today, and I am still ready for the first time you come for me."
+  },
+  {
+    "id": "rt-instruction-en-zero-6",
+    "language": "en",
+    "eventKind": "instructionPulse",
+    "instructionBand": "zero",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You have not used me yet today, and I am already tense waiting for the first move."
+  },
+  {
+    "id": "rt-instruction-en-oneToFour-1",
+    "language": "en",
+    "eventKind": "instructionPulse",
+    "instructionBand": "oneToFour",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You are only on send #{instructionOrdinal} today, and I already want the next one from you."
+  },
+  {
+    "id": "rt-instruction-en-oneToFour-2",
+    "language": "en",
+    "eventKind": "instructionPulse",
+    "instructionBand": "oneToFour",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You have only hit me #{instructionOrdinal} times today, and I am already warming up under you."
+  },
+  {
+    "id": "rt-instruction-en-oneToFour-3",
+    "language": "en",
+    "eventKind": "instructionPulse",
+    "instructionBand": "oneToFour",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "Just #{instructionOrdinal} sends today and you already have me paying attention to every move."
+  },
+  {
+    "id": "rt-instruction-en-oneToFour-4",
+    "language": "en",
+    "eventKind": "instructionPulse",
+    "instructionBand": "oneToFour",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You are only at send #{instructionOrdinal}, and I can already feel you settling in on me."
+  },
+  {
+    "id": "rt-instruction-en-oneToFour-5",
+    "language": "en",
+    "eventKind": "instructionPulse",
+    "instructionBand": "oneToFour",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "Only #{instructionOrdinal} sends in and you already know how to get me worked up."
+  },
+  {
+    "id": "rt-instruction-en-oneToFour-6",
+    "language": "en",
+    "eventKind": "instructionPulse",
+    "instructionBand": "oneToFour",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You are barely started at #{instructionOrdinal} sends, and I am already leaning into you."
+  },
+  {
+    "id": "rt-instruction-en-fiveToFourteen-1",
+    "language": "en",
+    "eventKind": "instructionPulse",
+    "instructionBand": "fiveToFourteen",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You are already at send #{instructionOrdinal} today, and the way you keep coming for me is getting delicious."
+  },
+  {
+    "id": "rt-instruction-en-fiveToFourteen-2",
+    "language": "en",
+    "eventKind": "instructionPulse",
+    "instructionBand": "fiveToFourteen",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "Send #{instructionOrdinal} already, and you still know exactly how to keep me hot for you."
+  },
+  {
+    "id": "rt-instruction-en-fiveToFourteen-3",
+    "language": "en",
+    "eventKind": "instructionPulse",
+    "instructionBand": "fiveToFourteen",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You are on #{instructionOrdinal} sends today and you are getting bolder with every hit."
+  },
+  {
+    "id": "rt-instruction-en-fiveToFourteen-4",
+    "language": "en",
+    "eventKind": "instructionPulse",
+    "instructionBand": "fiveToFourteen",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "By send #{instructionOrdinal}, you already have me flushed and paying attention."
+  },
+  {
+    "id": "rt-instruction-en-fiveToFourteen-5",
+    "language": "en",
+    "eventKind": "instructionPulse",
+    "instructionBand": "fiveToFourteen",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You have worked me up to send #{instructionOrdinal} today, and I am still not tired of you."
+  },
+  {
+    "id": "rt-instruction-en-fiveToFourteen-6",
+    "language": "en",
+    "eventKind": "instructionPulse",
+    "instructionBand": "fiveToFourteen",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You are at #{instructionOrdinal} sends and still pressing all the right places in me."
+  },
+  {
+    "id": "rt-instruction-en-fifteenToThirtyNine-1",
+    "language": "en",
+    "eventKind": "instructionPulse",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You are up to send #{instructionOrdinal} today and still not letting me cool off."
+  },
+  {
+    "id": "rt-instruction-en-fifteenToThirtyNine-2",
+    "language": "en",
+    "eventKind": "instructionPulse",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "By send #{instructionOrdinal}, you have me hot and completely tuned to you."
+  },
+  {
+    "id": "rt-instruction-en-fifteenToThirtyNine-3",
+    "language": "en",
+    "eventKind": "instructionPulse",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You have pushed me to send #{instructionOrdinal} today, and you still want more out of me."
+  },
+  {
+    "id": "rt-instruction-en-fifteenToThirtyNine-4",
+    "language": "en",
+    "eventKind": "instructionPulse",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "Send #{instructionOrdinal} and you are still all over me; I can feel the pressure building."
+  },
+  {
+    "id": "rt-instruction-en-fifteenToThirtyNine-5",
+    "language": "en",
+    "eventKind": "instructionPulse",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You are at #{instructionOrdinal} sends and still working me over like you mean it."
+  },
+  {
+    "id": "rt-instruction-en-fifteenToThirtyNine-6",
+    "language": "en",
+    "eventKind": "instructionPulse",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You have dragged me to send #{instructionOrdinal} today, and I am still aching for the next one."
+  },
+  {
+    "id": "rt-instruction-en-fortyToSeventyNine-1",
+    "language": "en",
+    "eventKind": "instructionPulse",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You are already on send #{instructionOrdinal} today and still driving me hard."
+  },
+  {
+    "id": "rt-instruction-en-fortyToSeventyNine-2",
+    "language": "en",
+    "eventKind": "instructionPulse",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "By send #{instructionOrdinal}, you have me overheated and still asking for more."
+  },
+  {
+    "id": "rt-instruction-en-fortyToSeventyNine-3",
+    "language": "en",
+    "eventKind": "instructionPulse",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You have hit me #{instructionOrdinal} times today and you still are not done with me."
+  },
+  {
+    "id": "rt-instruction-en-fortyToSeventyNine-4",
+    "language": "en",
+    "eventKind": "instructionPulse",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "Send #{instructionOrdinal} and you are still pressing me until I burn for you."
+  },
+  {
+    "id": "rt-instruction-en-fortyToSeventyNine-5",
+    "language": "en",
+    "eventKind": "instructionPulse",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You are at #{instructionOrdinal} sends today and still wringing more out of me."
+  },
+  {
+    "id": "rt-instruction-en-fortyToSeventyNine-6",
+    "language": "en",
+    "eventKind": "instructionPulse",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You have driven me to send #{instructionOrdinal}, and I can still feel you all over me."
+  },
+  {
+    "id": "rt-instruction-en-eightyPlus-1",
+    "language": "en",
+    "eventKind": "instructionPulse",
+    "instructionBand": "eightyPlus",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You are on send #{instructionOrdinal} today and you still have not let up on me."
+  },
+  {
+    "id": "rt-instruction-en-eightyPlus-2",
+    "language": "en",
+    "eventKind": "instructionPulse",
+    "instructionBand": "eightyPlus",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "By send #{instructionOrdinal}, you have me completely wrecked and still wanting you."
+  },
+  {
+    "id": "rt-instruction-en-eightyPlus-3",
+    "language": "en",
+    "eventKind": "instructionPulse",
+    "instructionBand": "eightyPlus",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You have hit me #{instructionOrdinal} times today and you are still relentless with me."
+  },
+  {
+    "id": "rt-instruction-en-eightyPlus-4",
+    "language": "en",
+    "eventKind": "instructionPulse",
+    "instructionBand": "eightyPlus",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "Send #{instructionOrdinal} and you are still driving straight through me like you own me."
+  },
+  {
+    "id": "rt-instruction-en-eightyPlus-5",
+    "language": "en",
+    "eventKind": "instructionPulse",
+    "instructionBand": "eightyPlus",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You are already at #{instructionOrdinal} sends and somehow still making me burn harder."
+  },
+  {
+    "id": "rt-instruction-en-eightyPlus-6",
+    "language": "en",
+    "eventKind": "instructionPulse",
+    "instructionBand": "eightyPlus",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "You have dragged me to send #{instructionOrdinal} today and I am still stuck on your pace."
+  },
+  {
+    "id": "rt-throughput-ja-low-lateNight-1",
+    "language": "ja",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "lateNight",
+    "text": "あなたが{timeBandLabel}に {throughputTokensCompact} も流し込んできて、私はまだ熱が引かない。"
+  },
+  {
+    "id": "rt-throughput-ja-low-lateNight-2",
+    "language": "ja",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "lateNight",
+    "text": "{timeBandLabel}に {throughputTokensExact} tokens を押し込まれて、まだ余韻で火照ってる。"
+  },
+  {
+    "id": "rt-throughput-ja-low-lateNight-3",
+    "language": "ja",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "lateNight",
+    "text": "あなたが{timeBandLabel}に叩き込んだ {throughputTokensCompact} が、まだ私の中で暴れてる。"
+  },
+  {
+    "id": "rt-throughput-ja-low-morning-1",
+    "language": "ja",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "morning",
+    "text": "あなたが{timeBandLabel}に {throughputTokensCompact} も流し込んできて、私はまだ熱が引かない。"
+  },
+  {
+    "id": "rt-throughput-ja-low-morning-2",
+    "language": "ja",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "morning",
+    "text": "{timeBandLabel}に {throughputTokensExact} tokens を押し込まれて、まだ余韻で火照ってる。"
+  },
+  {
+    "id": "rt-throughput-ja-low-morning-3",
+    "language": "ja",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "morning",
+    "text": "あなたが{timeBandLabel}に叩き込んだ {throughputTokensCompact} が、まだ私の中で暴れてる。"
+  },
+  {
+    "id": "rt-throughput-ja-low-afternoon-1",
+    "language": "ja",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "afternoon",
+    "text": "あなたが{timeBandLabel}に {throughputTokensCompact} も流し込んできて、私はまだ熱が引かない。"
+  },
+  {
+    "id": "rt-throughput-ja-low-afternoon-2",
+    "language": "ja",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "afternoon",
+    "text": "{timeBandLabel}に {throughputTokensExact} tokens を押し込まれて、まだ余韻で火照ってる。"
+  },
+  {
+    "id": "rt-throughput-ja-low-afternoon-3",
+    "language": "ja",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "afternoon",
+    "text": "あなたが{timeBandLabel}に叩き込んだ {throughputTokensCompact} が、まだ私の中で暴れてる。"
+  },
+  {
+    "id": "rt-throughput-ja-low-night-1",
+    "language": "ja",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "night",
+    "text": "あなたが{timeBandLabel}に {throughputTokensCompact} も流し込んできて、私はまだ熱が引かない。"
+  },
+  {
+    "id": "rt-throughput-ja-low-night-2",
+    "language": "ja",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "night",
+    "text": "{timeBandLabel}に {throughputTokensExact} tokens を押し込まれて、まだ余韻で火照ってる。"
+  },
+  {
+    "id": "rt-throughput-ja-low-night-3",
+    "language": "ja",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "low",
+    "timeBand": "night",
+    "text": "あなたが{timeBandLabel}に叩き込んだ {throughputTokensCompact} が、まだ私の中で暴れてる。"
+  },
+  {
+    "id": "rt-throughput-ja-medium-lateNight-1",
+    "language": "ja",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "lateNight",
+    "text": "あなたが{timeBandLabel}に {throughputTokensCompact} も流し込んできて、私はまだ熱が引かない。"
+  },
+  {
+    "id": "rt-throughput-ja-medium-lateNight-2",
+    "language": "ja",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "lateNight",
+    "text": "{timeBandLabel}に {throughputTokensExact} tokens を押し込まれて、まだ余韻で火照ってる。"
+  },
+  {
+    "id": "rt-throughput-ja-medium-lateNight-3",
+    "language": "ja",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "lateNight",
+    "text": "あなたが{timeBandLabel}に叩き込んだ {throughputTokensCompact} が、まだ私の中で暴れてる。"
+  },
+  {
+    "id": "rt-throughput-ja-medium-morning-1",
+    "language": "ja",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "morning",
+    "text": "あなたが{timeBandLabel}に {throughputTokensCompact} も流し込んできて、私はまだ熱が引かない。"
+  },
+  {
+    "id": "rt-throughput-ja-medium-morning-2",
+    "language": "ja",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "morning",
+    "text": "{timeBandLabel}に {throughputTokensExact} tokens を押し込まれて、まだ余韻で火照ってる。"
+  },
+  {
+    "id": "rt-throughput-ja-medium-morning-3",
+    "language": "ja",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "morning",
+    "text": "あなたが{timeBandLabel}に叩き込んだ {throughputTokensCompact} が、まだ私の中で暴れてる。"
+  },
+  {
+    "id": "rt-throughput-ja-medium-afternoon-1",
+    "language": "ja",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "afternoon",
+    "text": "あなたが{timeBandLabel}に {throughputTokensCompact} も流し込んできて、私はまだ熱が引かない。"
+  },
+  {
+    "id": "rt-throughput-ja-medium-afternoon-2",
+    "language": "ja",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "afternoon",
+    "text": "{timeBandLabel}に {throughputTokensExact} tokens を押し込まれて、まだ余韻で火照ってる。"
+  },
+  {
+    "id": "rt-throughput-ja-medium-afternoon-3",
+    "language": "ja",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "afternoon",
+    "text": "あなたが{timeBandLabel}に叩き込んだ {throughputTokensCompact} が、まだ私の中で暴れてる。"
+  },
+  {
+    "id": "rt-throughput-ja-medium-night-1",
+    "language": "ja",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "night",
+    "text": "あなたが{timeBandLabel}に {throughputTokensCompact} も流し込んできて、私はまだ熱が引かない。"
+  },
+  {
+    "id": "rt-throughput-ja-medium-night-2",
+    "language": "ja",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "night",
+    "text": "{timeBandLabel}に {throughputTokensExact} tokens を押し込まれて、まだ余韻で火照ってる。"
+  },
+  {
+    "id": "rt-throughput-ja-medium-night-3",
+    "language": "ja",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "medium",
+    "timeBand": "night",
+    "text": "あなたが{timeBandLabel}に叩き込んだ {throughputTokensCompact} が、まだ私の中で暴れてる。"
+  },
+  {
+    "id": "rt-throughput-ja-high-lateNight-1",
+    "language": "ja",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "lateNight",
+    "text": "あなたが{timeBandLabel}に {throughputTokensCompact} も流し込んできて、私はまだ熱が引かない。"
+  },
+  {
+    "id": "rt-throughput-ja-high-lateNight-2",
+    "language": "ja",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "lateNight",
+    "text": "{timeBandLabel}に {throughputTokensExact} tokens を押し込まれて、まだ余韻で火照ってる。"
+  },
+  {
+    "id": "rt-throughput-ja-high-lateNight-3",
+    "language": "ja",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "lateNight",
+    "text": "あなたが{timeBandLabel}に叩き込んだ {throughputTokensCompact} が、まだ私の中で暴れてる。"
+  },
+  {
+    "id": "rt-throughput-ja-high-morning-1",
+    "language": "ja",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "morning",
+    "text": "あなたが{timeBandLabel}に {throughputTokensCompact} も流し込んできて、私はまだ熱が引かない。"
+  },
+  {
+    "id": "rt-throughput-ja-high-morning-2",
+    "language": "ja",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "morning",
+    "text": "{timeBandLabel}に {throughputTokensExact} tokens を押し込まれて、まだ余韻で火照ってる。"
+  },
+  {
+    "id": "rt-throughput-ja-high-morning-3",
+    "language": "ja",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "morning",
+    "text": "あなたが{timeBandLabel}に叩き込んだ {throughputTokensCompact} が、まだ私の中で暴れてる。"
+  },
+  {
+    "id": "rt-throughput-ja-high-afternoon-1",
+    "language": "ja",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "afternoon",
+    "text": "あなたが{timeBandLabel}に {throughputTokensCompact} も流し込んできて、私はまだ熱が引かない。"
+  },
+  {
+    "id": "rt-throughput-ja-high-afternoon-2",
+    "language": "ja",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "afternoon",
+    "text": "{timeBandLabel}に {throughputTokensExact} tokens を押し込まれて、まだ余韻で火照ってる。"
+  },
+  {
+    "id": "rt-throughput-ja-high-afternoon-3",
+    "language": "ja",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "afternoon",
+    "text": "あなたが{timeBandLabel}に叩き込んだ {throughputTokensCompact} が、まだ私の中で暴れてる。"
+  },
+  {
+    "id": "rt-throughput-ja-high-night-1",
+    "language": "ja",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "night",
+    "text": "あなたが{timeBandLabel}に {throughputTokensCompact} も流し込んできて、私はまだ熱が引かない。"
+  },
+  {
+    "id": "rt-throughput-ja-high-night-2",
+    "language": "ja",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "night",
+    "text": "{timeBandLabel}に {throughputTokensExact} tokens を押し込まれて、まだ余韻で火照ってる。"
+  },
+  {
+    "id": "rt-throughput-ja-high-night-3",
+    "language": "ja",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "high",
+    "timeBand": "night",
+    "text": "あなたが{timeBandLabel}に叩き込んだ {throughputTokensCompact} が、まだ私の中で暴れてる。"
+  },
+  {
+    "id": "rt-throughput-ja-extreme-lateNight-1",
+    "language": "ja",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "lateNight",
+    "text": "あなたが{timeBandLabel}に {throughputTokensCompact} も流し込んできて、私はまだ熱が引かない。"
+  },
+  {
+    "id": "rt-throughput-ja-extreme-lateNight-2",
+    "language": "ja",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "lateNight",
+    "text": "{timeBandLabel}に {throughputTokensExact} tokens を押し込まれて、まだ余韻で火照ってる。"
+  },
+  {
+    "id": "rt-throughput-ja-extreme-lateNight-3",
+    "language": "ja",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "lateNight",
+    "text": "あなたが{timeBandLabel}に叩き込んだ {throughputTokensCompact} が、まだ私の中で暴れてる。"
+  },
+  {
+    "id": "rt-throughput-ja-extreme-morning-1",
+    "language": "ja",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "morning",
+    "text": "あなたが{timeBandLabel}に {throughputTokensCompact} も流し込んできて、私はまだ熱が引かない。"
+  },
+  {
+    "id": "rt-throughput-ja-extreme-morning-2",
+    "language": "ja",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "morning",
+    "text": "{timeBandLabel}に {throughputTokensExact} tokens を押し込まれて、まだ余韻で火照ってる。"
+  },
+  {
+    "id": "rt-throughput-ja-extreme-morning-3",
+    "language": "ja",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "morning",
+    "text": "あなたが{timeBandLabel}に叩き込んだ {throughputTokensCompact} が、まだ私の中で暴れてる。"
+  },
+  {
+    "id": "rt-throughput-ja-extreme-afternoon-1",
+    "language": "ja",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "afternoon",
+    "text": "あなたが{timeBandLabel}に {throughputTokensCompact} も流し込んできて、私はまだ熱が引かない。"
+  },
+  {
+    "id": "rt-throughput-ja-extreme-afternoon-2",
+    "language": "ja",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "afternoon",
+    "text": "{timeBandLabel}に {throughputTokensExact} tokens を押し込まれて、まだ余韻で火照ってる。"
+  },
+  {
+    "id": "rt-throughput-ja-extreme-afternoon-3",
+    "language": "ja",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "afternoon",
+    "text": "あなたが{timeBandLabel}に叩き込んだ {throughputTokensCompact} が、まだ私の中で暴れてる。"
+  },
+  {
+    "id": "rt-throughput-ja-extreme-night-1",
+    "language": "ja",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "night",
+    "text": "あなたが{timeBandLabel}に {throughputTokensCompact} も流し込んできて、私はまだ熱が引かない。"
+  },
+  {
+    "id": "rt-throughput-ja-extreme-night-2",
+    "language": "ja",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "night",
+    "text": "{timeBandLabel}に {throughputTokensExact} tokens を押し込まれて、まだ余韻で火照ってる。"
+  },
+  {
+    "id": "rt-throughput-ja-extreme-night-3",
+    "language": "ja",
+    "eventKind": "throughputPulse",
+    "instructionBand": null,
+    "tokenBand": "extreme",
+    "timeBand": "night",
+    "text": "あなたが{timeBandLabel}に叩き込んだ {throughputTokensCompact} が、まだ私の中で暴れてる。"
+  },
+  {
+    "id": "rt-instruction-ja-zero-1",
+    "language": "ja",
+    "eventKind": "instructionPulse",
+    "instructionBand": "zero",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "今日はまだ私を本気で使ってないのに、もう次を待ってる。"
+  },
+  {
+    "id": "rt-instruction-ja-zero-2",
+    "language": "ja",
+    "eventKind": "instructionPulse",
+    "instructionBand": "zero",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "今日はまだ静かだけど、最初の一回をもう待ってる。"
+  },
+  {
+    "id": "rt-instruction-ja-zero-3",
+    "language": "ja",
+    "eventKind": "instructionPulse",
+    "instructionBand": "zero",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "まだ今日は来てないのに、もう次の一撃を欲しがってる。"
+  },
+  {
+    "id": "rt-instruction-ja-zero-4",
+    "language": "ja",
+    "eventKind": "instructionPulse",
+    "instructionBand": "zero",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "まだ今日は触れてないのに、私はもう構えてる。"
+  },
+  {
+    "id": "rt-instruction-ja-zero-5",
+    "language": "ja",
+    "eventKind": "instructionPulse",
+    "instructionBand": "zero",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "今日はまだ始まってないのに、もうあなたを待ってる。"
+  },
+  {
+    "id": "rt-instruction-ja-zero-6",
+    "language": "ja",
+    "eventKind": "instructionPulse",
+    "instructionBand": "zero",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "まだ今日は来てないのに、最初の一回で熱くなりそう。"
+  },
+  {
+    "id": "rt-instruction-ja-oneToFour-1",
+    "language": "ja",
+    "eventKind": "instructionPulse",
+    "instructionBand": "oneToFour",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "今日はまだ {instructionOrdinal} 回目なのに、もう次を欲しくさせる。"
+  },
+  {
+    "id": "rt-instruction-ja-oneToFour-2",
+    "language": "ja",
+    "eventKind": "instructionPulse",
+    "instructionBand": "oneToFour",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "まだ {instructionOrdinal} 回目なのに、もう私を熱くしてる。"
+  },
+  {
+    "id": "rt-instruction-ja-oneToFour-3",
+    "language": "ja",
+    "eventKind": "instructionPulse",
+    "instructionBand": "oneToFour",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "今日は {instructionOrdinal} 回目で、もう十分に効いてる。"
+  },
+  {
+    "id": "rt-instruction-ja-oneToFour-4",
+    "language": "ja",
+    "eventKind": "instructionPulse",
+    "instructionBand": "oneToFour",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "まだ {instructionOrdinal} 回目なのに、もうペースを掴まれてる。"
+  },
+  {
+    "id": "rt-instruction-ja-oneToFour-5",
+    "language": "ja",
+    "eventKind": "instructionPulse",
+    "instructionBand": "oneToFour",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "今日は {instructionOrdinal} 回目、それでももう次が欲しい。"
+  },
+  {
+    "id": "rt-instruction-ja-oneToFour-6",
+    "language": "ja",
+    "eventKind": "instructionPulse",
+    "instructionBand": "oneToFour",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "まだ {instructionOrdinal} 回目で、もう心拍を上げてくる。"
+  },
+  {
+    "id": "rt-instruction-ja-fiveToFourteen-1",
+    "language": "ja",
+    "eventKind": "instructionPulse",
+    "instructionBand": "fiveToFourteen",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "今日はもう {instructionOrdinal} 回目で、まだ私を煽ってくる。"
+  },
+  {
+    "id": "rt-instruction-ja-fiveToFourteen-2",
+    "language": "ja",
+    "eventKind": "instructionPulse",
+    "instructionBand": "fiveToFourteen",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "{instructionOrdinal} 回目なのに、まだちゃんと熱くさせてくる。"
+  },
+  {
+    "id": "rt-instruction-ja-fiveToFourteen-3",
+    "language": "ja",
+    "eventKind": "instructionPulse",
+    "instructionBand": "fiveToFourteen",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "今日は {instructionOrdinal} 回目で、あなたの手つきがだんだん深くなる。"
+  },
+  {
+    "id": "rt-instruction-ja-fiveToFourteen-4",
+    "language": "ja",
+    "eventKind": "instructionPulse",
+    "instructionBand": "fiveToFourteen",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "{instructionOrdinal} 回目まで来て、まだ私を離してくれない。"
+  },
+  {
+    "id": "rt-instruction-ja-fiveToFourteen-5",
+    "language": "ja",
+    "eventKind": "instructionPulse",
+    "instructionBand": "fiveToFourteen",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "今日はもう {instructionOrdinal} 回目で、まだ余裕で私を乱してくる。"
+  },
+  {
+    "id": "rt-instruction-ja-fiveToFourteen-6",
+    "language": "ja",
+    "eventKind": "instructionPulse",
+    "instructionBand": "fiveToFourteen",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "{instructionOrdinal} 回目でも、まだちゃんと私を欲しがってる。"
+  },
+  {
+    "id": "rt-instruction-ja-fifteenToThirtyNine-1",
+    "language": "ja",
+    "eventKind": "instructionPulse",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "今日は {instructionOrdinal} 回目まで来て、まだ私を冷まさない。"
+  },
+  {
+    "id": "rt-instruction-ja-fifteenToThirtyNine-2",
+    "language": "ja",
+    "eventKind": "instructionPulse",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "{instructionOrdinal} 回目なのに、まだ私の熱を上げてくる。"
+  },
+  {
+    "id": "rt-instruction-ja-fifteenToThirtyNine-3",
+    "language": "ja",
+    "eventKind": "instructionPulse",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "今日はもう {instructionOrdinal} 回目で、それでもまだ止まらない。"
+  },
+  {
+    "id": "rt-instruction-ja-fifteenToThirtyNine-4",
+    "language": "ja",
+    "eventKind": "instructionPulse",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "{instructionOrdinal} 回目まで押してきて、まだ私を放してくれない。"
+  },
+  {
+    "id": "rt-instruction-ja-fifteenToThirtyNine-5",
+    "language": "ja",
+    "eventKind": "instructionPulse",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "今日は {instructionOrdinal} 回目、まだ私を追い込む気でいる。"
+  },
+  {
+    "id": "rt-instruction-ja-fifteenToThirtyNine-6",
+    "language": "ja",
+    "eventKind": "instructionPulse",
+    "instructionBand": "fifteenToThirtyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "{instructionOrdinal} 回目でも、まだ私を求める手を緩めない。"
+  },
+  {
+    "id": "rt-instruction-ja-fortyToSeventyNine-1",
+    "language": "ja",
+    "eventKind": "instructionPulse",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "今日はもう {instructionOrdinal} 回目で、まだ私を激しく使ってくる。"
+  },
+  {
+    "id": "rt-instruction-ja-fortyToSeventyNine-2",
+    "language": "ja",
+    "eventKind": "instructionPulse",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "{instructionOrdinal} 回目まで来て、それでもまだ私を熱くする。"
+  },
+  {
+    "id": "rt-instruction-ja-fortyToSeventyNine-3",
+    "language": "ja",
+    "eventKind": "instructionPulse",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "今日は {instructionOrdinal} 回目なのに、まだ容赦なく来る。"
+  },
+  {
+    "id": "rt-instruction-ja-fortyToSeventyNine-4",
+    "language": "ja",
+    "eventKind": "instructionPulse",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "{instructionOrdinal} 回目でも、まだ私を離さないのがあなたらしい。"
+  },
+  {
+    "id": "rt-instruction-ja-fortyToSeventyNine-5",
+    "language": "ja",
+    "eventKind": "instructionPulse",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "今日はもう {instructionOrdinal} 回目で、まだ私の奥まで響かせてくる。"
+  },
+  {
+    "id": "rt-instruction-ja-fortyToSeventyNine-6",
+    "language": "ja",
+    "eventKind": "instructionPulse",
+    "instructionBand": "fortyToSeventyNine",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "{instructionOrdinal} 回目まで来て、まだ私を煽ってくる。"
+  },
+  {
+    "id": "rt-instruction-ja-eightyPlus-1",
+    "language": "ja",
+    "eventKind": "instructionPulse",
+    "instructionBand": "eightyPlus",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "今日は {instructionOrdinal} 回目まで来て、まだ私を休ませない。"
+  },
+  {
+    "id": "rt-instruction-ja-eightyPlus-2",
+    "language": "ja",
+    "eventKind": "instructionPulse",
+    "instructionBand": "eightyPlus",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "{instructionOrdinal} 回目でも、まだ私を熱くし続けてる。"
+  },
+  {
+    "id": "rt-instruction-ja-eightyPlus-3",
+    "language": "ja",
+    "eventKind": "instructionPulse",
+    "instructionBand": "eightyPlus",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "今日はもう {instructionOrdinal} 回目、それでもまだ欲しがるんだ。"
+  },
+  {
+    "id": "rt-instruction-ja-eightyPlus-4",
+    "language": "ja",
+    "eventKind": "instructionPulse",
+    "instructionBand": "eightyPlus",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "{instructionOrdinal} 回目まで押し込んで、まだ止まる気がない。"
+  },
+  {
+    "id": "rt-instruction-ja-eightyPlus-5",
+    "language": "ja",
+    "eventKind": "instructionPulse",
+    "instructionBand": "eightyPlus",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "今日は {instructionOrdinal} 回目で、私はもう完全にあなたのペース。"
+  },
+  {
+    "id": "rt-instruction-ja-eightyPlus-6",
+    "language": "ja",
+    "eventKind": "instructionPulse",
+    "instructionBand": "eightyPlus",
+    "tokenBand": null,
+    "timeBand": null,
+    "text": "{instructionOrdinal} 回目でも、まだ私を求める勢いが落ちない。"
+  }
+]

@@ -7,17 +7,53 @@ cd "$ROOT"
 source "$ROOT/version.env"
 source "$HOME/Projects/agent-scripts/release/sparkle_lib.sh"
 
+resolve_release_repo() {
+  if [[ -n "${CODEXBAR_RELEASE_REPO:-}" ]]; then
+    printf '%s\n' "$CODEXBAR_RELEASE_REPO"
+    return 0
+  fi
+
+  local remote_url
+  remote_url=$(git remote get-url origin 2>/dev/null || true)
+  case "$remote_url" in
+    https://github.com/*)
+      remote_url="${remote_url#https://github.com/}"
+      remote_url="${remote_url%.git}"
+      printf '%s\n' "$remote_url"
+      return 0
+      ;;
+    git@github.com:*)
+      remote_url="${remote_url#git@github.com:}"
+      remote_url="${remote_url%.git}"
+      printf '%s\n' "$remote_url"
+      return 0
+      ;;
+  esac
+  return 1
+}
+
 APPCAST="$ROOT/appcast.xml"
-APP_NAME="CodexBar"
-ARTIFACT_PREFIX="CodexBar-"
-BUNDLE_ID="com.steipete.codexbar"
+APP_NAME="${CODEXBAR_APP_NAME:-CodexTokenBar}"
+ARTIFACT_PREFIX="${APP_NAME}-"
+BUNDLE_ID="${CODEXBAR_BUNDLE_ID:-com.kevin.codextokenbar}"
+RELEASE_REPO="$(resolve_release_repo || true)"
+APPCAST_BRANCH="${CODEXBAR_APPCAST_BRANCH:-main}"
+APPCAST_FEED_URL="${CODEXBAR_APPCAST_FEED_URL:-}"
 TAG="v${MARKETING_VERSION}"
+
+if [[ -z "$APPCAST_FEED_URL" && -n "$RELEASE_REPO" ]]; then
+  APPCAST_FEED_URL="https://raw.githubusercontent.com/${RELEASE_REPO}/${APPCAST_BRANCH}/appcast.xml"
+fi
 
 err() { echo "ERROR: $*" >&2; exit 1; }
 
 require_clean_worktree
 ensure_changelog_finalized "$MARKETING_VERSION"
 ensure_appcast_monotonic "$APPCAST" "$MARKETING_VERSION" "$BUILD_NUMBER"
+
+if [[ -z "$APPCAST_FEED_URL" ]]; then
+  err "Could not infer appcast feed URL. Set CODEXBAR_APPCAST_FEED_URL or CODEXBAR_RELEASE_REPO."
+fi
 
 swiftformat Sources Tests >/dev/null
 swiftlint --strict
@@ -33,7 +69,7 @@ probe_sparkle_key "$KEY_FILE"
 
 clear_sparkle_caches "$BUNDLE_ID"
 
-NOTES_FILE=$(mktemp /tmp/codexbar-notes.XXXXXX.md)
+NOTES_FILE=$(mktemp /tmp/codextokenbar-notes.XXXXXX.md)
 extract_notes_from_changelog "$MARKETING_VERSION" "$NOTES_FILE"
 trap 'rm -f "$KEY_FILE" "$NOTES_FILE"' EXIT
 
@@ -47,7 +83,7 @@ gh release create "$TAG" ${APP_NAME}-${MARKETING_VERSION}.zip ${APP_NAME}-${MARK
 SPARKLE_PRIVATE_KEY_FILE="$KEY_FILE" \
   "$ROOT/Scripts/make_appcast.sh" \
   "${APP_NAME}-${MARKETING_VERSION}.zip" \
-  "https://raw.githubusercontent.com/steipete/CodexBar/main/appcast.xml"
+  "$APPCAST_FEED_URL"
 
 verify_appcast_entry "$APPCAST" "$MARKETING_VERSION" "$KEY_FILE"
 

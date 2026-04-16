@@ -1,13 +1,25 @@
 #!/usr/bin/env bash
-# Reset CodexBar: kill running instances, build, package, relaunch, verify.
+# Reset the app: kill running instances, build, package, relaunch, verify.
 
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-APP_BUNDLE="${ROOT_DIR}/CodexBar.app"
-APP_PROCESS_PATTERN="CodexBar.app/Contents/MacOS/CodexBar"
+APP_NAME="${CODEXBAR_APP_NAME:-CodexTokenBar}"
+APP_EXECUTABLE_NAME="${CODEXBAR_EXECUTABLE_NAME:-CodexTokenBar}"
+APP_BUNDLE_ID="${CODEXBAR_BUNDLE_ID:-com.kevin.codextokenbar}"
+APP_BUNDLE="${CODEXBAR_INSTALL_PATH:-/Applications/${CODEXBAR_APP_BUNDLE:-${APP_NAME}.app}}"
+APP_PROCESS_PATTERN="${APP_NAME}.app/Contents/MacOS/${APP_EXECUTABLE_NAME}"
 DEBUG_PROCESS_PATTERN="${ROOT_DIR}/.build/debug/CodexBar"
 RELEASE_PROCESS_PATTERN="${ROOT_DIR}/.build/release/CodexBar"
+DAILY_BOARD_APP_NAME="${CODEXBAR_DAILY_BOARD_APP_NAME:-CodexDaily}"
+DAILY_BOARD_EXECUTABLE_NAME="${CODEXBAR_DAILY_BOARD_EXECUTABLE_NAME:-CodexDaily}"
+DAILY_BOARD_APP_PROCESS_PATTERN="${DAILY_BOARD_APP_NAME}.app/Contents/MacOS/${DAILY_BOARD_EXECUTABLE_NAME}"
+DAILY_BOARD_DEBUG_PROCESS_PATTERN="${ROOT_DIR}/.build/debug/CodexDaily"
+DAILY_BOARD_RELEASE_PROCESS_PATTERN="${ROOT_DIR}/.build/release/CodexDaily"
+LEGACY_DAILY_BOARD_APP_PROCESS_PATTERN="CodexTokenBar Daily Board.app/Contents/MacOS/CodexDailyBoard"
+LEGACY_DAILY_BOARD_DEBUG_PROCESS_PATTERN="${ROOT_DIR}/.build/debug/CodexDailyBoard"
+LEGACY_DAILY_BOARD_RELEASE_PROCESS_PATTERN="${ROOT_DIR}/.build/release/CodexDailyBoard"
+LEGACY_DAILY_BOARD_EXECUTABLE_NAME="CodexDailyBoard"
 LOCK_KEY="$(printf '%s' "${ROOT_DIR}" | shasum -a 256 | cut -c1-8)"
 LOCK_DIR="${TMPDIR:-/tmp}/codexbar-compile-and-run-${LOCK_KEY}"
 LOCK_PID_FILE="${LOCK_DIR}/pid"
@@ -16,6 +28,14 @@ RUN_TESTS=0
 DEBUG_LLDB=0
 RELEASE_ARCHES=""
 SIGNING_MODE="${CODEXBAR_SIGNING:-}"
+
+export HOME="${CODEXBAR_HOME:-$ROOT_DIR/.home}"
+export CLANG_MODULE_CACHE_PATH="${CLANG_MODULE_CACHE_PATH:-$ROOT_DIR/.build/modulecache}"
+export SWIFT_MODULECACHE_PATH="${SWIFT_MODULECACHE_PATH:-$CLANG_MODULE_CACHE_PATH}"
+mkdir -p "${HOME}" "${CLANG_MODULE_CACHE_PATH}"
+if [[ -z "${DEVELOPER_DIR:-}" ]] && [[ -d "/Applications/Xcode.app/Contents/Developer" ]]; then
+  export DEVELOPER_DIR="/Applications/Xcode.app/Contents/Developer"
+fi
 
 log()  { printf '%s\n' "$*"; }
 fail() { printf 'ERROR: %s\n' "$*" >&2; exit 1; }
@@ -28,26 +48,38 @@ has_signing_identity() {
   security find-identity -p codesigning -v 2>/dev/null | grep -F "${identity}" >/dev/null 2>&1
 }
 
+first_developer_id_identity() {
+  security find-identity -v -p codesigning 2>/dev/null |
+    sed -n 's/.*"\(Developer ID Application:[^"]*\)".*/\1/p' |
+    head -n 1
+}
+
 resolve_signing_mode() {
   if [[ -n "${SIGNING_MODE}" ]]; then
     return
   fi
 
-  if [[ -n "${APP_IDENTITY:-}" ]]; then
+  local requested_identity="${CODEXBAR_SIGNING_IDENTITY:-${APP_IDENTITY:-}}"
+  if [[ -n "${requested_identity}" ]]; then
+    APP_IDENTITY="${requested_identity}"
+    export APP_IDENTITY
     if has_signing_identity "${APP_IDENTITY}"; then
       SIGNING_MODE="identity"
       return
     fi
-    log "WARN: APP_IDENTITY not found in Keychain; falling back to adhoc signing."
+    log "WARN: requested signing identity not found in Keychain; falling back to adhoc signing."
     SIGNING_MODE="adhoc"
     return
   fi
 
   local candidate=""
   for candidate in \
-    "Developer ID Application: Peter Steinberger (Y5PE65HELJ)" \
+    "$(first_developer_id_identity)" \
     "CodexBar Development"
   do
+    if [[ -z "${candidate}" ]]; then
+      continue
+    fi
     if has_signing_identity "${candidate}"; then
       APP_IDENTITY="${candidate}"
       export APP_IDENTITY
@@ -115,7 +147,15 @@ kill_all_codexbar() {
     pgrep -f "${APP_PROCESS_PATTERN}" >/dev/null 2>&1 \
       || pgrep -f "${DEBUG_PROCESS_PATTERN}" >/dev/null 2>&1 \
       || pgrep -f "${RELEASE_PROCESS_PATTERN}" >/dev/null 2>&1 \
-      || pgrep -x "CodexBar" >/dev/null 2>&1
+      || pgrep -x "${APP_EXECUTABLE_NAME}" >/dev/null 2>&1 \
+      || pgrep -f "${DAILY_BOARD_APP_PROCESS_PATTERN}" >/dev/null 2>&1 \
+      || pgrep -f "${DAILY_BOARD_DEBUG_PROCESS_PATTERN}" >/dev/null 2>&1 \
+      || pgrep -f "${DAILY_BOARD_RELEASE_PROCESS_PATTERN}" >/dev/null 2>&1 \
+      || pgrep -x "${DAILY_BOARD_EXECUTABLE_NAME}" >/dev/null 2>&1 \
+      || pgrep -f "${LEGACY_DAILY_BOARD_APP_PROCESS_PATTERN}" >/dev/null 2>&1 \
+      || pgrep -f "${LEGACY_DAILY_BOARD_DEBUG_PROCESS_PATTERN}" >/dev/null 2>&1 \
+      || pgrep -f "${LEGACY_DAILY_BOARD_RELEASE_PROCESS_PATTERN}" >/dev/null 2>&1 \
+      || pgrep -x "${LEGACY_DAILY_BOARD_EXECUTABLE_NAME}" >/dev/null 2>&1
   }
 
   # Phase 1: request termination (give the app time to exit cleanly).
@@ -123,7 +163,15 @@ kill_all_codexbar() {
     pkill -f "${APP_PROCESS_PATTERN}" 2>/dev/null || true
     pkill -f "${DEBUG_PROCESS_PATTERN}" 2>/dev/null || true
     pkill -f "${RELEASE_PROCESS_PATTERN}" 2>/dev/null || true
-    pkill -x "CodexBar" 2>/dev/null || true
+    pkill -x "${APP_EXECUTABLE_NAME}" 2>/dev/null || true
+    pkill -f "${DAILY_BOARD_APP_PROCESS_PATTERN}" 2>/dev/null || true
+    pkill -f "${DAILY_BOARD_DEBUG_PROCESS_PATTERN}" 2>/dev/null || true
+    pkill -f "${DAILY_BOARD_RELEASE_PROCESS_PATTERN}" 2>/dev/null || true
+    pkill -x "${DAILY_BOARD_EXECUTABLE_NAME}" 2>/dev/null || true
+    pkill -f "${LEGACY_DAILY_BOARD_APP_PROCESS_PATTERN}" 2>/dev/null || true
+    pkill -f "${LEGACY_DAILY_BOARD_DEBUG_PROCESS_PATTERN}" 2>/dev/null || true
+    pkill -f "${LEGACY_DAILY_BOARD_RELEASE_PROCESS_PATTERN}" 2>/dev/null || true
+    pkill -x "${LEGACY_DAILY_BOARD_EXECUTABLE_NAME}" 2>/dev/null || true
     if ! is_running; then
       return 0
     fi
@@ -134,7 +182,15 @@ kill_all_codexbar() {
   pkill -9 -f "${APP_PROCESS_PATTERN}" 2>/dev/null || true
   pkill -9 -f "${DEBUG_PROCESS_PATTERN}" 2>/dev/null || true
   pkill -9 -f "${RELEASE_PROCESS_PATTERN}" 2>/dev/null || true
-  pkill -9 -x "CodexBar" 2>/dev/null || true
+  pkill -9 -x "${APP_EXECUTABLE_NAME}" 2>/dev/null || true
+  pkill -9 -f "${DAILY_BOARD_APP_PROCESS_PATTERN}" 2>/dev/null || true
+  pkill -9 -f "${DAILY_BOARD_DEBUG_PROCESS_PATTERN}" 2>/dev/null || true
+  pkill -9 -f "${DAILY_BOARD_RELEASE_PROCESS_PATTERN}" 2>/dev/null || true
+  pkill -9 -x "${DAILY_BOARD_EXECUTABLE_NAME}" 2>/dev/null || true
+  pkill -9 -f "${LEGACY_DAILY_BOARD_APP_PROCESS_PATTERN}" 2>/dev/null || true
+  pkill -9 -f "${LEGACY_DAILY_BOARD_DEBUG_PROCESS_PATTERN}" 2>/dev/null || true
+  pkill -9 -f "${LEGACY_DAILY_BOARD_RELEASE_PROCESS_PATTERN}" 2>/dev/null || true
+  pkill -9 -x "${LEGACY_DAILY_BOARD_EXECUTABLE_NAME}" 2>/dev/null || true
 
   for _ in {1..25}; do
     if ! is_running; then
@@ -143,7 +199,7 @@ kill_all_codexbar() {
     sleep 0.2
   done
 
-  fail "Failed to kill all CodexBar instances."
+  fail "Failed to kill all ${APP_NAME} instances."
 }
 
 # 1) Ensure a single runner instance.
@@ -172,8 +228,8 @@ fi
 
 acquire_lock
 
-# 2) Kill all running CodexBar instances (debug, release, bundled).
-log "==> Killing existing CodexBar instances"
+# 2) Kill all running instances (debug, release, bundled).
+log "==> Killing existing ${APP_NAME} instances"
 kill_all_codexbar
 kill_claude_probes
 
@@ -181,9 +237,9 @@ kill_claude_probes
 # (adhoc signature changes on every build, making old keychain entries inaccessible)
 if [[ "${SIGNING_MODE:-adhoc}" == "adhoc" ]]; then
   log "==> Clearing keychain entries (adhoc signing)"
-  security delete-generic-password -s "com.steipete.CodexBar" 2>/dev/null || true
+  security delete-generic-password -s "${APP_BUNDLE_ID}" 2>/dev/null || true
   # Clear all keychain items for the app to avoid multiple prompts
-  while security delete-generic-password -s "com.steipete.CodexBar" 2>/dev/null; do
+  while security delete-generic-password -s "${APP_BUNDLE_ID}" 2>/dev/null; do
     :
   done
 fi
@@ -214,14 +270,14 @@ fi
 log "==> launch app"
 if ! open "${APP_BUNDLE}"; then
   log "WARN: launch app returned non-zero; falling back to direct binary launch."
-  "${APP_BUNDLE}/Contents/MacOS/CodexBar" >/dev/null 2>&1 &
+  "${APP_BUNDLE}/Contents/MacOS/${APP_EXECUTABLE_NAME}" >/dev/null 2>&1 &
   disown
 fi
 
 # 5) Verify the app stays up for at least a moment (launch can be >1s on some systems).
 for _ in {1..10}; do
   if pgrep -f "${APP_PROCESS_PATTERN}" >/dev/null 2>&1; then
-    log "OK: CodexBar is running."
+    log "OK: ${APP_NAME} is running."
     exit 0
   fi
   sleep 0.4

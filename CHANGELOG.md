@@ -1,58 +1,36 @@
 # Changelog
 
 ## Unreleased
+
+## 0.18.0-beta.4 — 2026-04-16
 ### Highlights
-- Add a merged-menu Overview tab with configurable providers and row-to-provider navigation (#416). @ratulsarna
-- Add an experimental option to suppress Claude Keychain prompts (#388).
-- Add OpenRouter provider for credit-based usage tracking (#396). Thanks @chountalas!
-- Add Ollama provider, including token-account support in Settings and CLI (#380). Thanks @CryptoSageSnr!
-- Add Kilo provider support with API/CLI source modes, widget integration, and pass/credit handling (#454). Built on work by @coreh.
-- Reduce CPU/energy regressions and JSONL scanner overhead in Codex/web usage paths (#402, #392). Thanks @bald-ai and @asonawalla!
-- Add Codex historical pace with risk forecasting, backfill, and zero-usage-day handling (#482, supersedes #438). Thanks @tristanmanchester!
+- Reframe the app as **CodexTokenBar**, a Codex / OpenAI-focused fork with a new token dashboard, quota surfaces, and release flow tuned for GitHub Releases.
+- Add the new **TokenBar** interface: quota cards, detailed token overview, compact numeric summary, recent 30-day and 48-hour charts, and human instruction activity tracking.
+- Add the **CodexDaily** companion app and shared token-history engine while keeping CodexTokenBar as the primary public app bundle.
+- Add first-class Codex token history, Spark quota, OpenAI dashboard scraping, browser-cookie gating, and shared usage refresh infrastructure.
 
-### Providers & Usage
-- Claude: surface rate-limit errors from the CLI `/usage` probe with a user-friendly message, and harden "Failed to load usage data" matching against whitespace-collapsed output.
-- Claude: restore weekly/Sonnet reset parsing from whitespace-collapsed CLI `/usage` output so reset times and pace details still appear after CLI fallback.
-- Codex: add historical pace risk forecasting and backfill, gate pace computation by display mode, and handle zero-usage days in historical data (#482, supersedes #438). Thanks @tristanmanchester!
-- OpenRouter: add provider support with credit tracking, key-quota popup support, token-account labels, fallback status icons, and updated icon/color (#396). Thanks @chountalas!
-- Ollama: add provider support with token-account support in app/CLI, Chrome-default auto cookie import, and manual-cookie mode (#380). Thanks @CryptoSageSnr!
-- Kilo: add provider support with source-mode fallback, clearer credential/login guidance, auto top-up activity labeling, zero-balance credit handling, and pass parsing/menu rendering (#454). Thanks @coreh!
-- Browser cookie import: match Gecko `*.default*` profile directories case-insensitively so Firefox/Zen cookie detection works with uppercase `.Default` directories (#422). Thanks @bald-ai!
-- MiniMax: make both Settings "Open Coding Plan" actions region-aware so China mainland selection opens `platform.minimaxi.com` instead of the global domain (#426, fixes #378). Thanks @bald-ai!
-- Codex: in percent display mode with "show remaining," show remaining credits in the menu bar when session or weekly usage is exhausted (#336). Thanks @teron131!
-- Claude: fix extra-usage double conversion so OAuth/Web values stay on a single normalization path (#472, supersedes #463). Thanks @Priyans-hu!
-- Copilot: harden free-plan quota parsing and fallback behavior by treating underdetermined values as unknown, preserving missing metadata as nil (#432, supersedes #393). Thanks @emanuelst!
-- Menu: rebuild the merged provider switcher when “Show usage as used” changes so switcher progress updates immediately (#306). Thanks @Flohhhhh!
-- Update Kiro parsing for `kiro-cli` 1.24+ / Q Developer formats and non-managed plan handling (#288). Thanks @kilhyeonjun!
-- Kimi: in automatic metric mode, prioritize the 5-hour rate-limit window for menu bar and merged highest-usage calculations (#390). Thanks @ajaxjiang96!
-- OpenCode: treat explicit `null` subscription responses as missing usage data, skip POST fallback, and return a clearer workspace-specific error (#412).
-- OpenCode: surface clearer HTTP errors. Thanks @SalimBinYousuf1!
-- Warp: update API key setup guidance.
-- Claude: update the "not installed" help link to the current Claude Code documentation URL (#431). Thanks @skebby11!
-- Fix Claude setup message package name (#376). Thanks @daegwang!
+### Product & UI
+- Introduce a new `TokenApp` menu bar experience with configurable dashboard modules, richer menu content, detailed charts, and numeric usage summaries.
+- Add a popup style preference for the main menu (`液态玻璃` or `系统 popover`) while preserving the current liquid-glass presentation as the default.
+- Rework quota cards, charts, and usage overview cards for clearer token, quota, and main-thread visibility.
+- Remove hover-only affordances from the detailed overview where they were adding noise instead of value.
 
-### Menu & Settings
-- Merged menu: add an Overview switcher tab that shows up to three provider usage rows in provider order (#416).
-- Settings: add "Overview tab providers" controls to choose/deselect Overview providers, with persisted selection reconciliation as enabled providers change (#416).
-- Menu: hide contextual provider actions while Overview is selected and rebuild switcher state when overview availability changes (#416).
+### Token history & quota
+- Add a dedicated token history engine, Codex session parsing, refresh scheduling, and shared presentation caching for smoother updates.
+- Switch Spark quota retrieval to the same structured Codex usage API path used for primary Codex quota, with webpage scraping only as fallback.
+- Align CodexDaily token history generation and refresh cadence with CodexTokenBar while keeping separate caches.
+- Add main-thread scoped charts and summaries for recent 30 days, recent 48 hours, and overview totals.
 
-### Claude OAuth & Keychain
-- Use a `claude-code/<version>` User-Agent for OAuth usage requests instead of a generic identifier.
-- Add an experimental Claude OAuth Security-CLI reader path and option in settings.
-- Apply stored prompt mode and fallback policy to silent/noninteractive keychain probes.
-- Add cooldown for background OAuth keychain retries.
-- Disable experimental toggle when keychain access is disabled.
+### Packaging & release
+- Rename packaging and runtime paths around `CodexTokenBar` and `CodexDaily`, including dedicated package/run scripts for each app.
+- Update signing, notarization, appcast, and GitHub Release scripts to work with the forked repository and CodexTokenBar naming.
+- Decouple `sign-and-notarize.sh` from Sparkle so a notarized GitHub Release zip can be produced without appcast setup.
+- Add release documentation for first-time GitHub Release publishing from a personal fork.
 
-### Performance & Reliability
-- Codex/OpenAI web: reduce CPU and energy overhead by shortening failed CLI probe windows, capping web retry timeouts, and using adaptive idle blink scheduling (#402). Thanks @bald-ai!
-- Cost usage scanner: optimize JSONL chunk parsing to avoid buffer-front removal overhead on large logs (#392). Thanks @asonawalla!
-- TTY runner: fence shutdown registration to avoid launch/shutdown races, isolate process groups before shutdown rejection, and ensure lingering CLI descendants are cleaned up on app termination (#429). Thanks @uraimo!
-
-### Dev & Tests
-- Run provider fetches and Claude debug OAuth probes off `MainActor`.
-- Split Claude OAuth test overrides and isolate coordinator tests.
-- Docs: explain pace tracking terminology in the UI guide, including "deficit", "reserve", and "on pace" meanings (#421). Thanks @bald-ai!
-
+### Docs & repo
+- Rewrite the README around the CodexTokenBar product focus and document upstream attribution for the fork.
+- Add UI scheme and release setup documentation for the new TokenBar experience and GitHub Release workflow.
+- Refresh development and packaging docs to cover CodexTokenBar/CodexDaily packaging and launch commands.
 
 ## 0.18.0-beta.3 — 2026-02-13
 ### Highlights

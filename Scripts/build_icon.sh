@@ -1,9 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ICON_FILE=${1:-Icon.icon}
-BASENAME=${2:-Icon}
-OUT_ROOT=${3:-build/icon}
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 XCODE_APP=${XCODE_APP:-/Applications/Xcode.app}
 
 ICTOOL="$XCODE_APP/Contents/Applications/Icon Composer.app/Contents/Executables/ictool"
@@ -15,35 +13,80 @@ if [[ ! -x "$ICTOOL" ]]; then
   exit 1
 fi
 
-ICONSET_DIR="$OUT_ROOT/${BASENAME}.iconset"
-TMP_DIR="$OUT_ROOT/tmp"
-mkdir -p "$ICONSET_DIR" "$TMP_DIR"
+build_icon() {
+  local icon_file="$1"
+  local basename="$2"
+  local out_root="$3"
+  local out_file="$4"
+  local iconset_dir="$out_root/${basename}.iconset"
+  local tmp_dir="$out_root/tmp"
 
-MASTER_ART="$TMP_DIR/icon_art_824.png"
-MASTER_1024="$TMP_DIR/icon_1024.png"
+  mkdir -p "$iconset_dir" "$tmp_dir"
 
-# Render inner art (no margin) with macOS Default appearance
-"$ICTOOL" "$ICON_FILE" \
-  --export-preview macOS Default 824 824 1 -45 "$MASTER_ART"
+  local master_art="$tmp_dir/icon_art_824.png"
+  local master_1024="$tmp_dir/icon_1024.png"
 
-# Pad to 1024x1024 with transparent border
-sips --padToHeightWidth 1024 1024 "$MASTER_ART" --out "$MASTER_1024" >/dev/null
+  "$ICTOOL" "$icon_file" \
+    --export-preview macOS Default 824 824 1 -45 "$master_art" >/dev/null
 
-# Generate required sizes
-sizes=(16 32 64 128 256 512 1024)
-for sz in "${sizes[@]}"; do
-  out="$ICONSET_DIR/icon_${sz}x${sz}.png"
-  sips -z "$sz" "$sz" "$MASTER_1024" --out "$out" >/dev/null
-  if [[ "$sz" -ne 1024 ]]; then
-    dbl=$((sz*2))
-    out2="$ICONSET_DIR/icon_${sz}x${sz}@2x.png"
-    sips -z "$dbl" "$dbl" "$MASTER_1024" --out "$out2" >/dev/null
-  fi
-done
+  sips --padToHeightWidth 1024 1024 "$master_art" --out "$master_1024" >/dev/null
 
-# 512x512@2x already covered by 1024; ensure it exists
-cp "$MASTER_1024" "$ICONSET_DIR/icon_512x512@2x.png"
+  local sizes=(16 32 64 128 256 512 1024)
+  for sz in "${sizes[@]}"; do
+    local out="$iconset_dir/icon_${sz}x${sz}.png"
+    sips -z "$sz" "$sz" "$master_1024" --out "$out" >/dev/null
+    if [[ "$sz" -ne 1024 ]]; then
+      local dbl=$((sz * 2))
+      local out2="$iconset_dir/icon_${sz}x${sz}@2x.png"
+      sips -z "$dbl" "$dbl" "$master_1024" --out "$out2" >/dev/null
+    fi
+  done
 
-iconutil -c icns "$ICONSET_DIR" -o Icon.icns
+  cp "$master_1024" "$iconset_dir/icon_512x512@2x.png"
+  iconutil -c icns "$iconset_dir" -o "$out_file"
+  echo "Generated $out_file"
+}
 
-echo "Icon.icns generated at $(pwd)/Icon.icns"
+build_named_icon() {
+  local app_name="$1"
+  local icon_file=""
+  case "$app_name" in
+    CodexTokenBar)
+      icon_file="$ROOT/AppIcons/CodexTokenBar.icon"
+      ;;
+    CodexDaily)
+      icon_file="$ROOT/AppIcons/CodexDailyBoard.icon"
+      ;;
+    *)
+      echo "Unknown icon target: $app_name" >&2
+      exit 1
+      ;;
+  esac
+
+  local out_root="$ROOT/build/icon/$app_name"
+  local out_file="$out_root/Icon.icns"
+  build_icon "$icon_file" "$app_name" "$out_root" "$out_file"
+}
+
+if [[ $# -eq 0 ]]; then
+  build_named_icon "CodexTokenBar"
+  build_named_icon "CodexDaily"
+  cp "$ROOT/build/icon/CodexTokenBar/Icon.icns" "$ROOT/Icon.icns"
+  exit 0
+fi
+
+case "${1:-}" in
+  CodexTokenBar|CodexDaily)
+    build_named_icon "$1"
+    if [[ "$1" == "CodexTokenBar" ]]; then
+      cp "$ROOT/build/icon/CodexTokenBar/Icon.icns" "$ROOT/Icon.icns"
+    fi
+    exit 0
+    ;;
+esac
+
+ICON_FILE="$1"
+BASENAME="${2:-Icon}"
+OUT_ROOT="${3:-$ROOT/build/icon/$BASENAME}"
+OUT_FILE="${4:-$OUT_ROOT/Icon.icns}"
+build_icon "$ICON_FILE" "$BASENAME" "$OUT_ROOT" "$OUT_FILE"

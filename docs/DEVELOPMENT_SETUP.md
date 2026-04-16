@@ -98,7 +98,7 @@ This script:
 2. Runs `swift build` (release mode)
 3. Runs `swift test` (all tests)
 4. Packages the app with `./Scripts/package_app.sh`
-5. Launches `CodexBar.app`
+5. Launches `/Applications/CodexTokenBar.app`
 6. Verifies it stays running
 
 ### Quick Build (No Tests)
@@ -160,5 +160,5 @@ Or manually:
 ```bash
 ./Scripts/package_app.sh
 pkill -x CodexBar || pkill -f CodexBar.app || true
-open -n CodexBar.app
+open -n /Applications/CodexTokenBar.app
 ```

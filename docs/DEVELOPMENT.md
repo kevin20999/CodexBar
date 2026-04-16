@@ -19,6 +19,12 @@ read_when:
 # Just build and package (no tests)
 ./Scripts/package_app.sh
 
+# CodexDaily only: build, package, and launch without touching CodexTokenBar
+./Scripts/compile_and_run_codexdaily.sh
+
+# CodexDaily only: just package/install CodexDaily.app
+./Scripts/package_codexdaily.sh
+
 # Launch existing app (no rebuild)
 ./Scripts/launch.sh
 ```
@@ -133,7 +139,8 @@ swiftlint --strict
 ### Local Development Build
 ```bash
 ./Scripts/package_app.sh
-# Creates: CodexBar.app (ad-hoc signed)
+# Stages: .build/apps/CodexTokenBar.app
+# Installs: /Applications/CodexTokenBar.app (ad-hoc signed)
 ```
 
 ### Release Build (Notarized)

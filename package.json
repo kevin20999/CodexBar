@@ -14,6 +14,7 @@
     "test:tty": "swift test --filter TTYIntegrationTests",
     "test:live": "LIVE_TEST=1 swift test --filter LiveAccountTests",
     "release": "./Scripts/package_app.sh release",
+    "clean:local": "./Scripts/clean_local_artifacts.sh",
     "restart": "pnpm start",
     "stop": "pkill -x CodexBar || pkill -f CodexBar.app || true"
   }

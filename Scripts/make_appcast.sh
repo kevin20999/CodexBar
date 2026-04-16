@@ -2,11 +2,44 @@
 set -euo pipefail
 
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
+APP_NAME="${CODEXBAR_APP_NAME:-CodexTokenBar}"
+
+resolve_release_repo() {
+  if [[ -n "${CODEXBAR_RELEASE_REPO:-}" ]]; then
+    printf '%s\n' "$CODEXBAR_RELEASE_REPO"
+    return 0
+  fi
+
+  local remote_url
+  remote_url=$(git remote get-url origin 2>/dev/null || true)
+  case "$remote_url" in
+    https://github.com/*)
+      remote_url="${remote_url#https://github.com/}"
+      remote_url="${remote_url%.git}"
+      printf '%s\n' "$remote_url"
+      return 0
+      ;;
+    git@github.com:*)
+      remote_url="${remote_url#git@github.com:}"
+      remote_url="${remote_url%.git}"
+      printf '%s\n' "$remote_url"
+      return 0
+      ;;
+  esac
+  return 1
+}
+
 ZIP=${1:?
-"Usage: $0 CodexBar-<ver>.zip"}
-FEED_URL=${2:-"https://raw.githubusercontent.com/steipete/CodexBar/main/appcast.xml"}
+"Usage: $0 ${APP_NAME}-<ver>.zip"}
+RELEASE_REPO="$(resolve_release_repo || true)"
+APPCAST_BRANCH="${CODEXBAR_APPCAST_BRANCH:-main}"
+FEED_URL=${2:-${CODEXBAR_APPCAST_FEED_URL:-}}
 PRIVATE_KEY_FILE=${SPARKLE_PRIVATE_KEY_FILE:-}
 SPARKLE_CHANNEL=${SPARKLE_CHANNEL:-}
+
+if [[ -z "$FEED_URL" && -n "$RELEASE_REPO" ]]; then
+  FEED_URL="https://raw.githubusercontent.com/${RELEASE_REPO}/${APPCAST_BRANCH}/appcast.xml"
+fi
 if [[ -z "$PRIVATE_KEY_FILE" ]]; then
   echo "Set SPARKLE_PRIVATE_KEY_FILE to your ed25519 private key (Sparkle)." >&2
   exit 1
@@ -21,8 +54,10 @@ ZIP_NAME=$(basename "$ZIP")
 ZIP_BASE="${ZIP_NAME%.zip}"
 VERSION=${SPARKLE_RELEASE_VERSION:-}
 if [[ -z "$VERSION" ]]; then
-  if [[ "$ZIP_NAME" =~ ^CodexBar-([0-9]+(\.[0-9]+){1,2}([-.][^.]*)?)\.zip$ ]]; then
-    VERSION="${BASH_REMATCH[1]}"
+  local_prefix="${APP_NAME}-"
+  if [[ "$ZIP_NAME" == "${local_prefix}"*.zip ]]; then
+    VERSION="${ZIP_NAME#${local_prefix}}"
+    VERSION="${VERSION%.zip}"
   else
     echo "Could not infer version from $ZIP_NAME; set SPARKLE_RELEASE_VERSION." >&2
     exit 1
@@ -37,6 +72,10 @@ else
   echo "Missing Scripts/changelog-to-html.sh; cannot generate HTML release notes." >&2
   exit 1
 fi
+if [[ -z "$FEED_URL" ]]; then
+  echo "Could not infer feed URL. Pass it as the second argument or set CODEXBAR_APPCAST_FEED_URL." >&2
+  exit 1
+fi
 cleanup() {
   if [[ -n "${WORK_DIR:-}" ]]; then
     rm -rf "$WORK_DIR"
@@ -47,7 +86,14 @@ cleanup() {
 }
 trap cleanup EXIT
 
-DOWNLOAD_URL_PREFIX=${SPARKLE_DOWNLOAD_URL_PREFIX:-"https://github.com/steipete/CodexBar/releases/download/v${VERSION}/"}
+DOWNLOAD_URL_PREFIX=${SPARKLE_DOWNLOAD_URL_PREFIX:-}
+if [[ -z "$DOWNLOAD_URL_PREFIX" && -n "$RELEASE_REPO" ]]; then
+  DOWNLOAD_URL_PREFIX="https://github.com/${RELEASE_REPO}/releases/download/v${VERSION}/"
+fi
+if [[ -z "$DOWNLOAD_URL_PREFIX" ]]; then
+  echo "Could not infer download URL prefix. Set SPARKLE_DOWNLOAD_URL_PREFIX or CODEXBAR_RELEASE_REPO." >&2
+  exit 1
+fi
 
 # Sparkle provides generate_appcast; ensure it's on PATH (via SwiftPM build of Sparkle's bin) or Xcode dmg
 if ! command -v generate_appcast >/dev/null; then
@@ -55,7 +101,7 @@ if ! command -v generate_appcast >/dev/null; then
   exit 1
 fi
 
-WORK_DIR=$(mktemp -d /tmp/codexbar-appcast.XXXXXX)
+WORK_DIR=$(mktemp -d /tmp/codextokenbar-appcast.XXXXXX)
 
 cp "$ROOT/appcast.xml" "$WORK_DIR/appcast.xml"
 cp "$ZIP" "$WORK_DIR/$ZIP_NAME"

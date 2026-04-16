@@ -212,8 +212,8 @@ extension SettingsStore {
         let showOptionalCreditsAndExtraUsage = creditsExtrasDefault ?? true
         if creditsExtrasDefault == nil { userDefaults.set(true, forKey: "showOptionalCreditsAndExtraUsage") }
         let openAIWebAccessDefault = userDefaults.object(forKey: "openAIWebAccessEnabled") as? Bool
-        let openAIWebAccessEnabled = openAIWebAccessDefault ?? true
-        if openAIWebAccessDefault == nil { userDefaults.set(true, forKey: "openAIWebAccessEnabled") }
+        let openAIWebAccessEnabled = openAIWebAccessDefault ?? false
+        if openAIWebAccessDefault == nil { userDefaults.set(false, forKey: "openAIWebAccessEnabled") }
         let jetbrainsIDEBasePath = userDefaults.string(forKey: "jetbrainsIDEBasePath") ?? ""
         let mergeIcons = userDefaults.object(forKey: "mergeIcons") as? Bool ?? true
         let switcherShowsIcons = userDefaults.object(forKey: "switcherShowsIcons") as? Bool ?? true

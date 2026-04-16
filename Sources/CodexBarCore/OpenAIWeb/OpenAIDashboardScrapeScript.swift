@@ -375,12 +375,26 @@ let openAIDashboardScrapeScript = """
       ].join(', ');
       const hasAuthInputs = !!document.querySelector(authSelector);
       const lower = bodyText.toLowerCase();
+      const includesAny = (haystack, needles) => needles.some(needle => haystack.includes(needle));
       const loginCTA =
-        lower.includes('sign in') ||
-        lower.includes('log in') ||
-        lower.includes('continue with google') ||
-        lower.includes('continue with apple') ||
-        lower.includes('continue with microsoft');
+        includesAny(lower, [
+          'sign in',
+          'log in',
+          'login',
+          'sign up',
+          'continue with google',
+          'continue with apple',
+          'continue with microsoft',
+          '登录',
+          '登入',
+          '免费注册',
+          '註冊',
+          '注册',
+          'ログイン',
+          'サインイン',
+          '無料登録',
+          '新規登録'
+        ]);
       const loginRequired =
         href.includes('/auth/') ||
         href.includes('/login') ||

@@ -85,7 +85,7 @@ struct CodexProviderImplementation: ProviderImplementation {
             ProviderSettingsToggleDescriptor(
                 id: "codex-openai-web-extras",
                 title: "OpenAI web extras",
-                subtitle: "Show usage breakdown, credits history, and code review via chatgpt.com.",
+                subtitle: "Optional chatgpt.com extras. Remaining quota still comes from OAuth/CLI; enabling this may access browser cookies.",
                 binding: extrasBinding,
                 statusText: nil,
                 actions: [],
@@ -114,13 +114,15 @@ struct CodexProviderImplementation: ProviderImplementation {
         }
         let cookieOptions = ProviderCookieSourceUI.options(
             allowsOff: true,
-            keychainDisabled: context.settings.debugDisableKeychainAccess)
+            keychainDisabled: context.settings.debugDisableKeychainAccess,
+            allowsSafari: true)
 
         let cookieSubtitle: () -> String? = {
             ProviderCookieSourceUI.subtitle(
                 source: context.settings.codexCookieSource,
                 keychainDisabled: context.settings.debugDisableKeychainAccess,
-                auto: "Automatic imports browser cookies for dashboard extras.",
+                auto: "Automatic imports browser cookies for dashboard extras and may show a macOS Keychain prompt.",
+                safari: "Only imports Safari browser cookies for dashboard extras.",
                 manual: "Paste a Cookie header from a chatgpt.com request.",
                 off: "Disable OpenAI dashboard cookie usage.")
         }
@@ -142,7 +144,7 @@ struct CodexProviderImplementation: ProviderImplementation {
             ProviderSettingsPickerDescriptor(
                 id: "codex-cookie-source",
                 title: "OpenAI cookies",
-                subtitle: "Automatic imports browser cookies for dashboard extras.",
+                subtitle: "Browser-cookie import is opt-in and only used for OpenAI web extras.",
                 dynamicSubtitle: cookieSubtitle,
                 binding: cookieBinding,
                 options: cookieOptions,

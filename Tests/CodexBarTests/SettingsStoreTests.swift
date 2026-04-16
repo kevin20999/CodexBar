@@ -611,7 +611,7 @@ struct SettingsStoreTests {
     }
 
     @Test
-    func defaultsOpenAIWebAccessToEnabled() throws {
+    func defaultsOpenAIWebAccessToDisabled() throws {
         let suite = "SettingsStoreTests-openai-web"
         let defaults = try #require(UserDefaults(suiteName: suite))
         defaults.removePersistentDomain(forName: suite)
@@ -624,9 +624,9 @@ struct SettingsStoreTests {
             zaiTokenStore: NoopZaiTokenStore(),
             syntheticTokenStore: NoopSyntheticTokenStore())
 
-        #expect(store.openAIWebAccessEnabled == true)
-        #expect(defaults.bool(forKey: "openAIWebAccessEnabled") == true)
-        #expect(store.codexCookieSource == .auto)
+        #expect(store.openAIWebAccessEnabled == false)
+        #expect(defaults.bool(forKey: "openAIWebAccessEnabled") == false)
+        #expect(store.codexCookieSource == .off)
     }
 
     @Test

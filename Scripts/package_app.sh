@@ -6,8 +6,31 @@ SIGNING_MODE=${CODEXBAR_SIGNING:-}
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
 cd "$ROOT"
 
+export HOME="${CODEXBAR_HOME:-$ROOT/.home}"
+export CLANG_MODULE_CACHE_PATH="${CLANG_MODULE_CACHE_PATH:-$ROOT/.build/modulecache}"
+export SWIFT_MODULECACHE_PATH="${SWIFT_MODULECACHE_PATH:-$CLANG_MODULE_CACHE_PATH}"
+mkdir -p "$HOME" "$CLANG_MODULE_CACHE_PATH"
+if [[ -z "${DEVELOPER_DIR:-}" ]] && [[ -d "/Applications/Xcode.app/Contents/Developer" ]]; then
+  export DEVELOPER_DIR="/Applications/Xcode.app/Contents/Developer"
+fi
+
 # Load version info
 source "$ROOT/version.env"
+APP_DISPLAY_NAME="${CODEXBAR_APP_NAME:-CodexTokenBar}"
+APP_EXECUTABLE_NAME="${CODEXBAR_EXECUTABLE_NAME:-CodexTokenBar}"
+APP_BUNDLE_NAME="${CODEXBAR_APP_BUNDLE:-${APP_DISPLAY_NAME}.app}"
+APP_STAGING_DIR="${CODEXBAR_APP_STAGING_DIR:-$ROOT/.build/apps}"
+APP_INSTALL_PATH="${CODEXBAR_INSTALL_PATH:-/Applications/${APP_BUNDLE_NAME}}"
+BUNDLE_ID_BASE="${CODEXBAR_BUNDLE_ID:-com.kevin.codextokenbar}"
+DAILY_BOARD_APP_DISPLAY_NAME="${CODEXBAR_DAILY_BOARD_APP_NAME:-CodexDaily}"
+DAILY_BOARD_EXECUTABLE_NAME="${CODEXBAR_DAILY_BOARD_EXECUTABLE_NAME:-CodexDaily}"
+DAILY_BOARD_BUNDLE_NAME="${CODEXBAR_DAILY_BOARD_APP_BUNDLE:-${DAILY_BOARD_APP_DISPLAY_NAME}.app}"
+DAILY_BOARD_BUNDLE_ID_BASE="${CODEXBAR_DAILY_BOARD_BUNDLE_ID:-com.kevin.codexdaily}"
+DAILY_BOARD_STAGING_PATH="${APP_STAGING_DIR}/${DAILY_BOARD_BUNDLE_NAME}"
+DAILY_BOARD_INSTALL_PATH="${CODEXBAR_DAILY_BOARD_INSTALL_PATH:-/Applications/${DAILY_BOARD_BUNDLE_NAME}}"
+LEGACY_DAILY_BOARD_STAGING_PATH="${APP_STAGING_DIR}/CodexTokenBar Daily Board.app"
+PACKAGE_MAIN_APP="${CODEXBAR_PACKAGE_MAIN_APP:-1}"
+PACKAGE_DAILY_APP="${CODEXBAR_PACKAGE_DAILY_APP:-1}"
 
 # Clean build only when explicitly requested (slower).
 if [[ "${CODEXBAR_FORCE_CLEAN:-0}" == "1" ]]; then
@@ -32,6 +55,11 @@ if [[ ${#ARCH_LIST[@]} -eq 0 ]]; then
     x86_64) ARCH_LIST=(x86_64) ;;
     *) ARCH_LIST=("$HOST_ARCH") ;;
   esac
+fi
+
+if [[ "${PACKAGE_MAIN_APP}" != "1" && "${PACKAGE_DAILY_APP}" != "1" ]]; then
+  echo "ERROR: At least one of CODEXBAR_PACKAGE_MAIN_APP or CODEXBAR_PACKAGE_DAILY_APP must be enabled." >&2
+  exit 1
 fi
 
 patch_keyboard_shortcuts() {
@@ -100,47 +128,38 @@ PY
 
 KEYBOARD_SHORTCUTS_UTIL="$ROOT/.build/checkouts/KeyboardShortcuts/Sources/KeyboardShortcuts/Utilities.swift"
 if [[ ! -f "$KEYBOARD_SHORTCUTS_UTIL" ]]; then
-  swift build -c "$CONF" --arch "${ARCH_LIST[0]}"
+  bootstrap_product="CodexBar"
+  if [[ "${PACKAGE_MAIN_APP}" != "1" && "${PACKAGE_DAILY_APP}" == "1" ]]; then
+    bootstrap_product="CodexDaily"
+  fi
+  swift build -c "$CONF" --arch "${ARCH_LIST[0]}" --product "${bootstrap_product}"
 fi
 patch_keyboard_shortcuts
 
 for ARCH in "${ARCH_LIST[@]}"; do
-  swift build -c "$CONF" --arch "$ARCH"
+  if [[ "${PACKAGE_MAIN_APP}" == "1" ]]; then
+    swift build -c "$CONF" --arch "$ARCH" --product CodexBar
+  fi
+  if [[ "${PACKAGE_DAILY_APP}" == "1" ]]; then
+    swift build -c "$CONF" --arch "$ARCH" --product CodexDaily
+  fi
 done
 
-APP="$ROOT/CodexBar.app"
-rm -rf "$APP"
-mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources" "$APP/Contents/Frameworks"
-mkdir -p "$APP/Contents/Helpers" "$APP/Contents/PlugIns"
+APP_STAGING_PATH="${APP_STAGING_DIR}/${APP_BUNDLE_NAME}"
+mkdir -p "$APP_STAGING_DIR"
+rm -rf "$APP_STAGING_PATH" "$DAILY_BOARD_STAGING_PATH" "$LEGACY_DAILY_BOARD_STAGING_PATH"
 
-# Convert new .icon bundle to .icns if present (macOS 14+/IconStudio export)
-ICON_SOURCE="$ROOT/Icon.icon"
-ICON_TARGET="$ROOT/Icon.icns"
-if [[ -f "$ICON_SOURCE" ]]; then
-  iconutil --convert icns --output "$ICON_TARGET" "$ICON_SOURCE"
-fi
+TOKENBAR_ICON_TARGET="$ROOT/build/icon/CodexTokenBar/Icon.icns"
+DAILY_BOARD_ICON_TARGET="$ROOT/build/icon/CodexDaily/Icon.icns"
+"$ROOT/Scripts/build_icon.sh" >/dev/null
 
-BUNDLE_ID="com.steipete.codexbar"
-FEED_URL="https://raw.githubusercontent.com/steipete/CodexBar/main/appcast.xml"
-AUTO_CHECKS=true
+BUNDLE_ID="$BUNDLE_ID_BASE"
 LOWER_CONF=$(printf "%s" "$CONF" | tr '[:upper:]' '[:lower:]')
 if [[ "$LOWER_CONF" == "debug" ]]; then
-  BUNDLE_ID="com.steipete.codexbar.debug"
-  FEED_URL=""
-  AUTO_CHECKS=false
-fi
-if [[ "$SIGNING_MODE" == "adhoc" ]]; then
-  FEED_URL=""
-  AUTO_CHECKS=false
-fi
-WIDGET_BUNDLE_ID="${BUNDLE_ID}.widget"
-APP_GROUP_ID="group.com.steipete.codexbar"
-if [[ "$BUNDLE_ID" == *".debug"* ]]; then
-  APP_GROUP_ID="group.com.steipete.codexbar.debug"
+  BUNDLE_ID="${BUNDLE_ID_BASE}.debug"
 fi
 ENTITLEMENTS_DIR="$ROOT/.build/entitlements"
 APP_ENTITLEMENTS="${ENTITLEMENTS_DIR}/CodexBar.entitlements"
-WIDGET_ENTITLEMENTS="${ENTITLEMENTS_DIR}/CodexBarWidget.entitlements"
 mkdir -p "$ENTITLEMENTS_DIR"
 if [[ "$ALLOW_LLDB" == "1" && "$LOWER_CONF" != "debug" ]]; then
   echo "ERROR: CODEXBAR_ALLOW_LLDB requires debug configuration" >&2
@@ -151,55 +170,12 @@ cat > "$APP_ENTITLEMENTS" <<PLIST
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>com.apple.security.application-groups</key>
-    <array>
-        <string>${APP_GROUP_ID}</string>
-    </array>
     $(if [[ "$ALLOW_LLDB" == "1" ]]; then echo "    <key>com.apple.security.get-task-allow</key><true/>"; fi)
-</dict>
-</plist>
-PLIST
-cat > "$WIDGET_ENTITLEMENTS" <<PLIST
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-    <key>com.apple.security.app-sandbox</key>
-    <true/>
-    <key>com.apple.security.application-groups</key>
-    <array>
-        <string>${APP_GROUP_ID}</string>
-    </array>
 </dict>
 </plist>
 PLIST
 BUILD_TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 GIT_COMMIT=$(git rev-parse --short HEAD 2>/dev/null || echo "unknown")
-
-cat > "$APP/Contents/Info.plist" <<PLIST
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-    <key>CFBundleName</key><string>CodexBar</string>
-    <key>CFBundleDisplayName</key><string>CodexBar</string>
-    <key>CFBundleIdentifier</key><string>${BUNDLE_ID}</string>
-    <key>CFBundleExecutable</key><string>CodexBar</string>
-    <key>CFBundlePackageType</key><string>APPL</string>
-    <key>CFBundleShortVersionString</key><string>${MARKETING_VERSION}</string>
-    <key>CFBundleVersion</key><string>${BUILD_NUMBER}</string>
-    <key>LSMinimumSystemVersion</key><string>14.0</string>
-    <key>LSUIElement</key><true/>
-    <key>CFBundleIconFile</key><string>Icon</string>
-    <key>NSHumanReadableCopyright</key><string>© 2025 Peter Steinberger. MIT License.</string>
-    <key>SUFeedURL</key><string>${FEED_URL}</string>
-    <key>SUPublicEDKey</key><string>AGCY8w5vHirVfGGDGc8Szc5iuOqupZSh9pMj/Qs67XI=</string>
-    <key>SUEnableAutomaticChecks</key><${AUTO_CHECKS}/>
-    <key>CodexBuildTimestamp</key><string>${BUILD_TIMESTAMP}</string>
-    <key>CodexGitCommit</key><string>${GIT_COMMIT}</string>
-</dict>
-</plist>
-PLIST
 
 build_product_path() {
   local name="$1"
@@ -223,6 +199,28 @@ resolve_binary_path() {
   if [[ "$arch" == "arm64" || "$arch" == "x86_64" ]] && [[ -f ".build/$CONF/$name" ]]; then
     echo ".build/$CONF/$name"
   fi
+}
+
+resolve_codesign_identity() {
+  local requested_identity="${CODEXBAR_SIGNING_IDENTITY:-${APP_IDENTITY:-}}"
+  if [[ -n "$requested_identity" ]]; then
+    printf '%s\n' "$requested_identity"
+    return 0
+  fi
+
+  local detected_identity
+  detected_identity=$(
+    security find-identity -v -p codesigning 2>/dev/null |
+      sed -n 's/.*"\(Developer ID Application:[^"]*\)".*/\1/p' |
+      head -n 1
+  )
+  if [[ -n "$detected_identity" ]]; then
+    printf '%s\n' "$detected_identity"
+    return 0
+  fi
+
+  echo "ERROR: No Developer ID Application identity found. Set CODEXBAR_SIGNING_IDENTITY/APP_IDENTITY or use CODEXBAR_SIGNING=adhoc." >&2
+  return 1
 }
 
 verify_binary_arches() {
@@ -266,49 +264,6 @@ install_binary() {
   chmod +x "$dest"
   verify_binary_arches "$dest" "${ARCH_LIST[@]}"
 }
-
-install_binary "CodexBar" "$APP/Contents/MacOS/CodexBar"
-# Ship CodexBarCLI alongside the app for easy symlinking.
-if [[ -n "$(resolve_binary_path "CodexBarCLI" "${ARCH_LIST[0]}")" ]]; then
-  install_binary "CodexBarCLI" "$APP/Contents/Helpers/CodexBarCLI"
-fi
-# Watchdog helper: ensures `claude` probes die when CodexBar crashes/gets killed.
-if [[ -n "$(resolve_binary_path "CodexBarClaudeWatchdog" "${ARCH_LIST[0]}")" ]]; then
-  install_binary "CodexBarClaudeWatchdog" "$APP/Contents/Helpers/CodexBarClaudeWatchdog"
-fi
-if [[ -n "$(resolve_binary_path "CodexBarWidget" "${ARCH_LIST[0]}")" ]]; then
-  WIDGET_APP="$APP/Contents/PlugIns/CodexBarWidget.appex"
-  mkdir -p "$WIDGET_APP/Contents/MacOS" "$WIDGET_APP/Contents/Resources"
-  cat > "$WIDGET_APP/Contents/Info.plist" <<PLIST
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-    <key>CFBundleName</key><string>CodexBarWidget</string>
-    <key>CFBundleDisplayName</key><string>CodexBar</string>
-    <key>CFBundleIdentifier</key><string>${WIDGET_BUNDLE_ID}</string>
-    <key>CFBundleExecutable</key><string>CodexBarWidget</string>
-    <key>CFBundlePackageType</key><string>XPC!</string>
-    <key>CFBundleShortVersionString</key><string>${MARKETING_VERSION}</string>
-    <key>CFBundleVersion</key><string>${BUILD_NUMBER}</string>
-    <key>LSMinimumSystemVersion</key><string>14.0</string>
-    <key>NSExtension</key>
-    <dict>
-        <key>NSExtensionPointIdentifier</key><string>com.apple.widgetkit-extension</string>
-        <key>NSExtensionPrincipalClass</key><string>CodexBarWidget.CodexBarWidgetBundle</string>
-    </dict>
-</dict>
-</plist>
-PLIST
-  install_binary "CodexBarWidget" "$WIDGET_APP/Contents/MacOS/CodexBarWidget"
-fi
-# Embed Sparkle.framework
-if [[ -d ".build/$CONF/Sparkle.framework" ]]; then
-  cp -R ".build/$CONF/Sparkle.framework" "$APP/Contents/Frameworks/"
-  chmod -R a+rX "$APP/Contents/Frameworks/Sparkle.framework"
-  install_name_tool -add_rpath "@executable_path/../Frameworks" "$APP/Contents/MacOS/CodexBar"
-  # Re-sign Sparkle and all nested components with Developer ID + timestamp
-  SPARKLE="$APP/Contents/Frameworks/Sparkle.framework"
 if [[ "$SIGNING_MODE" == "adhoc" ]]; then
   CODESIGN_ID="-"
   CODESIGN_ARGS=(--force --sign "$CODESIGN_ID")
@@ -316,84 +271,168 @@ elif [[ "$ALLOW_LLDB" == "1" ]]; then
   CODESIGN_ID="-"
   CODESIGN_ARGS=(--force --sign "$CODESIGN_ID")
 else
-  CODESIGN_ID="${APP_IDENTITY:-Developer ID Application: Peter Steinberger (Y5PE65HELJ)}"
+  CODESIGN_ID="$(resolve_codesign_identity)"
   CODESIGN_ARGS=(--force --timestamp --options runtime --sign "$CODESIGN_ID")
-fi
-function resign() { codesign "${CODESIGN_ARGS[@]}" "$1"; }
-  # Sign innermost binaries first, then the framework root to seal resources
-  resign "$SPARKLE"
-  resign "$SPARKLE/Versions/B/Sparkle"
-  resign "$SPARKLE/Versions/B/Autoupdate"
-  resign "$SPARKLE/Versions/B/Updater.app"
-  resign "$SPARKLE/Versions/B/Updater.app/Contents/MacOS/Updater"
-  resign "$SPARKLE/Versions/B/XPCServices/Downloader.xpc"
-  resign "$SPARKLE/Versions/B/XPCServices/Downloader.xpc/Contents/MacOS/Downloader"
-  resign "$SPARKLE/Versions/B/XPCServices/Installer.xpc"
-  resign "$SPARKLE/Versions/B/XPCServices/Installer.xpc/Contents/MacOS/Installer"
-  resign "$SPARKLE/Versions/B"
-  resign "$SPARKLE"
-fi
-
-if [[ -f "$ICON_TARGET" ]]; then
-  cp "$ICON_TARGET" "$APP/Contents/Resources/Icon.icns"
 fi
 
 # Bundle app resources (provider icons, etc.).
 APP_RESOURCES_DIR="$ROOT/Sources/CodexBar/Resources"
-if [[ -d "$APP_RESOURCES_DIR" ]]; then
-  cp -R "$APP_RESOURCES_DIR/." "$APP/Contents/Resources/"
-fi
-if [[ ! -f "$APP/Contents/Resources/Icon-classic.icns" ]]; then
-  echo "ERROR: Missing Icon-classic.icns in app bundle resources." >&2
-  exit 1
-fi
 
-# SwiftPM resource bundles (e.g. KeyboardShortcuts) are emitted next to the built binary.
-CODEXBAR_BINARY="$(resolve_binary_path "CodexBar" "${ARCH_LIST[0]}")"
-PREFERRED_BUILD_DIR="$(dirname "${CODEXBAR_BINARY:-$(build_product_path "CodexBar" "${ARCH_LIST[0]}")}")"
-shopt -s nullglob
-SWIFTPM_BUNDLES=("${PREFERRED_BUILD_DIR}/"*.bundle)
-shopt -u nullglob
-if [[ ${#SWIFTPM_BUNDLES[@]} -gt 0 ]]; then
-  for bundle in "${SWIFTPM_BUNDLES[@]}"; do
-    bundle_name="$(basename "$bundle")"
-    cp -R "$bundle" "$APP/Contents/Resources/"
+create_app_bundle() {
+  local app_path="$1"
+  local display_name="$2"
+  local executable_name="$3"
+  local product_name="$4"
+  local bundle_id="$5"
+  local lsui_element="$6"
+  local icon_source="$7"
+
+  mkdir -p "$app_path/Contents/MacOS" "$app_path/Contents/Resources" "$app_path/Contents/Frameworks"
+  mkdir -p "$app_path/Contents/Helpers"
+
+  cat > "$app_path/Contents/Info.plist" <<PLIST
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleName</key><string>${display_name}</string>
+    <key>CFBundleDisplayName</key><string>${display_name}</string>
+    <key>CFBundleIdentifier</key><string>${bundle_id}</string>
+    <key>CFBundleExecutable</key><string>${executable_name}</string>
+    <key>CFBundlePackageType</key><string>APPL</string>
+    <key>CFBundleShortVersionString</key><string>${MARKETING_VERSION}</string>
+    <key>CFBundleVersion</key><string>${BUILD_NUMBER}</string>
+    <key>LSMinimumSystemVersion</key><string>14.0</string>
+    <key>LSUIElement</key><${lsui_element}/>
+    <key>CFBundleIconFile</key><string>Icon</string>
+    <key>NSHumanReadableCopyright</key><string>© 2025 Peter Steinberger. MIT License.</string>
+    <key>CodexBuildTimestamp</key><string>${BUILD_TIMESTAMP}</string>
+    <key>CodexGitCommit</key><string>${GIT_COMMIT}</string>
+</dict>
+</plist>
+PLIST
+
+  install_binary "$product_name" "$app_path/Contents/MacOS/${executable_name}"
+
+  if [[ -f "$icon_source" ]]; then
+    cp "$icon_source" "$app_path/Contents/Resources/Icon.icns"
+  else
+    echo "ERROR: Missing icon source at $icon_source" >&2
+    exit 1
+  fi
+
+  if [[ "$product_name" == "CodexBar" && -d "$APP_RESOURCES_DIR" ]]; then
+    cp -R "$APP_RESOURCES_DIR/." "$app_path/Contents/Resources/"
+  fi
+  if [[ "$product_name" == "CodexBar" && ! -f "$app_path/Contents/Resources/Icon-classic.icns" ]]; then
+    echo "ERROR: Missing Icon-classic.icns in app bundle resources." >&2
+    exit 1
+  fi
+
+  local built_binary preferred_build_dir
+  built_binary="$(resolve_binary_path "$product_name" "${ARCH_LIST[0]}")"
+  preferred_build_dir="$(dirname "${built_binary:-$(build_product_path "$product_name" "${ARCH_LIST[0]}")}")"
+  shopt -s nullglob
+  local swiftpm_bundles=("${preferred_build_dir}/"*.bundle)
+  shopt -u nullglob
+  if [[ ${#swiftpm_bundles[@]} -gt 0 ]]; then
+    for bundle in "${swiftpm_bundles[@]}"; do
+      local bundle_name
+      bundle_name="$(basename "$bundle")"
+      if [[ "$product_name" == "CodexBar" ]]; then
+        case "$bundle_name" in
+          *CodexDailyKit.bundle|*CodexDailyBoardShared.bundle|CodexDaily_*)
+            continue
+            ;;
+        esac
+      elif [[ "$product_name" == "CodexDaily" ]]; then
+        case "$bundle_name" in
+          *CodexDailyKit.bundle)
+            ;;
+          *)
+            continue
+            ;;
+        esac
+      fi
+      cp -R "$bundle" "$app_path/Contents/Resources/"
+    done
+  fi
+
+  chmod -R u+w "$app_path"
+  xattr -cr "$app_path"
+  find "$app_path" -name '._*' -delete
+
+  codesign "${CODESIGN_ARGS[@]}" \
+    --entitlements "$APP_ENTITLEMENTS" \
+    "$app_path"
+
+  echo "Created $app_path"
+}
+
+install_app_bundle() {
+  local source_path="$1"
+  local install_path="$2"
+  local executable_name="$3"
+  local temp_path="${install_path}.tmp.$$"
+
+  mkdir -p "$(dirname "$install_path")"
+  rm -rf "$temp_path"
+  if ! /usr/bin/ditto "$source_path" "$temp_path"; then
+    echo "ERROR: Failed to stage app install at $temp_path" >&2
+    rm -rf "$temp_path"
+    exit 1
+  fi
+
+  xattr -cr "$temp_path"
+  find "$temp_path" -name '._*' -delete
+
+  rm -rf "$install_path"
+  if ! mv "$temp_path" "$install_path"; then
+    echo "ERROR: Failed to install app to $install_path" >&2
+    rm -rf "$temp_path"
+    exit 1
+  fi
+
+  if [[ ! -x "$install_path/Contents/MacOS/${executable_name}" ]]; then
+    echo "ERROR: Installed app is missing executable ${executable_name} at $install_path" >&2
+    exit 1
+  fi
+
+  echo "Installed $install_path"
+}
+
+remove_legacy_daily_bundles() {
+  local legacy_paths=(
+    "/Applications/CodexTokenBar Daily Board.app"
+    "/Applications/CodexDailyBoard.app"
+  )
+
+  for path in "${legacy_paths[@]}"; do
+    if [[ "$path" != "$DAILY_BOARD_INSTALL_PATH" && -e "$path" ]]; then
+      rm -rf "$path"
+    fi
   done
-fi
-if [[ ! -d "$APP/Contents/Resources/KeyboardShortcuts_KeyboardShortcuts.bundle" ]]; then
-  echo "ERROR: Missing KeyboardShortcuts SwiftPM resource bundle (Settings → Keyboard shortcut will crash)." >&2
-  echo "Expected: ${PREFERRED_BUILD_DIR}/KeyboardShortcuts_KeyboardShortcuts.bundle" >&2
-  exit 1
-fi
+}
 
-# Ensure contents are writable before stripping attributes and signing.
-chmod -R u+w "$APP"
-
-# Strip extended attributes to prevent AppleDouble (._*) files that break code sealing
-xattr -cr "$APP"
-find "$APP" -name '._*' -delete
-
-# Sign helper binaries if present
-if [[ -f "${APP}/Contents/Helpers/CodexBarCLI" ]]; then
-  codesign "${CODESIGN_ARGS[@]}" "${APP}/Contents/Helpers/CodexBarCLI"
-fi
-if [[ -f "${APP}/Contents/Helpers/CodexBarClaudeWatchdog" ]]; then
-  codesign "${CODESIGN_ARGS[@]}" "${APP}/Contents/Helpers/CodexBarClaudeWatchdog"
+DAILY_BOARD_BUNDLE_ID="$DAILY_BOARD_BUNDLE_ID_BASE"
+if [[ "$LOWER_CONF" == "debug" ]]; then
+  DAILY_BOARD_BUNDLE_ID="${DAILY_BOARD_BUNDLE_ID_BASE}.debug"
 fi
 
-# Sign widget extension if present
-if [[ -d "${APP}/Contents/PlugIns/CodexBarWidget.appex" ]]; then
-  codesign "${CODESIGN_ARGS[@]}" \
-    --entitlements "$WIDGET_ENTITLEMENTS" \
-    "$APP/Contents/PlugIns/CodexBarWidget.appex/Contents/MacOS/CodexBarWidget"
-  codesign "${CODESIGN_ARGS[@]}" \
-    --entitlements "$WIDGET_ENTITLEMENTS" \
-    "$APP/Contents/PlugIns/CodexBarWidget.appex"
+if [[ "${PACKAGE_MAIN_APP}" == "1" ]]; then
+  create_app_bundle "$APP_STAGING_PATH" "$APP_DISPLAY_NAME" "$APP_EXECUTABLE_NAME" "CodexBar" "$BUNDLE_ID" "true" "$TOKENBAR_ICON_TARGET"
+  install_app_bundle "$APP_STAGING_PATH" "$APP_INSTALL_PATH" "$APP_EXECUTABLE_NAME"
 fi
 
-# Finally sign the app bundle itself
-codesign "${CODESIGN_ARGS[@]}" \
-  --entitlements "$APP_ENTITLEMENTS" \
-  "$APP"
-
-echo "Created $APP"
+if [[ "${PACKAGE_DAILY_APP}" == "1" ]]; then
+  create_app_bundle \
+    "$DAILY_BOARD_STAGING_PATH" \
+    "$DAILY_BOARD_APP_DISPLAY_NAME" \
+    "$DAILY_BOARD_EXECUTABLE_NAME" \
+    "CodexDaily" \
+    "$DAILY_BOARD_BUNDLE_ID" \
+    "false" \
+    "$DAILY_BOARD_ICON_TARGET"
+  remove_legacy_daily_bundles
+  install_app_bundle "$DAILY_BOARD_STAGING_PATH" "$DAILY_BOARD_INSTALL_PATH" "$DAILY_BOARD_EXECUTABLE_NAME"
+fi

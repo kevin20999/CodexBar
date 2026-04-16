@@ -7,15 +7,19 @@ xcuserdata/
 
 # Build products
 .build/
+build/
 DerivedData
+.tmp-modulecache/
 
 # Bundles / artifacts
 # Main app bundle (any variation)
 CodexBar.app/
+CodexTokenBar.app/
 CodexBar *.app/
 CodexBar_*.app/
 Codexbar.app/
 # Release artifacts
+.artifacts/
 *.ipa
 *.dSYM*
 *.zip
@@ -30,8 +34,11 @@ debug_*.swift
 # Misc
 .DS_Store
 .vscode/
+.cursor/
+.codebuddy/
 .codex/environments/
 .swiftpm-cache/
+.upstream/
 
 # Debug/analysis docs
 docs/*-analysis.md

@@ -3,22 +3,22 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>CodexBar</title>
+    <title>CodexTokenBar</title>
     <meta
       name="description"
-      content="Tiny macOS menu bar app that keeps your Codex, Claude Code, Cursor, Gemini, Antigravity, Droid (Factory), Copilot, and z.ai limits visible."
+      content="CodexTokenBar is a macOS menu bar dashboard for Codex / OpenAI quota, token usage, credits, code review allowance, and main-thread activity."
     />
     <meta name="theme-color" content="#0b1016" />
-    <link rel="canonical" href="https://codexbar.app/" />
+    <link rel="canonical" href="https://github.com/kevin20999/CodexBar" />
 
-    <meta property="og:title" content="CodexBar" />
+    <meta property="og:title" content="CodexTokenBar" />
     <meta
       property="og:description"
-      content="Tiny macOS menu bar app that keeps your Codex, Claude Code, Cursor, Gemini, Antigravity, Droid (Factory), Copilot, and z.ai limits visible."
+      content="CodexTokenBar is a macOS menu bar dashboard for Codex / OpenAI quota, token usage, credits, code review allowance, and main-thread activity."
     />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://codexbar.app/" />
-    <meta property="og:image" content="https://codexbar.app/codexbar.png" />
+    <meta property="og:url" content="https://github.com/kevin20999/CodexBar" />
+    <meta property="og:image" content="https://raw.githubusercontent.com/kevin20999/CodexBar/main/docs/codexbar.png" />
     <meta name="twitter:card" content="summary_large_image" />
 
     <link rel="icon" href="./icon.png" type="image/png" />
@@ -28,15 +28,15 @@
   <body>
     <main class="wrap">
       <header class="top" data-animate="1">
-        <a class="brand" href="https://github.com/steipete/CodexBar" aria-label="CodexBar on GitHub">
+        <a class="brand" href="https://github.com/kevin20999/CodexBar" aria-label="CodexTokenBar on GitHub">
           <span class="name">
-            <h1 class="title">CodexBar</h1>
-            <p class="tagline">Codex, Claude Code, Cursor, Gemini, Antigravity, Droid, Copilot, z.ai limits.</p>
+            <h1 class="title">CodexTokenBar</h1>
+            <p class="tagline">Codex / OpenAI quota, token usage, credits, code review, and main-thread activity.</p>
           </span>
         </a>
         <nav class="links" aria-label="Links">
-          <a class="btn primary" href="https://github.com/steipete/CodexBar/releases/latest">Download</a>
-          <a class="btn ghost" href="https://github.com/steipete/CodexBar">Source</a>
+          <a class="btn primary" href="https://github.com/kevin20999/CodexBar/releases/latest">Download</a>
+          <a class="btn ghost" href="https://github.com/kevin20999/CodexBar">Source</a>
         </nav>
       </header>
 
@@ -45,26 +45,26 @@
           <div class="badges" aria-label="Highlights">
             <span class="badge">macOS 14+</span>
             <span class="badge">Apple Silicon + Intel</span>
-            <span class="badge">Free &amp; open source</span>
+            <span class="badge">Codex / OpenAI focused</span>
             <span class="badge">No passwords stored</span>
           </div>
           <div class="hero-heading">
             <img class="hero-icon" src="./icon.png" alt="" aria-hidden="true" width="40" height="40" />
             <div>
-              <h2>Stay ahead of resets.</h2>
+              <h2>See Codex usage before it surprises you.</h2>
               <p>
-                CodexBar keeps session + weekly limits (and credits) in the menu bar, so you know when you're safe to ship.
+                CodexTokenBar keeps quota windows, Spark usage, recent token charts, credits, code review allowance, and main-thread summaries in one menu bar dashboard.
               </p>
             </div>
           </div>
           <p class="requirement">Requirements: macOS 14+ (Apple Silicon + Intel).</p>
           <div class="cta">
-            <a class="btn primary" href="https://github.com/steipete/CodexBar/releases/latest">Download latest</a>
-            <a class="btn" href="https://github.com/steipete/CodexBar">View on GitHub</a>
+            <a class="btn primary" href="https://github.com/kevin20999/CodexBar/releases/latest">Download latest</a>
+            <a class="btn" href="https://github.com/kevin20999/CodexBar">View on GitHub</a>
           </div>
           <p class="brew-line">
-            Homebrew: <code id="brew-cmd">brew install --cask steipete/tap/codexbar</code>
-            <button class="copy-btn" onclick="copyBrew()" aria-label="Copy to clipboard" title="Copy to clipboard">
+            GitHub Release: <code id="release-url">https://github.com/kevin20999/CodexBar/releases/latest</code>
+            <button class="copy-btn" onclick="copyReleaseUrl()" aria-label="Copy to clipboard" title="Copy to clipboard">
               <svg class="icon-copy" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                 <rect x="5" y="5" width="9" height="9" rx="1.5"/>
                 <path d="M5 11H3.5A1.5 1.5 0 012 9.5v-7A1.5 1.5 0 013.5 1h7A1.5 1.5 0 0112 2.5V5"/>
@@ -74,13 +74,12 @@
               </svg>
             </button>
           </p>
-          <p class="brew-line">Linuxbrew (CLI only): <code>brew install steipete/tap/codexbar</code></p>
           <p class="note">
-            GitHub Releases builds update via Sparkle. Homebrew installs update via <code>brew upgrade</code>.
+            Current public builds are distributed from GitHub Releases. This page focuses on CodexTokenBar only.
           </p>
           <script>
-            function copyBrew() {
-              const cmd = document.getElementById('brew-cmd').textContent;
+            function copyReleaseUrl() {
+              const cmd = document.getElementById('release-url').textContent;
               navigator.clipboard.writeText(cmd).then(() => {
                 document.querySelector('.copy-btn').classList.add('copied');
                 setTimeout(() => document.querySelector('.copy-btn').classList.remove('copied'), 1500);
@@ -88,60 +87,57 @@
             }
           </script>
           <ul class="bullets" aria-label="What it does">
-            <li>One status item per provider (Codex, Claude, Cursor, Gemini, Antigravity, Droid, Copilot, z.ai, Kilo).</li>
-            <li>Session + weekly bars with reset times and optional credits.</li>
-            <li>Web-backed limits via browser cookies (Codex, Claude, Cursor, Droid).</li>
-            <li>Two-bar icon: session on top, weekly on bottom, dimmed on errors.</li>
-            <li>Minimal UI, no Dock icon.</li>
+            <li>Codex quota and Spark quota cards with reset times.</li>
+            <li>Recent 30-day and 48-hour token charts scoped to the main thread.</li>
+            <li>Detailed today / 7-day / 30-day / cumulative token summaries.</li>
+            <li>Credits, code review allowance, and human instruction activity when available.</li>
+            <li>Focused menu bar UI for Codex / OpenAI workflows.</li>
           </ul>
         </div>
         <figure class="shot hero-shot" data-animate="3">
-          <img src="./codexbar.png" alt="CodexBar menu bar popover showing session and weekly usage." />
-          <figcaption>Menu card shows session + weekly usage, resets, and credits when available.</figcaption>
+          <img src="./codexbar.png" alt="CodexTokenBar dashboard showing quota cards, charts, and token usage modules." />
+          <figcaption>Quota, token charts, and summary cards are all visible in one menu bar dashboard.</figcaption>
         </figure>
       </section>
 
       <section class="details" aria-label="Details" data-animate="4">
         <div class="card">
-          <h3>Install &amp; updates</h3>
+          <h3>English</h3>
           <p>
-            Download from GitHub Releases or install via Homebrew. Sparkle updates are enabled on GitHub builds only.
+            CodexTokenBar is a focused macOS menu bar dashboard for Codex / OpenAI usage. It helps you see quota, recent token usage, credits, and main-thread activity without opening a browser.
           </p>
         </div>
         <div class="card">
-          <h3>Providers</h3>
+          <h3>中文</h3>
           <p>
-            Codex · Claude Code · Cursor · Gemini · Antigravity · Droid · Copilot · z.ai · Kilo<br />
-            Open to new providers — see the <a href="https://github.com/steipete/CodexBar/blob/main/docs/provider.md">provider guide</a>.
+            CodexTokenBar 是一个面向 Codex / OpenAI 的 macOS 菜单栏仪表盘。它把额度、近期 token 用量、Credits 和主线程活动集中到一个弹窗里，不用来回切浏览器。
           </p>
         </div>
         <div class="card">
-          <h3>Privacy</h3>
+          <h3>日本語</h3>
           <p>
-            Reuses existing browser cookies (Safari/Chrome/Firefox) for dashboard access — no passwords stored. When cookies
-            are missing, CodexBar falls back to local CLI output. Audit notes in
-            <a href="https://github.com/steipete/CodexBar/issues/12">issue #12</a>.
+            CodexTokenBar は、Codex / OpenAI 向けの macOS メニューバーダッシュボードです。クォータ、直近の token 使用量、Credits、メインスレッド統計を一つのポップアップにまとめます。
           </p>
         </div>
       </section>
 
       <section class="details" aria-label="Features" data-animate="5">
         <div class="card">
-          <h3>Usage tracking</h3>
+          <h3>What you can see</h3>
           <p>
-            Session + weekly meters with reset countdowns, plus optional credits and code review limits.
+            Codex quota, Spark quota, today / 7-day / 30-day / cumulative totals, recent charts, code review allowance, and credits.
           </p>
         </div>
         <div class="card">
-          <h3>Status + widgets</h3>
+          <h3>Why it helps</h3>
           <p>
-            Provider status polling with incident badges, plus a WidgetKit snapshot that mirrors the menu card.
+            The app surfaces the numbers you normally check manually in ChatGPT or Codex settings, but keeps them one click away in the menu bar.
           </p>
         </div>
         <div class="card">
-          <h3>CLI + automation</h3>
+          <h3>Privacy</h3>
           <p>
-            Bundled <code>codexbar</code> CLI for scripts and CI, with Linux CLI builds on GitHub Releases.
+            Browser cookie import is opt-in. Dashboard parsing stays local to the app. No passwords are stored in the repository.
           </p>
         </div>
       </section>
@@ -150,25 +146,23 @@
         <div class="card">
           <h3>macOS permissions</h3>
           <p>
-            Full Disk Access only for Safari cookies, Keychain access for tokens, and Files &amp; Folders prompts when
-            provider CLIs access project directories.
+            Full Disk Access is only needed for some browser-cookie paths. Keychain access is used for tokens and browser decryption keys where required.
           </p>
         </div>
       </section>
 
       <section class="links-row" aria-label="Docs links" data-animate="7">
-        <a class="link-pill" href="https://github.com/steipete/CodexBar/blob/main/docs/providers.md">Docs</a>
-        <a class="link-pill" href="https://github.com/steipete/CodexBar/blob/main/docs/cli.md">CLI</a>
-        <a class="link-pill" href="https://github.com/steipete/CodexBar/blob/main/docs/provider.md">Provider guide</a>
+        <a class="link-pill" href="https://github.com/kevin20999/CodexBar/releases/latest">Download</a>
+        <a class="link-pill" href="https://github.com/kevin20999/CodexBar/blob/main/README.md">README</a>
+        <a class="link-pill" href="https://github.com/kevin20999/CodexBar/blob/main/docs/GITHUB_RELEASE_FIRST_TIME.md">Release guide</a>
       </section>
 
       <footer class="foot" data-animate="8">
         <p>
-          Built by <a href="https://steipete.me">Peter Steinberger</a> •
-          <a href="https://github.com/steipete/CodexBar/blob/main/CHANGELOG.md">Changelog</a> •
-          <a href="https://github.com/steipete/CodexBar/blob/main/LICENSE">MIT</a> •
-          <a href="https://codexbar.app">codexbar.app</a> •
-          <a href="https://trimmy.app">trimmy.app</a>
+          CodexTokenBar fork by <a href="https://github.com/kevin20999/CodexBar">kevin20999</a> •
+          based on <a href="https://github.com/steipete/CodexBar">CodexBar</a> by Peter Steinberger •
+          <a href="https://github.com/kevin20999/CodexBar/blob/main/CHANGELOG.md">Changelog</a> •
+          <a href="https://github.com/kevin20999/CodexBar/blob/main/LICENSE">MIT</a>
         </p>
       </footer>
     </main>

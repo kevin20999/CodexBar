@@ -267,7 +267,7 @@ curl -I -L "https://github.com/<your-account>/CodexBar/releases/download/v<versi
 - [ ] download the release asset fresh
 - [ ] extract with `ditto -x -k`
 - [ ] open the app
-- [ ] confirm `CodexDaily.app` is not part of the release
+- [ ] confirm the extracted bundle is `CodexTokenBar.app`
 
 Done when:
 

@@ -30,15 +30,49 @@ struct TokenSpeedFloatingWidgetPalette {
 }
 
 enum TokenSpeedFloatingWidgetTheme {
-    static let surfaceTint = Color(nsColor: NSColor(
-        srgbRed: 12 / 255,
-        green: 14 / 255,
-        blue: 18 / 255,
-        alpha: 0.06))
-    static let stroke = Color.white.opacity(0.12)
-    static let shadow = Color.black.opacity(0.04)
+    private static var theme: MenuVisualThemeTokens {
+        MenuVisualThemeProvider.tokens
+    }
+
+    static var usesPixelChrome: Bool {
+        self.theme.chromeStyle == .pixel
+    }
+
+    static var surfaceTint: Color {
+        if self.usesPixelChrome {
+            return Color(nsColor: self.theme.analyticsTint).opacity(0.10)
+        }
+        return Color(nsColor: NSColor(
+            srgbRed: 12 / 255,
+            green: 14 / 255,
+            blue: 18 / 255,
+            alpha: 0.06))
+    }
+
+    static var stroke: Color {
+        if self.usesPixelChrome {
+            return Color(nsColor: self.theme.glassStroke)
+        }
+        return Color.white.opacity(0.12)
+    }
+
+    static var shadow: Color {
+        if self.usesPixelChrome {
+            return Color(nsColor: self.theme.panelShadow).opacity(0.78)
+        }
+        return Color.black.opacity(0.04)
+    }
 
     static func palette(for colorScheme: ColorScheme) -> TokenSpeedFloatingWidgetPalette {
+        if self.usesPixelChrome {
+            return TokenSpeedFloatingWidgetPalette(
+                textColor: self.theme.primaryText,
+                mutedTextColor: self.theme.secondaryText,
+                guideLineColor: self.theme.chartGrid,
+                baselineColor: self.theme.chartAxis,
+                spikeColor: self.theme.analyticsTint)
+        }
+
         switch colorScheme {
         case .light:
             return TokenSpeedFloatingWidgetPalette(
@@ -73,17 +107,26 @@ private struct TokenSpeedFloatingWidgetBackground: View {
     }
 
     var body: some View {
-        self.shape
-            .fill(.clear)
-            .modifier(TokenSpeedFloatingWidgetGlassModifier(shape: self.shape))
-            .overlay {
-                self.shape.fill(TokenSpeedFloatingWidgetTheme.surfaceTint)
-            }
-            .overlay {
+        Group {
+            if TokenSpeedFloatingWidgetTheme.usesPixelChrome {
+                TokenPixelSurfaceBackground(
+                    cornerRadius: TokenMenuTheme.chromeCornerRadius(default: self.cornerRadius, pixel: min(self.cornerRadius, 12)),
+                    tint: Color(nsColor: MenuVisualThemeProvider.tokens.analyticsTint),
+                    style: .card)
+            } else {
                 self.shape
-                    .stroke(TokenSpeedFloatingWidgetTheme.stroke, lineWidth: 0.8)
+                    .fill(.clear)
+                    .modifier(TokenSpeedFloatingWidgetGlassModifier(shape: self.shape))
+                    .overlay {
+                        self.shape.fill(TokenSpeedFloatingWidgetTheme.surfaceTint)
+                    }
+                    .overlay {
+                        self.shape
+                            .stroke(TokenSpeedFloatingWidgetTheme.stroke, lineWidth: 0.8)
+                    }
+                    .shadow(color: TokenSpeedFloatingWidgetTheme.shadow, radius: 2.4, x: 0, y: 1)
             }
-            .shadow(color: TokenSpeedFloatingWidgetTheme.shadow, radius: 2.4, x: 0, y: 1)
+        }
     }
 }
 
@@ -282,6 +325,7 @@ enum TokenSpeedFloatingRocketPlacement {
 
 private struct TokenSpeedFloatingSpikeChart: View {
     @Environment(\.colorScheme) private var colorScheme
+    @State private var rocketMotion = TokenSpeedRocketBurstMotion.zero
 
     let model: TokenSpeedPanelModel
 
@@ -334,18 +378,18 @@ private struct TokenSpeedFloatingSpikeChart: View {
                     }
                 }
 
-                TimelineView(.animation(minimumInterval: 1.0 / 30.0)) { context in
-                    self.rocket(
-                        at: context.date,
-                        verticalOffset: self.rocketVerticalOffset(
-                            baselineY: baselineY,
-                            usableHeight: usableHeight))
-                        .position(
-                            x: rocketX,
-                            y: baselineY)
-                        .allowsHitTesting(false)
-                }
+                self.rocket(
+                    verticalOffset: self.rocketVerticalOffset(
+                        baselineY: baselineY,
+                        usableHeight: usableHeight))
+                    .position(
+                        x: rocketX,
+                        y: baselineY)
+                    .allowsHitTesting(false)
             }
+        }
+        .task(id: self.rocketBurstTrigger) {
+            await self.runRocketBurstAnimation()
         }
     }
 
@@ -371,51 +415,62 @@ private struct TokenSpeedFloatingSpikeChart: View {
         return max(14, trackY - 8) - baselineY
     }
 
-    @ViewBuilder
-    private func rocket(at date: Date, verticalOffset: CGFloat) -> some View {
-        let motion = self.rocketMotion(at: date)
+    private var rocketBurstTrigger: TokenSpeedRocketBurstTrigger? {
+        TokenSpeedRocketBurstTrigger(
+            launchTimestamp: self.model.rocketLaunchTimestamp,
+            launchStrength: self.model.rocketLaunchStrength)
+    }
+
+    private func rocket(verticalOffset: CGFloat) -> some View {
         Text("🚀")
             .font(.system(size: 19))
-            .offset(y: verticalOffset + motion.yOffset)
-            .rotationEffect(.degrees(TokenSpeedFloatingRocketPlacement.baseAngle + motion.rotation))
-            .scaleEffect(motion.scale)
-            .animation(.smooth(duration: 0.9), value: self.model.rocketHeadPoint)
+            .offset(y: verticalOffset + self.rocketMotion.yOffset)
+            .rotationEffect(.degrees(TokenSpeedFloatingRocketPlacement.baseAngle + self.rocketMotion.rotation))
+            .scaleEffect(self.rocketMotion.scale)
     }
 
-    private func rocketMotion(at date: Date) -> TokenSpeedFloatingRocketMotion {
-        guard let launchDate = self.model.rocketLaunchTimestamp,
-              self.model.rocketLaunchStrength > 0
-        else {
-            return .zero
+    @MainActor
+    private func runRocketBurstAnimation() async {
+        guard self.rocketBurstTrigger != nil else {
+            self.rocketMotion = .zero
+            return
         }
 
-        let elapsed = max(0, date.timeIntervalSince(launchDate))
-        let envelope = CGFloat(exp(-4.1 * elapsed))
-        let launchStrength = CGFloat(self.model.rocketLaunchStrength)
-        let yOffset = (-launchStrength * 6.2 * envelope)
-            + (CGFloat(cos(elapsed * 52)) * launchStrength * 1.7 * envelope)
-        let rotation = Double(sin(elapsed * 42)) * Double(launchStrength * 8 * envelope)
-        let scale = 1 + (launchStrength * 0.08 * envelope)
+        let launchStrength = TokenSpeedRocketBurstAnimator.clampedStrength(self.model.rocketLaunchStrength)
+        self.rocketMotion = .zero
 
-        return TokenSpeedFloatingRocketMotion(
-            xOffset: 0,
-            yOffset: yOffset,
-            rotation: rotation,
-            scale: scale)
+        withAnimation(TokenSpeedRocketBurstAnimator.ignitionAnimation) {
+            self.rocketMotion = TokenSpeedRocketBurstAnimator.launchMotion(
+                strength: launchStrength,
+                allowsHorizontalDrift: false)
+        }
+
+        do {
+            try await Task.sleep(for: TokenSpeedRocketBurstAnimator.ignitionDuration)
+        } catch {
+            return
+        }
+
+        guard !Task.isCancelled else { return }
+
+        withAnimation(TokenSpeedRocketBurstAnimator.settleAnimation) {
+            self.rocketMotion = TokenSpeedRocketBurstAnimator.settleMotion(
+                strength: launchStrength,
+                allowsHorizontalDrift: false)
+        }
+
+        do {
+            try await Task.sleep(for: TokenSpeedRocketBurstAnimator.settleDuration)
+        } catch {
+            return
+        }
+
+        guard !Task.isCancelled else { return }
+
+        withAnimation(TokenSpeedRocketBurstAnimator.returnAnimation) {
+            self.rocketMotion = .zero
+        }
     }
-}
-
-private struct TokenSpeedFloatingRocketMotion: Equatable {
-    let xOffset: CGFloat
-    let yOffset: CGFloat
-    let rotation: Double
-    let scale: CGFloat
-
-    static let zero = TokenSpeedFloatingRocketMotion(
-        xOffset: 0,
-        yOffset: 0,
-        rotation: 0,
-        scale: 1)
 }
 
 private struct TokenSpeedFloatingMetricGroup: View {
@@ -432,13 +487,13 @@ private struct TokenSpeedFloatingMetricGroup: View {
 
         VStack(alignment: .leading, spacing: 3) {
             Text(self.label)
-                .font(.system(size: 10, weight: .semibold, design: .rounded))
+                .font(TokenMenuTheme.labelFont(size: 10, weight: .semibold))
                 .foregroundStyle(palette.mutedText)
                 .lineLimit(1)
 
             HStack(alignment: .firstTextBaseline, spacing: 2) {
                 Text(self.value.magnitude)
-                    .font(.system(size: self.magnitudeFontSize, weight: .semibold, design: .rounded))
+                    .font(TokenMenuTheme.metricFont(size: self.magnitudeFontSize, weight: .semibold))
                     .foregroundStyle(palette.text)
                     .monospacedDigit()
                     .lineLimit(1)
@@ -446,7 +501,7 @@ private struct TokenSpeedFloatingMetricGroup: View {
 
                 if let suffix = self.value.suffix {
                     Text(suffix)
-                        .font(.system(size: self.suffixFontSize, weight: .semibold, design: .rounded))
+                        .font(TokenMenuTheme.labelFont(size: self.suffixFontSize, weight: .semibold))
                         .foregroundStyle(palette.text)
                         .lineLimit(1)
                 }
@@ -463,7 +518,11 @@ struct TokenSpeedFloatingChartContent: View {
     @Bindable var settings: SettingsStore
 
     private var shape: RoundedRectangle {
-        RoundedRectangle(cornerRadius: TokenSpeedFloatingChartLayout.cornerRadius, style: .continuous)
+        RoundedRectangle(
+            cornerRadius: TokenMenuTheme.chromeCornerRadius(
+                default: TokenSpeedFloatingChartLayout.cornerRadius,
+                pixel: 12),
+            style: .continuous)
     }
 
     private var chartModel: TokenSpeedPanelModel {
@@ -483,6 +542,7 @@ struct TokenSpeedFloatingChartContent: View {
     }
 
     var body: some View {
+        let theme = self.settings.menuVisualTheme
         VStack(alignment: .leading, spacing: 0) {
             TokenSpeedFloatingSpikeChart(model: self.chartModel)
                 .frame(height: TokenSpeedFloatingChartLayout.chartHeight)
@@ -516,5 +576,6 @@ struct TokenSpeedFloatingChartContent: View {
         .background(
             TokenSpeedFloatingWidgetBackground(cornerRadius: TokenSpeedFloatingChartLayout.cornerRadius))
         .clipShape(self.shape)
+        .id(theme)
     }
 }

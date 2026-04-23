@@ -45,6 +45,22 @@ enum TokenDailyBoardNarrativeLayout {
         avatarSize * (TokenDailyBoardNarrativeAnimationRules.avatarPeakScale - 1))
         + 10
     static let conversationOnlyMinimumBubbleWidthDuringAvatarAnimation: CGFloat = 240
+
+    static func conversationOnlyAvatarCornerRadius(for avatarSize: CGFloat) -> CGFloat {
+        min(max((avatarSize * 0.33).rounded(), self.avatarCornerRadius), avatarSize / 2)
+    }
+
+    static func avatarCornerRadius(
+        for displayMode: TokenDailyBoardDisplayMode,
+        usesCircularMask: Bool,
+        avatarSize: CGFloat)
+        -> CGFloat
+    {
+        guard !usesCircularMask else { return self.avatarCornerRadius }
+        return displayMode == .conversationOnly
+            ? self.conversationOnlyAvatarCornerRadius(for: avatarSize)
+            : self.avatarCornerRadius
+    }
 }
 
 struct TokenDailyBoardNarrativeSizingMetrics: Equatable {
@@ -78,7 +94,10 @@ enum TokenDailyBoardNarrativePresentationRules {
     }
 
     static func usesSystemGlass(for displayMode: TokenDailyBoardDisplayMode) -> Bool {
-        displayMode != .conversationOnly
+        switch displayMode {
+        case .conversationOnly, .conversationAndToday, .fullBoard:
+            true
+        }
     }
 
     static func showsOuterShadow(for displayMode: TokenDailyBoardDisplayMode) -> Bool {
@@ -113,6 +132,56 @@ enum TokenDailyBoardNarrativeAnimationRules {
         guard !text.isEmpty else { return 0 }
         let stepCount = max(text.count - 1, 0)
         return Double(stepCount) / max(charactersPerSecond, 0.1)
+    }
+}
+
+enum TokenDailyBoardConversationOnlyIdlePresentationRules {
+    static let baseOpacity = 0.60
+    static let peakOpacity = 0.75
+    static let breathingDuration: TimeInterval = 2.8
+
+    static func isEnabled(
+        for groupKind: TokenDailyBoardNarrativePresentationGroupKind,
+        displayMode: TokenDailyBoardDisplayMode)
+        -> Bool
+    {
+        displayMode == .conversationOnly && groupKind == .waitingGroup
+    }
+}
+
+enum TokenDailyBoardConversationOnlyIdleSwitchRules {
+    static let crossfadeDuration: TimeInterval = 0.12
+
+    static func isEnabled(
+        for groupKind: TokenDailyBoardNarrativePresentationGroupKind,
+        displayMode: TokenDailyBoardDisplayMode)
+        -> Bool
+    {
+        displayMode == .conversationOnly && groupKind == .waitingGroup
+    }
+
+    static func animatesAvatar(
+        for groupKind: TokenDailyBoardNarrativePresentationGroupKind,
+        displayMode: TokenDailyBoardDisplayMode)
+        -> Bool
+    {
+        !self.isEnabled(for: groupKind, displayMode: displayMode)
+    }
+
+    static func animatesBodyText(
+        for groupKind: TokenDailyBoardNarrativePresentationGroupKind,
+        displayMode: TokenDailyBoardDisplayMode)
+        -> Bool
+    {
+        !self.isEnabled(for: groupKind, displayMode: displayMode)
+    }
+
+    static func animatesMetadataText(
+        for groupKind: TokenDailyBoardNarrativePresentationGroupKind,
+        displayMode: TokenDailyBoardDisplayMode)
+        -> Bool
+    {
+        !self.isEnabled(for: groupKind, displayMode: displayMode)
     }
 }
 
@@ -2916,6 +2985,190 @@ private struct TokenDailyBoardAnimatedMetadataLine: View {
     }
 }
 
+private struct TokenDailyBoardConversationOnlyTextEffectView<Content: View>: View {
+    let preset: TokenDailyBoardConversationOnlyTextEffectPreset
+    let replayToken: String
+    let isWaitingGroup: Bool
+    let content: Content
+
+    @State private var progress = 1.0
+
+    init(
+        preset: TokenDailyBoardConversationOnlyTextEffectPreset,
+        replayToken: String,
+        isWaitingGroup: Bool,
+        @ViewBuilder content: () -> Content)
+    {
+        self.preset = preset
+        self.replayToken = replayToken
+        self.isWaitingGroup = isWaitingGroup
+        self.content = content()
+    }
+
+    private var configuration: TokenDailyBoardConversationOnlyTextEffectConfiguration {
+        TokenDailyBoardConversationOnlyTextEffectRules.configuration(for: self.preset)
+    }
+
+    private var intensityMultiplier: Double {
+        TokenDailyBoardConversationOnlyTextEffectRules.intensityMultiplier(isWaitingGroup: self.isWaitingGroup)
+    }
+
+    var body: some View {
+        self.content
+            .opacity(self.currentOpacity)
+            .offset(x: self.currentOffset.width, y: self.currentOffset.height)
+            .scaleEffect(self.currentScale)
+            .blur(radius: self.currentBlur)
+            .brightness(self.currentBrightness)
+            .rotationEffect(.degrees(self.currentRotation))
+            .shadow(
+                color: self.configuration.shadowColor.opacity(self.currentShadowOpacity),
+                radius: self.configuration.shadowRadius * self.intensityMultiplier,
+                x: 0,
+                y: self.configuration.shadowYOffset)
+            .onAppear {
+                self.replay()
+            }
+            .onChange(of: self.replayToken) { _, _ in
+                self.replay()
+            }
+    }
+
+    private var motionProgress: Double {
+        (1 - self.progress) * self.intensityMultiplier
+    }
+
+    private var currentOpacity: Double {
+        self.configuration.initialOpacity + ((1 - self.configuration.initialOpacity) * self.progress)
+    }
+
+    private var currentOffset: CGSize {
+        CGSize(
+            width: self.configuration.initialOffset.width * self.motionProgress,
+            height: self.configuration.initialOffset.height * self.motionProgress)
+    }
+
+    private var currentScale: CGFloat {
+        self.configuration.initialScale + ((1 - self.configuration.initialScale) * self.progress)
+    }
+
+    private var currentBlur: CGFloat {
+        self.configuration.initialBlur * self.motionProgress
+    }
+
+    private var currentBrightness: Double {
+        self.configuration.initialBrightness
+            + ((self.configuration.settleBrightness - self.configuration.initialBrightness) * self.progress)
+    }
+
+    private var currentRotation: Double {
+        self.configuration.rotationDegrees * self.motionProgress
+    }
+
+    private var currentShadowOpacity: Double {
+        self.configuration.shadowOpacity * (0.3 + (self.progress * 0.7)) * self.intensityMultiplier
+    }
+
+    private func replay() {
+        self.progress = 0
+        withAnimation(.easeOut(duration: self.configuration.duration)) {
+            self.progress = 1
+        }
+    }
+}
+
+private struct TokenDailyBoardConversationOnlyAvatarEffectOverlay: View {
+    let avatarSize: CGFloat
+    let usesCircularMask: Bool
+    let cornerRadius: CGFloat
+    let preset: TokenDailyBoardConversationOnlyAvatarEffectPreset
+    let replayToken: String
+    let intensityScale: Double
+
+    @State private var progress = 1.0
+
+    private var configuration: TokenDailyBoardConversationOnlyAvatarEffectConfiguration {
+        TokenDailyBoardConversationOnlyAvatarEffectRules.configuration(for: self.preset)
+    }
+
+    private var effectOpacity: Double {
+        min(max(self.intensityScale, 0), 1)
+    }
+
+    var body: some View {
+        GeometryReader { proxy in
+            let size = min(proxy.size.width, proxy.size.height)
+            let orbitDistance = size * self.configuration.orbitRadiusMultiplier
+            let orbitAngle = Angle.degrees((self.progress * 360) + self.configuration.scanAngle)
+            let motionProgress = 1 - self.progress
+
+            ZStack {
+                RadialGradient(
+                    colors: [
+                        self.configuration.haloColor.opacity(self.configuration.haloOpacity * self.effectOpacity),
+                        self.configuration.haloColor.opacity(0),
+                    ],
+                    center: .center,
+                    startRadius: size * 0.10,
+                    endRadius: size * 0.68)
+                    .scaleEffect(self.configuration.haloScale - (CGFloat(motionProgress) * 0.06))
+
+                if self.usesCircularMask {
+                    Circle()
+                        .stroke(
+                            self.configuration.accentColor.opacity(self.configuration.ringOpacity * self.effectOpacity),
+                            lineWidth: 1.0)
+                        .scaleEffect(self.configuration.ringScale - (CGFloat(motionProgress) * 0.05))
+                        .blur(radius: 0.8)
+                } else {
+                    RoundedRectangle(cornerRadius: self.cornerRadius, style: .continuous)
+                        .stroke(
+                            self.configuration.accentColor.opacity(self.configuration.ringOpacity * self.effectOpacity),
+                            lineWidth: 1.0)
+                        .scaleEffect(self.configuration.ringScale - (CGFloat(motionProgress) * 0.05))
+                        .blur(radius: 0.8)
+                }
+
+                LinearGradient(
+                    colors: [
+                        .clear,
+                        self.configuration.accentColor.opacity(self.configuration.scanOpacity * self.effectOpacity),
+                        .clear,
+                    ],
+                    startPoint: .leading,
+                    endPoint: .trailing)
+                    .frame(width: size * 0.52, height: size * 1.30)
+                    .rotationEffect(.degrees(self.configuration.scanAngle))
+                    .offset(x: (self.progress - 0.5) * self.configuration.scanTravel * 2)
+                    .blendMode(.screen)
+
+                Circle()
+                    .fill(self.configuration.accentColor.opacity(self.configuration.orbitOpacity * self.effectOpacity))
+                    .frame(width: size * 0.10, height: size * 0.10)
+                    .offset(
+                        x: CGFloat(cos(orbitAngle.radians)) * orbitDistance,
+                        y: CGFloat(sin(orbitAngle.radians)) * orbitDistance)
+                    .blur(radius: 0.6)
+            }
+            .frame(width: proxy.size.width, height: proxy.size.height)
+            .allowsHitTesting(false)
+        }
+        .onAppear {
+            self.replay()
+        }
+        .onChange(of: self.replayToken) { _, _ in
+            self.replay()
+        }
+    }
+
+    private func replay() {
+        self.progress = 0
+        withAnimation(.easeOut(duration: self.configuration.duration)) {
+            self.progress = 1
+        }
+    }
+}
+
 struct TokenDailyBoardConversationOnlyNarrativeView: View {
     let sentence: TokenDailyBoardNarrativeSentence
     let fontScaleMultiplier: CGFloat
@@ -2938,8 +3191,15 @@ struct TokenDailyBoardConversationOnlyNarrativeView: View {
     let bodyCharactersPerSecond: Double
     let metadataCharactersPerSecond: Double
     let avatarMotionConfiguration: TokenDailyBoardNarrativeAvatarMotionConfiguration
+    let isWaitingGroup: Bool
     let textColor: Color
     let mutedTextColor: Color
+    let idleSwitchTransitionToken: String
+    let effectReplayToken: String
+
+    @State private var idlePresentationOpacity = 1.0
+    @State private var idleSwitchOpacity = 1.0
+    @State private var idleSwitchTask: Task<Void, Never>?
 
     private var resolvedTuning: TokenDailyBoardConversationOnlyDebugTuning {
         TokenDailyBoardConversationOnlyDebugRules.clamp(self.tuning)
@@ -2968,6 +3228,10 @@ struct TokenDailyBoardConversationOnlyNarrativeView: View {
             fontScaleMultiplier: self.fontScaleMultiplier)
     }
 
+    private var resolvedIdlePresentationOpacity: Double {
+        self.isWaitingGroup ? self.idlePresentationOpacity : 1
+    }
+
     var body: some View {
         ZStack {
             HStack(alignment: .top, spacing: TokenDailyBoardNarrativeLayout.conversationOnlyAvatarToContentSpacing) {
@@ -2984,63 +3248,74 @@ struct TokenDailyBoardConversationOnlyNarrativeView: View {
                     animatesReplacement: TokenDailyBoardNarrativeAvatarReplacementAnimationRules.isEnabled(
                         self.resolvedTuning,
                         displayMode: .conversationOnly),
-                    motionConfiguration: self.avatarMotionConfiguration)
+                    motionConfiguration: self.avatarMotionConfiguration,
+                    presentationOpacity: self.resolvedIdlePresentationOpacity,
+                    effectPreset: self.resolvedTuning.avatarEffectPreset,
+                    effectReplayToken: self.effectReplayToken)
                     .frame(
                         width: self.resolvedTuning.avatarSize,
                         height: self.resolvedTuning.avatarSize,
                         alignment: .topLeading)
 
-                VStack(
-                    alignment: .leading,
-                    spacing: TokenDailyBoardNarrativeLayout.conversationOnlyMetadataTopSpacing)
+                TokenDailyBoardConversationOnlyTextEffectView(
+                    preset: self.resolvedTuning.textEffectPreset,
+                    replayToken: self.effectReplayToken,
+                    isWaitingGroup: self.isWaitingGroup)
                 {
-                    Group {
-                        if self.animatesTypewriter {
-                            TokenDailyBoardTypewriterText(
-                                text: self.sentence.text,
-                                style: self.textStyle,
-                                color: self.textColor,
-                                lineSpacing: self.resolvedTuning.bodyLineSpacing,
-                                startDelay: self.typewriterStartDelay,
-                                charactersPerSecond: self.bodyCharactersPerSecond,
-                                completionToken: self.typewriterCompletionToken,
-                                onComplete: self.onTypewriterComplete)
-                        } else {
-                            TokenDailyBoardNarrativeStaticText(
-                                text: self.sentence.text,
-                                style: self.textStyle,
-                                color: self.textColor,
-                                lineSpacing: self.resolvedTuning.bodyLineSpacing)
-                        }
-                    }
-                    .frame(width: self.contentLayout.textColumnWidth, alignment: .leading)
-                    .offset(y: self.resolvedTuning.textColumnOffset.height)
-
-                    if self.sentence.metadataText?.isEmpty == false || self.displayedMetadataText != nil {
+                    VStack(
+                        alignment: .leading,
+                        spacing: TokenDailyBoardNarrativeLayout.conversationOnlyMetadataTopSpacing)
+                    {
                         Group {
-                            if self.animatesMetadataTypewriter, let displayedMetadataText = self.displayedMetadataText {
+                            if self.animatesTypewriter {
                                 TokenDailyBoardTypewriterText(
-                                    text: displayedMetadataText,
-                                    style: self.metadataStyle,
-                                    color: self.mutedTextColor,
-                                    startDelay: self.metadataStartDelay,
-                                    charactersPerSecond: self.metadataCharactersPerSecond,
-                                    completionToken: self.metadataCompletionToken,
-                                    onComplete: nil)
-                            } else if let displayedMetadataText = self.displayedMetadataText {
+                                    text: self.sentence.text,
+                                    style: self.textStyle,
+                                    color: self.textColor,
+                                    lineSpacing: self.resolvedTuning.bodyLineSpacing,
+                                    startDelay: self.typewriterStartDelay,
+                                    charactersPerSecond: self.bodyCharactersPerSecond,
+                                    completionToken: self.typewriterCompletionToken,
+                                    onComplete: self.onTypewriterComplete)
+                            } else {
                                 TokenDailyBoardNarrativeStaticText(
-                                    text: displayedMetadataText,
-                                    style: self.metadataStyle,
-                                    color: self.mutedTextColor)
+                                    text: self.sentence.text,
+                                    style: self.textStyle,
+                                    color: self.textColor,
+                                    lineSpacing: self.resolvedTuning.bodyLineSpacing)
                             }
                         }
                         .frame(width: self.contentLayout.textColumnWidth, alignment: .leading)
-                        .opacity(Double(self.resolvedTuning.metadataOpacity))
                         .offset(y: self.resolvedTuning.textColumnOffset.height)
+
+                        if self.sentence.metadataText?.isEmpty == false || self.displayedMetadataText != nil {
+                            Group {
+                                if self.animatesMetadataTypewriter,
+                                   let displayedMetadataText = self.displayedMetadataText
+                                {
+                                    TokenDailyBoardTypewriterText(
+                                        text: displayedMetadataText,
+                                        style: self.metadataStyle,
+                                        color: self.mutedTextColor,
+                                        startDelay: self.metadataStartDelay,
+                                        charactersPerSecond: self.metadataCharactersPerSecond,
+                                        completionToken: self.metadataCompletionToken,
+                                        onComplete: nil)
+                                } else if let displayedMetadataText = self.displayedMetadataText {
+                                    TokenDailyBoardNarrativeStaticText(
+                                        text: displayedMetadataText,
+                                        style: self.metadataStyle,
+                                        color: self.mutedTextColor)
+                                }
+                            }
+                            .frame(width: self.contentLayout.textColumnWidth, alignment: .leading)
+                            .opacity(Double(self.resolvedTuning.metadataOpacity))
+                            .offset(y: self.resolvedTuning.textColumnOffset.height)
+                        }
                     }
                 }
                 .frame(width: self.contentLayout.textColumnWidth, alignment: .topLeading)
-                .opacity(self.contentOpacity)
+                .opacity(self.contentOpacity * self.resolvedIdlePresentationOpacity)
                 .offset(y: self.contentVerticalOffset)
                 .animation(
                     TokenDailyBoardNarrativeMetadataAnimationRules.transitionAnimation,
@@ -3051,8 +3326,77 @@ struct TokenDailyBoardConversationOnlyNarrativeView: View {
                 width: self.contentLayout.contentSize.width,
                 height: self.contentLayout.contentSize.height,
                 alignment: .topLeading)
+            .opacity(self.idleSwitchOpacity)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+        .onAppear {
+            self.syncIdlePresentation(animated: false)
+            self.syncIdleSwitch(animated: self.isWaitingGroup && self.typewriterStartDelay > 0)
+        }
+        .onChange(of: self.isWaitingGroup) { _, _ in
+            self.syncIdlePresentation(animated: true)
+            if !self.isWaitingGroup {
+                self.syncIdleSwitch(animated: false)
+            }
+        }
+        .onChange(of: self.idleSwitchTransitionToken) { _, _ in
+            self.syncIdleSwitch(animated: true)
+        }
+        .onDisappear {
+            self.idlePresentationOpacity = 1
+            self.idleSwitchTask?.cancel()
+            self.idleSwitchTask = nil
+            self.idleSwitchOpacity = 1
+        }
+    }
+
+    private func syncIdlePresentation(animated: Bool) {
+        guard self.isWaitingGroup else {
+            if animated {
+                withAnimation(.easeOut(duration: 0.18)) {
+                    self.idlePresentationOpacity = 1
+                }
+            } else {
+                self.idlePresentationOpacity = 1
+            }
+            return
+        }
+
+        self.idlePresentationOpacity = TokenDailyBoardConversationOnlyIdlePresentationRules.baseOpacity
+        withAnimation(
+            .easeInOut(duration: TokenDailyBoardConversationOnlyIdlePresentationRules.breathingDuration)
+                .repeatForever(autoreverses: true))
+        {
+            self.idlePresentationOpacity = TokenDailyBoardConversationOnlyIdlePresentationRules.peakOpacity
+        }
+    }
+
+    private func syncIdleSwitch(animated: Bool) {
+        self.idleSwitchTask?.cancel()
+        self.idleSwitchTask = nil
+
+        guard self.isWaitingGroup else {
+            self.idleSwitchOpacity = 1
+            return
+        }
+
+        guard animated else {
+            self.idleSwitchOpacity = 1
+            return
+        }
+
+        let startDelay = max(self.typewriterStartDelay, 0)
+        self.idleSwitchOpacity = 0
+        self.idleSwitchTask = Task { @MainActor in
+            if startDelay > 0 {
+                try? await Task.sleep(nanoseconds: UInt64(startDelay * 1_000_000_000))
+            }
+            guard !Task.isCancelled else { return }
+            withAnimation(.easeOut(duration: TokenDailyBoardConversationOnlyIdleSwitchRules.crossfadeDuration)) {
+                self.idleSwitchOpacity = 1
+            }
+            self.idleSwitchTask = nil
+        }
     }
 }
 
@@ -3482,6 +3826,9 @@ private struct TokenDailyBoardNarrativeAvatarView: View {
     let idleShakeSequenceID: Int
     let animatesReplacement: Bool
     let motionConfiguration: TokenDailyBoardNarrativeAvatarMotionConfiguration
+    let presentationOpacity: Double
+    let effectPreset: TokenDailyBoardConversationOnlyAvatarEffectPreset
+    let effectReplayToken: String
 
     @State private var displayedSlot: CodexDailyAvatarResolvedSlot?
     @State private var displayedTransitionKey = ""
@@ -3495,7 +3842,10 @@ private struct TokenDailyBoardNarrativeAvatarView: View {
 
     private var roundedSquareShape: RoundedRectangle {
         RoundedRectangle(
-            cornerRadius: TokenDailyBoardNarrativeLayout.avatarCornerRadius,
+            cornerRadius: TokenDailyBoardNarrativeLayout.avatarCornerRadius(
+                for: self.displayMode,
+                usesCircularMask: self.usesCircularMask,
+                avatarSize: self.avatarSize),
             style: .continuous)
     }
 
@@ -3523,9 +3873,21 @@ private struct TokenDailyBoardNarrativeAvatarView: View {
 
             self.avatarLayer(for: self.displayedSlot ?? self.activeAvatarSlot)
                 .opacity(self.displayedOpacity)
+
+            TokenDailyBoardConversationOnlyAvatarEffectOverlay(
+                avatarSize: self.avatarSize,
+                usesCircularMask: self.usesCircularMask,
+                cornerRadius: TokenDailyBoardNarrativeLayout.avatarCornerRadius(
+                    for: self.displayMode,
+                    usesCircularMask: self.usesCircularMask,
+                    avatarSize: self.avatarSize),
+                preset: self.effectPreset,
+                replayToken: self.effectReplayToken,
+                intensityScale: self.presentationOpacity)
         }
         .offset(x: self.horizontalShakeOffset)
         .scaleEffect(self.scaleFactor)
+        .opacity(self.presentationOpacity)
         .padding(self.usesCircularMask ? TokenDailyBoardNarrativeLayout.conversationOnlyAvatarImageInset : 0)
         .frame(width: self.avatarSize, height: self.avatarSize)
         .modifier(TokenDailyBoardNarrativeAvatarMaskModifier(
@@ -3911,7 +4273,10 @@ struct TokenDailyBoardNarrativeRailView: View {
                     replacementSequenceID: self.avatarReplacementSequenceID,
                     idleShakeSequenceID: self.avatarIdleShakeSequenceID,
                     animatesReplacement: self.animatesAvatarReplacement,
-                    motionConfiguration: .standard)
+                    motionConfiguration: .standard,
+                    presentationOpacity: 1,
+                    effectPreset: .avatar01,
+                    effectReplayToken: "")
                     .frame(
                         width: metrics.avatarSize,
                         height: metrics.avatarSize,

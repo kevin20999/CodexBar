@@ -331,11 +331,16 @@ struct RemainingQuotaFitnessCardView: View {
 
             if self.showsCachedBadge {
                 Text(self.cachedBadgeTitle)
-                    .font(.system(size: self.badgeFontSize, weight: .semibold))
+                    .font(TokenMenuTheme.labelFont(size: self.badgeFontSize, weight: .semibold))
                     .foregroundStyle(self.theme.textPrimary)
                     .padding(.horizontal, 8)
                     .padding(.vertical, self.compactMode ? 3.5 : 4)
-                    .background(Capsule().fill(self.theme.badgeFill))
+                    .background {
+                        RoundedRectangle(
+                            cornerRadius: TokenMenuTheme.chromeCornerRadius(default: 999, pixel: 6),
+                            style: .continuous)
+                            .fill(self.theme.badgeFill)
+                    }
             }
 
             if self.showsCachedAction, let cachedActionTitle, let onCachedAction {
@@ -376,12 +381,14 @@ private struct QuotaHeaderActionButtonStyle: ButtonStyle {
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .font(.system(size: self.compactMode ? 10.5 : 11, weight: .semibold))
+            .font(TokenMenuTheme.labelFont(size: self.compactMode ? 10.5 : 11, weight: .semibold))
             .foregroundStyle(configuration.isPressed ? self.theme.textPrimary.opacity(0.84) : self.theme.textPrimary)
             .padding(.horizontal, 8)
             .padding(.vertical, self.compactMode ? 3.5 : 4)
             .background(
-                Capsule()
+                RoundedRectangle(
+                    cornerRadius: TokenMenuTheme.chromeCornerRadius(default: 999, pixel: 6),
+                    style: .continuous)
                     .fill(self.theme.badgeFill.opacity(configuration.isPressed ? 0.78 : 0.92)))
             .scaleEffect(configuration.isPressed ? 0.985 : 1)
             .animation(.easeOut(duration: 0.12), value: configuration.isPressed)
@@ -448,7 +455,7 @@ private struct RemainingQuotaFitnessRowView: View {
             HStack(alignment: .center, spacing: 12) {
                 HStack(alignment: .center, spacing: self.textStackSpacing) {
                     Text(self.presentation.title)
-                        .font(.system(size: self.titleFontSize, weight: .medium))
+                        .font(TokenMenuTheme.labelFont(size: self.titleFontSize, weight: .medium))
                         .foregroundStyle(self.theme.textPrimary)
                         .lineLimit(1)
                         .layoutPriority(1)
@@ -462,7 +469,7 @@ private struct RemainingQuotaFitnessRowView: View {
                         }
 
                         Text(self.resetText)
-                            .font(.system(size: self.subtitleFontSize, weight: .regular))
+                            .font(TokenMenuTheme.labelFont(size: self.subtitleFontSize, weight: .regular))
                             .foregroundStyle(self.theme.textSecondary)
                             .lineLimit(1)
                             .truncationMode(.tail)
@@ -473,7 +480,7 @@ private struct RemainingQuotaFitnessRowView: View {
                 .frame(maxWidth: .infinity, minHeight: self.metricBlockHeight, alignment: .leading)
 
                 Text("\(Int(self.presentation.remainingPercent.rounded()))%")
-                    .font(.system(size: self.percentFontSize, weight: .bold))
+                    .font(TokenMenuTheme.metricFont(size: self.percentFontSize, weight: .bold))
                     .foregroundStyle(self.theme.percentGradient)
                     .monospacedDigit()
                     .lineLimit(1)
@@ -523,27 +530,52 @@ private struct RemainingQuotaFitnessProgressBar: View {
                 : max(width * self.clampedFraction, self.minimumFillWidth)
 
             ZStack(alignment: .leading) {
-                Capsule(style: .continuous)
+                RoundedRectangle(
+                    cornerRadius: TokenMenuTheme.chromeCornerRadius(
+                        default: self.barHeight / 2,
+                        pixel: min(max(self.barHeight * 0.28, 3), 5)),
+                    style: .continuous)
                     .fill(self.theme.track)
                     .overlay(
-                        Capsule(style: .continuous)
-                            .stroke(self.theme.trackStroke, lineWidth: 0.8))
+                        RoundedRectangle(
+                            cornerRadius: TokenMenuTheme.chromeCornerRadius(
+                                default: self.barHeight / 2,
+                                pixel: min(max(self.barHeight * 0.28, 3), 5)),
+                            style: .continuous)
+                            .stroke(self.theme.trackStroke, lineWidth: TokenMenuTheme.usesPixelChrome ? 1.2 : 0.8))
 
                 if fillWidth > 0 {
-                    Capsule(style: .continuous)
+                    RoundedRectangle(
+                        cornerRadius: TokenMenuTheme.chromeCornerRadius(
+                            default: self.barHeight / 2,
+                            pixel: min(max(self.barHeight * 0.28, 3), 5)),
+                        style: .continuous)
                         .fill(self.theme.progressGradient)
                         .frame(width: min(fillWidth, width))
                         .overlay(alignment: .top) {
-                            Capsule(style: .continuous)
+                            RoundedRectangle(
+                                cornerRadius: TokenMenuTheme.chromeCornerRadius(
+                                    default: self.barHeight / 2,
+                                    pixel: min(max(self.barHeight * 0.28, 3), 4)),
+                                style: .continuous)
                                 .fill(
                                     LinearGradient(
                                         colors: [Color.white.opacity(0.34), Color.clear],
                                         startPoint: .top,
                                         endPoint: .bottom))
                                 .frame(height: self.highlightHeight)
-                                .clipShape(Capsule(style: .continuous))
+                                .clipShape(
+                                    RoundedRectangle(
+                                        cornerRadius: TokenMenuTheme.chromeCornerRadius(
+                                            default: self.barHeight / 2,
+                                            pixel: min(max(self.barHeight * 0.28, 3), 4)),
+                                        style: .continuous))
                         }
-                        .shadow(color: self.theme.cardGlow.opacity(0.28), radius: 12, x: 0, y: 0)
+                        .shadow(
+                            color: self.theme.cardGlow.opacity(TokenMenuTheme.usesPixelChrome ? 0.20 : 0.28),
+                            radius: TokenMenuTheme.usesPixelChrome ? 0 : 12,
+                            x: TokenMenuTheme.usesPixelChrome ? 2 : 0,
+                            y: TokenMenuTheme.usesPixelChrome ? 2 : 0)
                 }
             }
         }
@@ -594,13 +626,13 @@ private struct RemainingQuotaFitnessPlaceholderRowView: View {
             HStack(alignment: .center, spacing: 12) {
                 HStack(alignment: .center, spacing: self.textStackSpacing) {
                     Text(self.presentation.title)
-                        .font(.system(size: self.titleFontSize, weight: .medium))
+                        .font(TokenMenuTheme.labelFont(size: self.titleFontSize, weight: .medium))
                         .foregroundStyle(self.theme.textPrimary.opacity(0.74))
                         .lineLimit(1)
                         .layoutPriority(1)
 
                     Text("--")
-                        .font(.system(size: self.subtitleFontSize, weight: .regular))
+                        .font(TokenMenuTheme.labelFont(size: self.subtitleFontSize, weight: .regular))
                         .foregroundStyle(self.theme.textSecondary.opacity(0.82))
                         .lineLimit(1)
                         .monospacedDigit()
@@ -609,7 +641,7 @@ private struct RemainingQuotaFitnessPlaceholderRowView: View {
                 .frame(maxWidth: .infinity, minHeight: self.metricBlockHeight, alignment: .leading)
 
                 Text("--")
-                    .font(.system(size: self.percentFontSize, weight: .bold))
+                    .font(TokenMenuTheme.metricFont(size: self.percentFontSize, weight: .bold))
                     .foregroundStyle(self.theme.textSecondary.opacity(0.82))
                     .monospacedDigit()
                     .lineLimit(1)

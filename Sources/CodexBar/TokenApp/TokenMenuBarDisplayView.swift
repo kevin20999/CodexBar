@@ -1,7 +1,7 @@
 import AppKit
 import SwiftUI
 
-struct MenuBarQuotaMetrics: Equatable {
+struct MenuBarQuotaMetrics: Equatable, Hashable {
     let shortLabel: String
     let summaryLabel: String
     let percentText: String
@@ -9,7 +9,7 @@ struct MenuBarQuotaMetrics: Equatable {
     let fraction: Double?
 }
 
-struct MenuBarDisplayMetrics: Equatable {
+struct MenuBarDisplayMetrics: Equatable, Hashable {
     let inputText: String
     let outputText: String
     let primaryQuota: MenuBarQuotaMetrics
@@ -685,11 +685,57 @@ struct MenuBarPreviewPlate<Content: View>: View {
 @MainActor
 enum MenuBarDisplayRenderer {
     static let menuBarTargetHeight: CGFloat = MenuBarDisplayView.baseTargetHeight
+    static let cacheLimit = 64
 
     struct RenderedLabel {
         let image: NSImage
         let displaySize: CGSize
     }
+
+    private struct RenderCacheKey: Hashable {
+        let mode: MenuBarDisplayMode
+        let metrics: MenuBarDisplayMetrics
+        let quotaStyle: MenuBarQuotaStyle
+        let targetHeightKey: Int
+        let rendererScaleKey: Int
+    }
+
+    private final class RenderCacheStore {
+        private let limit: Int
+        private var orderedKeys: [RenderCacheKey] = []
+        private var labelsByKey: [RenderCacheKey: RenderedLabel] = [:]
+
+        init(limit: Int) {
+            self.limit = limit
+        }
+
+        func label(for key: RenderCacheKey) -> RenderedLabel? {
+            self.labelsByKey[key]
+        }
+
+        func store(_ label: RenderedLabel, for key: RenderCacheKey) {
+            if self.labelsByKey[key] == nil {
+                self.orderedKeys.append(key)
+            }
+            self.labelsByKey[key] = label
+
+            while self.orderedKeys.count > self.limit {
+                let removedKey = self.orderedKeys.removeFirst()
+                self.labelsByKey.removeValue(forKey: removedKey)
+            }
+        }
+
+        func clear() {
+            self.orderedKeys.removeAll(keepingCapacity: false)
+            self.labelsByKey.removeAll(keepingCapacity: false)
+        }
+
+        var count: Int {
+            self.labelsByKey.count
+        }
+    }
+
+    private static let renderCacheStore = RenderCacheStore(limit: Self.cacheLimit)
 
     static func render(
         mode: MenuBarDisplayMode,
@@ -698,23 +744,53 @@ enum MenuBarDisplayRenderer {
         targetHeight: CGFloat = Self.menuBarTargetHeight)
         -> RenderedLabel?
     {
-        let content = MenuBarDisplayView(
+        let displayScale = max(targetHeight / Self.menuBarTargetHeight, 1)
+        let backingScaleFactor = NSScreen.main?.backingScaleFactor ?? 2
+        let rendererScale = backingScaleFactor * displayScale
+        let cacheKey = RenderCacheKey(
             mode: mode,
             metrics: metrics,
-            quotaStyle: quotaStyle)
-            .compositingGroup()
+            quotaStyle: quotaStyle,
+            targetHeightKey: Self.dimensionKey(for: targetHeight),
+            rendererScaleKey: Self.dimensionKey(for: rendererScale))
 
-        let renderer = ImageRenderer(content: content)
-        let displayScale = max(targetHeight / Self.menuBarTargetHeight, 1)
-        renderer.scale = (NSScreen.main?.backingScaleFactor ?? 2) * displayScale
+        if let cached = self.renderCacheStore.label(for: cacheKey) {
+            return cached
+        }
 
-        guard let image = renderer.nsImage else { return nil }
-        image.isTemplate = false
+        let renderedLabel = autoreleasepool { () -> RenderedLabel? in
+            let content = MenuBarDisplayView(
+                mode: mode,
+                metrics: metrics,
+                quotaStyle: quotaStyle)
+                .compositingGroup()
 
-        let naturalHeight = max(image.size.height, 1)
-        let scale = targetHeight / naturalHeight
-        return RenderedLabel(
-            image: image,
-            displaySize: CGSize(width: image.size.width * scale, height: targetHeight))
+            let renderer = ImageRenderer(content: content)
+            renderer.scale = rendererScale
+            guard let image = renderer.nsImage else { return nil }
+            image.isTemplate = false
+
+            let naturalHeight = max(image.size.height, 1)
+            let scale = targetHeight / naturalHeight
+            return RenderedLabel(
+                image: image,
+                displaySize: CGSize(width: image.size.width * scale, height: targetHeight))
+        }
+
+        guard let renderedLabel else { return nil }
+        self.renderCacheStore.store(renderedLabel, for: cacheKey)
+        return renderedLabel
+    }
+
+    static func clearCacheForTesting() {
+        self.renderCacheStore.clear()
+    }
+
+    static func cacheCountForTesting() -> Int {
+        self.renderCacheStore.count
+    }
+
+    private static func dimensionKey(for value: CGFloat) -> Int {
+        Int((value * 100).rounded())
     }
 }

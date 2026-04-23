@@ -22,6 +22,7 @@ struct TokenSpeedThroughputChartView: View {
     let verticalGridOpacity: Double
     let rocketFontSize: CGFloat
     let rocketTopOffset: CGFloat
+    @State private var rocketMotion = TokenSpeedRocketBurstMotion.zero
 
     init(
         model: TokenSpeedPanelModel,
@@ -96,17 +97,18 @@ struct TokenSpeedThroughputChartView: View {
                             .allowsHitTesting(false)
                         }
 
-                        TimelineView(.animation(minimumInterval: 1.0 / 30.0)) { context in
-                            if let placement = self.rocketHeadPlacement(proxy: proxy, geo: geo) {
-                                self.rocketHead(at: context.date)
-                                    .position(x: placement.x, y: placement.y)
-                                    .allowsHitTesting(false)
-                            }
+                        if let placement = self.rocketHeadPlacement(proxy: proxy, geo: geo) {
+                            self.rocketHead
+                                .position(x: placement.x, y: placement.y)
+                                .allowsHitTesting(false)
                         }
                     }
                 }
             }
             .frame(height: self.plotHeight)
+            .task(id: self.rocketBurstTrigger) {
+                await self.runRocketBurstAnimation()
+            }
 
             if self.showsAxisRow {
                 self.chartAxisRow
@@ -121,15 +123,18 @@ struct TokenSpeedThroughputChartView: View {
         return [0, self.model.scaleTopValue / 2, self.model.scaleTopValue]
     }
 
-    @ViewBuilder
-    private func rocketHead(at date: Date) -> some View {
-        let motion = self.rocketMotion(at: date)
+    private var rocketBurstTrigger: TokenSpeedRocketBurstTrigger? {
+        TokenSpeedRocketBurstTrigger(
+            launchTimestamp: self.model.rocketLaunchTimestamp,
+            launchStrength: self.model.rocketLaunchStrength)
+    }
+
+    private var rocketHead: some View {
         Text("🚀")
             .font(.system(size: self.rocketFontSize))
-            .offset(x: motion.xOffset, y: motion.yOffset)
-            .rotationEffect(.degrees(motion.rotation))
-            .scaleEffect(motion.scale)
-            .animation(.smooth(duration: 0.9), value: self.model.rocketHeadPoint)
+            .offset(x: self.rocketMotion.xOffset, y: self.rocketMotion.yOffset)
+            .rotationEffect(.degrees(self.rocketMotion.rotation))
+            .scaleEffect(self.rocketMotion.scale)
     }
 
     private var axisPlacements: [TokenSpeedVerticalGridPlacement] {
@@ -233,23 +238,47 @@ struct TokenSpeedThroughputChartView: View {
         return plotFrame.maxY - (plotFrame.height * CGFloat(value / self.model.scaleTopValue))
     }
 
-    private func rocketMotion(at date: Date) -> TokenSpeedThroughputRocketMotion {
-        guard let launchDate = self.model.rocketLaunchTimestamp,
-              self.model.rocketLaunchStrength > 0
-        else {
-            return .zero
+    @MainActor
+    private func runRocketBurstAnimation() async {
+        guard self.rocketBurstTrigger != nil else {
+            self.rocketMotion = .zero
+            return
         }
 
-        let elapsed = max(0, date.timeIntervalSince(launchDate))
-        let envelope = CGFloat(exp(-4.1 * elapsed))
-        let launchStrength = CGFloat(self.model.rocketLaunchStrength)
+        let launchStrength = TokenSpeedRocketBurstAnimator.clampedStrength(self.model.rocketLaunchStrength)
+        self.rocketMotion = .zero
 
-        return TokenSpeedThroughputRocketMotion(
-            xOffset: CGFloat(sin(elapsed * 46)) * launchStrength * 2.6 * envelope,
-            yOffset: (-launchStrength * 6.2 * envelope)
-                + (CGFloat(cos(elapsed * 52)) * launchStrength * 1.7 * envelope),
-            rotation: Double(sin(elapsed * 42)) * Double(launchStrength * 8 * envelope),
-            scale: 1 + (launchStrength * 0.08 * envelope))
+        withAnimation(TokenSpeedRocketBurstAnimator.ignitionAnimation) {
+            self.rocketMotion = TokenSpeedRocketBurstAnimator.launchMotion(
+                strength: launchStrength,
+                allowsHorizontalDrift: true)
+        }
+
+        do {
+            try await Task.sleep(for: TokenSpeedRocketBurstAnimator.ignitionDuration)
+        } catch {
+            return
+        }
+
+        guard !Task.isCancelled else { return }
+
+        withAnimation(TokenSpeedRocketBurstAnimator.settleAnimation) {
+            self.rocketMotion = TokenSpeedRocketBurstAnimator.settleMotion(
+                strength: launchStrength,
+                allowsHorizontalDrift: true)
+        }
+
+        do {
+            try await Task.sleep(for: TokenSpeedRocketBurstAnimator.settleDuration)
+        } catch {
+            return
+        }
+
+        guard !Task.isCancelled else { return }
+
+        withAnimation(TokenSpeedRocketBurstAnimator.returnAnimation) {
+            self.rocketMotion = .zero
+        }
     }
 
     private func chartAxisText(for date: Date) -> String {
@@ -260,17 +289,4 @@ struct TokenSpeedThroughputChartView: View {
         formatter.dateFormat = "HH:mm:ss"
         return formatter.string(from: date)
     }
-}
-
-private struct TokenSpeedThroughputRocketMotion: Equatable {
-    let xOffset: CGFloat
-    let yOffset: CGFloat
-    let rotation: Double
-    let scale: CGFloat
-
-    static let zero = TokenSpeedThroughputRocketMotion(
-        xOffset: 0,
-        yOffset: 0,
-        rotation: 0,
-        scale: 1)
 }

@@ -91,6 +91,403 @@ final class CodexSessionTokenProviderTests: XCTestCase {
         XCTAssertEqual(second.days.first?.totalTokens, 30)
     }
 
+    func test_refreshTailScansAppendedTokenCountEvents() throws {
+        let sandbox = try TestSandbox()
+        let sessionRoot = sandbox.root.appendingPathComponent("sessions", isDirectory: true)
+        let sessionFile = sessionRoot
+            .appendingPathComponent("2026/04/20", isDirectory: true)
+            .appendingPathComponent("incremental-rollout.jsonl", isDirectory: false)
+        try FileManager.default.createDirectory(
+            at: sessionFile.deletingLastPathComponent(),
+            withIntermediateDirectories: true)
+
+        let initialPayload = [
+            sessionMetaLine(timestamp: "2026-04-20T10:00:00.000Z", id: "session-incremental"),
+            tokenCountLine(.init(
+                timestamp: "2026-04-20T10:00:01.000Z",
+                input: 10,
+                output: 3,
+                cachedInput: 0,
+                reasoningOutput: 0,
+                total: 13,
+                totalUsage: 13,
+                totalUsageInput: 10,
+                totalUsageOutput: 3,
+                totalUsageCachedInput: 0,
+                totalUsageReasoningOutput: 0)),
+        ].joined(separator: "\n")
+        try initialPayload.write(to: sessionFile, atomically: true, encoding: .utf8)
+
+        let historyStore = TokenHistoryStore(fileURL: sandbox.statsFile)
+        let provider = CodexSessionTokenProvider(
+            sessionRootURL: sessionRoot,
+            calendar: Self.utcCalendar,
+            historyStore: historyStore)
+
+        let first = try provider.refresh()
+        XCTAssertEqual(first.tailScannedSessionCount, 0)
+        _ = try historyStore.merge(refreshResult: first)
+
+        let appendedLine = tokenCountLine(.init(
+            timestamp: "2026-04-20T10:00:05.000Z",
+            input: 7,
+            output: 2,
+            cachedInput: 0,
+            reasoningOutput: 0,
+            total: 9,
+            totalUsage: 22,
+            totalUsageInput: 17,
+            totalUsageOutput: 5,
+            totalUsageCachedInput: 0,
+            totalUsageReasoningOutput: 0))
+        let handle = try FileHandle(forWritingTo: sessionFile)
+        defer {
+            try? handle.close()
+        }
+        try handle.seekToEnd()
+        try handle.write(contentsOf: Data(("\n" + appendedLine).utf8))
+
+        let second = try provider.refresh()
+
+        XCTAssertEqual(second.reusedSessionCount, 0)
+        XCTAssertEqual(second.tailScannedSessionCount, 1)
+        XCTAssertEqual(second.days.first?.inputTokens, 17)
+        XCTAssertEqual(second.days.first?.outputTokens, 5)
+        XCTAssertEqual(second.days.first?.totalTokens, 22)
+        XCTAssertEqual(second.sessions["session-incremental"]?.dailyBuckets.first?.totalTokens, 22)
+        XCTAssertEqual(second.sessions["session-incremental"]?.runningTokenTotals?.inputTokens, 17)
+        XCTAssertEqual(second.sessions["session-incremental"]?.runningTokenTotals?.outputTokens, 5)
+        let currentSize = try XCTUnwrap(
+            try (FileManager.default.attributesOfItem(atPath: sessionFile.path)[.size] as? NSNumber)?.int64Value)
+        XCTAssertEqual(second.sessions["session-incremental"]?.lastScannedByteOffset, currentSize)
+    }
+
+    func test_refreshFallsBackToFullRescanWhenSessionFileShrinks() throws {
+        let sandbox = try TestSandbox()
+        let sessionRoot = sandbox.root.appendingPathComponent("sessions", isDirectory: true)
+        let sessionFile = sessionRoot
+            .appendingPathComponent("2026/04/20", isDirectory: true)
+            .appendingPathComponent("shrinking-rollout.jsonl", isDirectory: false)
+        try FileManager.default.createDirectory(
+            at: sessionFile.deletingLastPathComponent(),
+            withIntermediateDirectories: true)
+
+        let initialPayload = [
+            sessionMetaLine(timestamp: "2026-04-20T11:00:00.000Z", id: "session-shrink"),
+            tokenCountLine(.init(
+                timestamp: "2026-04-20T11:00:01.000Z",
+                input: 10,
+                output: 3,
+                cachedInput: 0,
+                reasoningOutput: 0,
+                total: 13,
+                totalUsage: 13,
+                totalUsageInput: 10,
+                totalUsageOutput: 3,
+                totalUsageCachedInput: 0,
+                totalUsageReasoningOutput: 0)),
+            tokenCountLine(.init(
+                timestamp: "2026-04-20T11:00:03.000Z",
+                input: 7,
+                output: 2,
+                cachedInput: 0,
+                reasoningOutput: 0,
+                total: 9,
+                totalUsage: 22,
+                totalUsageInput: 17,
+                totalUsageOutput: 5,
+                totalUsageCachedInput: 0,
+                totalUsageReasoningOutput: 0)),
+        ].joined(separator: "\n")
+        try initialPayload.write(to: sessionFile, atomically: true, encoding: .utf8)
+
+        let historyStore = TokenHistoryStore(fileURL: sandbox.statsFile)
+        let provider = CodexSessionTokenProvider(
+            sessionRootURL: sessionRoot,
+            calendar: Self.utcCalendar,
+            historyStore: historyStore)
+
+        let first = try provider.refresh()
+        XCTAssertEqual(first.days.first?.totalTokens, 22)
+        _ = try historyStore.merge(refreshResult: first)
+
+        let rewrittenPayload = [
+            sessionMetaLine(timestamp: "2026-04-20T11:00:00.000Z", id: "session-shrink"),
+            tokenCountLine(.init(
+                timestamp: "2026-04-20T11:00:01.000Z",
+                input: 8,
+                output: 1,
+                cachedInput: 0,
+                reasoningOutput: 0,
+                total: 9,
+                totalUsage: 9,
+                totalUsageInput: 8,
+                totalUsageOutput: 1,
+                totalUsageCachedInput: 0,
+                totalUsageReasoningOutput: 0)),
+        ].joined(separator: "\n")
+        try rewrittenPayload.write(to: sessionFile, atomically: true, encoding: .utf8)
+
+        let second = try provider.refresh()
+
+        XCTAssertEqual(second.reusedSessionCount, 0)
+        XCTAssertEqual(second.tailScannedSessionCount, 0)
+        XCTAssertEqual(second.days.first?.inputTokens, 8)
+        XCTAssertEqual(second.days.first?.outputTokens, 1)
+        XCTAssertEqual(second.days.first?.totalTokens, 9)
+        XCTAssertEqual(second.sessions["session-shrink"]?.dailyBuckets.first?.totalTokens, 9)
+    }
+
+    func test_refreshMigrationBatchPrioritizesNewFilesBeforeLegacySnapshots() throws {
+        let sandbox = try TestSandbox()
+        let sessionRoot = sandbox.root.appendingPathComponent("sessions", isDirectory: true)
+        let legacyFile = sessionRoot
+            .appendingPathComponent("2026/04/20", isDirectory: true)
+            .appendingPathComponent("legacy-rollout.jsonl", isDirectory: false)
+        let newFile = sessionRoot
+            .appendingPathComponent("2026/04/21", isDirectory: true)
+            .appendingPathComponent("new-rollout.jsonl", isDirectory: false)
+        try FileManager.default.createDirectory(
+            at: legacyFile.deletingLastPathComponent(),
+            withIntermediateDirectories: true)
+        try FileManager.default.createDirectory(
+            at: newFile.deletingLastPathComponent(),
+            withIntermediateDirectories: true)
+
+        try [
+            sessionMetaLine(timestamp: "2026-04-20T10:00:00.000Z", id: "session-legacy"),
+            tokenCountLine(.init(
+                timestamp: "2026-04-20T10:00:01.000Z",
+                input: 10,
+                output: 3,
+                cachedInput: 0,
+                reasoningOutput: 0,
+                total: 13,
+                totalUsage: 13,
+                totalUsageInput: 10,
+                totalUsageOutput: 3,
+                totalUsageCachedInput: 0,
+                totalUsageReasoningOutput: 0)),
+        ].joined(separator: "\n").write(to: legacyFile, atomically: true, encoding: .utf8)
+
+        try [
+            sessionMetaLine(timestamp: "2026-04-21T10:00:00.000Z", id: "session-new"),
+            tokenCountLine(.init(
+                timestamp: "2026-04-21T10:00:01.000Z",
+                input: 7,
+                output: 2,
+                cachedInput: 0,
+                reasoningOutput: 0,
+                total: 9,
+                totalUsage: 9,
+                totalUsageInput: 7,
+                totalUsageOutput: 2,
+                totalUsageCachedInput: 0,
+                totalUsageReasoningOutput: 0)),
+        ].joined(separator: "\n").write(to: newFile, atomically: true, encoding: .utf8)
+
+        let legacyModifiedAt = Date(timeIntervalSince1970: 1_776_001_200)
+        let newModifiedAt = Date(timeIntervalSince1970: 1_776_001_000)
+        try FileManager.default.setAttributes([.modificationDate: legacyModifiedAt], ofItemAtPath: legacyFile.path)
+        try FileManager.default.setAttributes([.modificationDate: newModifiedAt], ofItemAtPath: newFile.path)
+
+        let historyStore = TokenHistoryStore(fileURL: sandbox.statsFile)
+        let provider = CodexSessionTokenProvider(
+            sessionRootURL: sessionRoot,
+            calendar: Self.utcCalendar,
+            historyStore: historyStore)
+
+        let baseline = try provider.refresh()
+        let legacyOnlyDocument = TokenHistoryDocument(
+            sessions: ["session-legacy": Self.legacySnapshot(from: try XCTUnwrap(baseline.sessions["session-legacy"]))],
+            days: try XCTUnwrap(baseline.sessions["session-legacy"]).dailyBuckets,
+            hours: try XCTUnwrap(baseline.sessions["session-legacy"]).hourlyBuckets,
+            fiveMinuteBuckets: try XCTUnwrap(baseline.sessions["session-legacy"]).fiveMinuteBuckets,
+            outboundMessageDays: try XCTUnwrap(baseline.sessions["session-legacy"]).outboundMessageDailyBuckets,
+            lastRefreshAt: baseline.refreshedAt)
+        try Self.writeHistoryDocument(legacyOnlyDocument, to: sandbox.statsFile)
+
+        let batch = try provider.refreshMigrationBatch(maxRuntime: .zero)
+
+        XCTAssertEqual(batch.scannedFileCount, 1)
+        XCTAssertNotNil(batch.sessions["session-new"])
+        XCTAssertNil(batch.sessions["session-legacy"]?.runningTokenTotals)
+        XCTAssertEqual(provider.statisticsMigrationStatus().pendingFileCount, 2)
+    }
+
+    func test_refreshMigrationBatchProcessesNewestLegacySnapshotWithinSingleBatch() throws {
+        let sandbox = try TestSandbox()
+        let sessionRoot = sandbox.root.appendingPathComponent("sessions", isDirectory: true)
+        let olderFile = sessionRoot
+            .appendingPathComponent("2026/04/20", isDirectory: true)
+            .appendingPathComponent("older-rollout.jsonl", isDirectory: false)
+        let newerFile = sessionRoot
+            .appendingPathComponent("2026/04/21", isDirectory: true)
+            .appendingPathComponent("newer-rollout.jsonl", isDirectory: false)
+        try FileManager.default.createDirectory(
+            at: olderFile.deletingLastPathComponent(),
+            withIntermediateDirectories: true)
+        try FileManager.default.createDirectory(
+            at: newerFile.deletingLastPathComponent(),
+            withIntermediateDirectories: true)
+
+        try [
+            sessionMetaLine(timestamp: "2026-04-20T10:00:00.000Z", id: "session-older"),
+            tokenCountLine(.init(
+                timestamp: "2026-04-20T10:00:01.000Z",
+                input: 10,
+                output: 3,
+                cachedInput: 0,
+                reasoningOutput: 0,
+                total: 13,
+                totalUsage: 13,
+                totalUsageInput: 10,
+                totalUsageOutput: 3,
+                totalUsageCachedInput: 0,
+                totalUsageReasoningOutput: 0)),
+        ].joined(separator: "\n").write(to: olderFile, atomically: true, encoding: .utf8)
+
+        try [
+            sessionMetaLine(timestamp: "2026-04-21T10:00:00.000Z", id: "session-newer"),
+            tokenCountLine(.init(
+                timestamp: "2026-04-21T10:00:01.000Z",
+                input: 7,
+                output: 2,
+                cachedInput: 0,
+                reasoningOutput: 0,
+                total: 9,
+                totalUsage: 9,
+                totalUsageInput: 7,
+                totalUsageOutput: 2,
+                totalUsageCachedInput: 0,
+                totalUsageReasoningOutput: 0)),
+        ].joined(separator: "\n").write(to: newerFile, atomically: true, encoding: .utf8)
+
+        let olderModifiedAt = Date(timeIntervalSince1970: 1_776_000_000)
+        let newerModifiedAt = Date(timeIntervalSince1970: 1_776_000_600)
+        try FileManager.default.setAttributes([.modificationDate: olderModifiedAt], ofItemAtPath: olderFile.path)
+        try FileManager.default.setAttributes([.modificationDate: newerModifiedAt], ofItemAtPath: newerFile.path)
+
+        let historyStore = TokenHistoryStore(fileURL: sandbox.statsFile)
+        let provider = CodexSessionTokenProvider(
+            sessionRootURL: sessionRoot,
+            calendar: Self.utcCalendar,
+            historyStore: historyStore)
+
+        let baseline = try provider.refresh()
+        let legacyDocument = TokenHistoryDocument(
+            sessions: baseline.sessions.mapValues(Self.legacySnapshot),
+            days: baseline.days,
+            hours: baseline.hours,
+            fiveMinuteBuckets: baseline.fiveMinuteBuckets,
+            outboundMessageDays: baseline.outboundMessageDays,
+            lastRefreshAt: baseline.refreshedAt)
+        try Self.writeHistoryDocument(legacyDocument, to: sandbox.statsFile)
+
+        XCTAssertEqual(provider.statisticsMigrationStatus().pendingFileCount, 2)
+
+        let batch = try provider.refreshMigrationBatch(maxRuntime: .zero)
+        _ = try historyStore.merge(refreshResult: batch)
+
+        XCTAssertEqual(batch.scannedFileCount, 1)
+        XCTAssertNotNil(batch.sessions["session-newer"]?.runningTokenTotals)
+        XCTAssertNil(batch.sessions["session-older"]?.runningTokenTotals)
+        XCTAssertEqual(provider.statisticsMigrationStatus().pendingFileCount, 1)
+    }
+
+    func test_refreshMigrationBatchPersistsPartialProgressWithoutReplacingLegacyBuckets() throws {
+        let sandbox = try TestSandbox()
+        let sessionRoot = sandbox.root.appendingPathComponent("sessions", isDirectory: true)
+        let sessionFile = sessionRoot
+            .appendingPathComponent("2026/04/22", isDirectory: true)
+            .appendingPathComponent("legacy-progress.jsonl", isDirectory: false)
+        try FileManager.default.createDirectory(
+            at: sessionFile.deletingLastPathComponent(),
+            withIntermediateDirectories: true)
+        try fixtureJSONL.write(to: sessionFile, atomically: true, encoding: .utf8)
+
+        let historyStore = TokenHistoryStore(fileURL: sandbox.statsFile)
+        let provider = CodexSessionTokenProvider(
+            sessionRootURL: sessionRoot,
+            calendar: Self.utcCalendar,
+            historyStore: historyStore)
+
+        let baseline = try provider.refresh()
+        let legacySnapshot = Self.legacySnapshot(from: try XCTUnwrap(baseline.sessions["session-123"]))
+        let legacyDocument = TokenHistoryDocument(
+            sessions: ["session-123": legacySnapshot],
+            days: baseline.days,
+            hours: baseline.hours,
+            fiveMinuteBuckets: baseline.fiveMinuteBuckets,
+            outboundMessageDays: baseline.outboundMessageDays,
+            lastRefreshAt: baseline.refreshedAt)
+        try Self.writeHistoryDocument(legacyDocument, to: sandbox.statsFile)
+
+        let batch = try provider.refreshMigrationBatch(maxRuntime: .zero)
+        let merged = try historyStore.merge(refreshResult: batch)
+        let migratedSnapshot = try XCTUnwrap(merged.sessions["session-123"])
+
+        XCTAssertNil(migratedSnapshot.runningTokenTotals)
+        XCTAssertNotNil(migratedSnapshot.incrementalMigrationProgress)
+        XCTAssertEqual(migratedSnapshot.dailyBuckets, legacySnapshot.dailyBuckets)
+        XCTAssertEqual(migratedSnapshot.hourlyBuckets, legacySnapshot.hourlyBuckets)
+        XCTAssertEqual(migratedSnapshot.fiveMinuteBuckets, legacySnapshot.fiveMinuteBuckets)
+        XCTAssertEqual(
+            migratedSnapshot.incrementalMigrationProgress?.lastScannedByteOffset,
+            Int64(sessionMetaLine(timestamp: "2026-03-11T10:00:00.000Z", id: "session-123").utf8.count + 1))
+        XCTAssertEqual(provider.statisticsMigrationStatus().pendingFileCount, 1)
+    }
+
+    func test_refreshMigrationBatchCompletesChunkedLegacyMigrationAcrossMultipleBatches() throws {
+        let sandbox = try TestSandbox()
+        let sessionRoot = sandbox.root.appendingPathComponent("sessions", isDirectory: true)
+        let sessionFile = sessionRoot
+            .appendingPathComponent("2026/04/22", isDirectory: true)
+            .appendingPathComponent("legacy-finish.jsonl", isDirectory: false)
+        try FileManager.default.createDirectory(
+            at: sessionFile.deletingLastPathComponent(),
+            withIntermediateDirectories: true)
+        try fixtureJSONL.write(to: sessionFile, atomically: true, encoding: .utf8)
+
+        let historyStore = TokenHistoryStore(fileURL: sandbox.statsFile)
+        let provider = CodexSessionTokenProvider(
+            sessionRootURL: sessionRoot,
+            calendar: Self.utcCalendar,
+            historyStore: historyStore)
+
+        let baseline = try provider.refresh()
+        let legacyDocument = TokenHistoryDocument(
+            sessions: ["session-123": Self.legacySnapshot(from: try XCTUnwrap(baseline.sessions["session-123"]))],
+            days: baseline.days,
+            hours: baseline.hours,
+            fiveMinuteBuckets: baseline.fiveMinuteBuckets,
+            outboundMessageDays: baseline.outboundMessageDays,
+            lastRefreshAt: baseline.refreshedAt)
+        try Self.writeHistoryDocument(legacyDocument, to: sandbox.statsFile)
+
+        var finishedSnapshot: SessionUsageSnapshot?
+        for _ in 0..<8 {
+            let batch = try provider.refreshMigrationBatch(maxRuntime: .zero)
+            let merged = try historyStore.merge(refreshResult: batch)
+            let snapshot = merged.sessions["session-123"]
+            if snapshot?.incrementalMigrationProgress == nil,
+               snapshot?.runningTokenTotals != nil
+            {
+                finishedSnapshot = snapshot
+                break
+            }
+        }
+
+        let snapshot = try XCTUnwrap(finishedSnapshot)
+        XCTAssertNil(snapshot.incrementalMigrationProgress)
+        XCTAssertEqual(snapshot.runningTokenTotals?.inputTokens, 23)
+        XCTAssertEqual(snapshot.runningTokenTotals?.outputTokens, 7)
+        XCTAssertEqual(snapshot.dailyBuckets.first?.totalTokens, 30)
+        XCTAssertEqual(snapshot.hourlyBuckets.count, 2)
+        XCTAssertEqual(snapshot.fiveMinuteBuckets.count, 2)
+        XCTAssertEqual(provider.statisticsMigrationStatus().pendingFileCount, 0)
+    }
+
     func test_refreshCountsOnlyPostForkUsageForForkedSessionReplay() throws {
         let sandbox = try TestSandbox()
         let sessionRoot = sandbox.root.appendingPathComponent("sessions", isDirectory: true)
@@ -1219,12 +1616,13 @@ private func tokenCountLine(_ fixture: TokenCountFixture) -> String {
         "\"total_tokens\":\(fixture.total)",
     ].joined(separator: ",")
 
-    let totalUsageField = if fixture.totalUsage != nil
+    let hasTotalUsage = fixture.totalUsage != nil
         || fixture.totalUsageInput != nil
         || fixture.totalUsageOutput != nil
         || fixture.totalUsageCachedInput != nil
         || fixture.totalUsageReasoningOutput != nil
-    {
+    let totalUsageField: String
+    if hasTotalUsage {
         let totalUsageFields = [
             "\"input_tokens\":\(fixture.totalUsageInput ?? fixture.input)",
             "\"output_tokens\":\(fixture.totalUsageOutput ?? fixture.output)",
@@ -1232,9 +1630,9 @@ private func tokenCountLine(_ fixture: TokenCountFixture) -> String {
             "\"reasoning_output_tokens\":\(fixture.totalUsageReasoningOutput ?? fixture.reasoningOutput)",
             "\"total_tokens\":\(fixture.totalUsage ?? ((fixture.totalUsageInput ?? fixture.input) + (fixture.totalUsageOutput ?? fixture.output)))",
         ].joined(separator: ",")
-        ",\"total_token_usage\":{\(totalUsageFields)}"
+        totalUsageField = ",\"total_token_usage\":{\(totalUsageFields)}"
     } else {
-        ""
+        totalUsageField = ""
     }
 
     let modelContextWindowField = if let modelContextWindow = fixture.modelContextWindow {
@@ -1332,4 +1730,31 @@ private struct TokenCountFixture {
     let totalUsageReasoningOutput: Int? = nil
     let modelContextWindow: Int? = nil
     let limitID: String? = nil
+}
+
+private extension CodexSessionTokenProviderTests {
+    static func legacySnapshot(from snapshot: SessionUsageSnapshot) -> SessionUsageSnapshot {
+        SessionUsageSnapshot(
+            sessionID: snapshot.sessionID,
+            sessionOriginKind: snapshot.sessionOriginKind,
+            sourceFile: snapshot.sourceFile,
+            sourceFileIdentity: nil,
+            sourceFileSize: snapshot.sourceFileSize,
+            sourceFileModificationTime: snapshot.sourceFileModificationTime,
+            lastEventAt: snapshot.lastEventAt,
+            scanVersion: 0,
+            lastScannedByteOffset: nil,
+            runningTokenTotals: nil,
+            seenTokenCountFingerprints: [],
+            dailyBuckets: snapshot.dailyBuckets,
+            hourlyBuckets: snapshot.hourlyBuckets,
+            fiveMinuteBuckets: snapshot.fiveMinuteBuckets,
+            outboundMessageDailyBuckets: snapshot.outboundMessageDailyBuckets)
+    }
+
+    static func writeHistoryDocument(_ document: TokenHistoryDocument, to url: URL) throws {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        try encoder.encode(document).write(to: url, options: .atomic)
+    }
 }

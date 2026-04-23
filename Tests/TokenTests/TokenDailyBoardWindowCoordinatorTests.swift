@@ -96,6 +96,18 @@ final class TokenDailyBoardWindowCoordinatorTests: XCTestCase {
         XCTAssertLessThanOrEqual(restored.maxY, 860)
     }
 
+    func test_centeredFrameCanUsePhysicalScreenFrameWithoutBottomPinning() {
+        let screenFrame = CGRect(x: 0, y: 0, width: 1512, height: 982)
+
+        let frame = TokenDailyBoardWindowLayout.centeredFrame(
+            for: CGRect(x: 0, y: 0, width: 812, height: 142),
+            in: screenFrame)
+
+        XCTAssertEqual(frame.origin.x, 350, accuracy: 0.001)
+        XCTAssertEqual(frame.origin.y, 420, accuracy: 0.001)
+        XCTAssertEqual(frame.midY, screenFrame.midY, accuracy: 0.001)
+    }
+
     func test_configureWindowEnablesFullSizeContentAndStylesSystemButtons() {
         let window = self.makeWindow(
             title: "Original",
@@ -279,15 +291,15 @@ final class TokenDailyBoardWindowCoordinatorTests: XCTestCase {
         XCTAssertEqual(window.maxSize.height, compactSize.height, accuracy: 0.001)
     }
 
-    func test_conversationOnlyWidthTuningReCentersWindow() {
+    func test_conversationOnlyUsesNaturalCompactWidthAndPreservesCurrentOrigin() {
         let window = self.makeWindow(
             title: "Daily Board",
             styleMask: [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView],
             frame: NSRect(x: 50, y: 50, width: 1331, height: 764))
-        let visibleFrame = TokenDailyBoardWindowLayout.resolvedVisibleFrame(for: window)
+        let screenFrame = TokenDailyBoardWindowLayout.resolvedScreenFrame(for: window)
         var tuning = TokenDailyBoardConversationOnlyDebugRules.defaultTuning
         tuning.windowWidth = 812
-        let expectedHeight = TokenDailyBoardConversationOnlyLayoutRules.compactWindowSize(for: tuning).height
+        let compactSize = TokenDailyBoardConversationOnlyLayoutRules.compactWindowSize(for: tuning)
 
         TokenDailyBoardWindowLayout.applyDisplayMode(
             .conversationOnly,
@@ -295,18 +307,34 @@ final class TokenDailyBoardWindowCoordinatorTests: XCTestCase {
             animated: false,
             tuning: tuning)
 
-        let expectedFrame = TokenDailyBoardWindowLayout.centeredFrame(
+        let expectedFrame = TokenDailyBoardWindowLayout.restoredFrame(
             for: CGRect(
                 origin: .zero,
-                size: CGSize(width: 812, height: expectedHeight)),
-            in: visibleFrame)
+                size: compactSize),
+            savedOrigin: CGPoint(x: 50, y: 50),
+            in: screenFrame)
 
-        XCTAssertEqual(window.frame.width, 812, accuracy: 0.001)
-        XCTAssertEqual(window.frame.height, expectedHeight, accuracy: 0.001)
+        XCTAssertEqual(window.frame.width, compactSize.width, accuracy: 0.001)
+        XCTAssertEqual(window.frame.height, compactSize.height, accuracy: 0.001)
+        XCTAssertNotEqual(window.frame.width, 812, accuracy: 0.001)
         XCTAssertEqual(window.frame.origin.x, expectedFrame.origin.x, accuracy: 0.001)
         XCTAssertEqual(window.frame.origin.y, expectedFrame.origin.y, accuracy: 0.001)
-        XCTAssertEqual(window.minSize.width, 812, accuracy: 0.001)
-        XCTAssertEqual(window.maxSize.width, 812, accuracy: 0.001)
+        XCTAssertEqual(window.minSize.width, compactSize.width, accuracy: 0.001)
+        XCTAssertEqual(window.maxSize.width, compactSize.width, accuracy: 0.001)
+    }
+
+    func test_conversationOnlyPlacementBoundsUsePhysicalScreenFrame() {
+        let window = self.makeWindow(
+            title: "Daily Board",
+            styleMask: [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView],
+            frame: NSRect(x: 50, y: 50, width: 600, height: 400))
+
+        XCTAssertEqual(
+            TokenDailyBoardWindowLayout.placementBounds(for: .conversationOnly, window: window),
+            TokenDailyBoardWindowLayout.resolvedScreenFrame(for: window))
+        XCTAssertEqual(
+            TokenDailyBoardWindowLayout.placementBounds(for: .conversationAndToday, window: window),
+            TokenDailyBoardWindowLayout.resolvedVisibleFrame(for: window))
     }
 
     func test_nonConversationModesRemainResizable() {
@@ -548,6 +576,11 @@ final class TokenDailyBoardWindowCoordinatorTests: XCTestCase {
                 displayMode: .conversationOnly,
                 isWindowHovered: false,
                 windowChromeVisible: false))
+        XCTAssertFalse(
+            TokenDailyBoardTitlebarAutoHideRules.shouldShowAccessory(
+                displayMode: .conversationOnly,
+                isWindowHovered: true,
+                windowChromeVisible: false))
         XCTAssertTrue(
             TokenDailyBoardTitlebarAutoHideRules.shouldShowAccessory(
                 displayMode: .conversationOnly,
@@ -608,7 +641,35 @@ final class TokenDailyBoardWindowCoordinatorTests: XCTestCase {
                 windowChromeVisible: false),
             TokenDailyBoardWindowChromeStyleRules.trafficLightAlpha,
             accuracy: 0.001)
-        XCTAssertEqual(TokenDailyBoardTitlebarAutoHideRules.delayedAutoHideDelay, .seconds(3))
+    }
+
+    func test_windowHoverRulesUseWholeWindowFrameHitTesting() {
+        let windowFrame = CGRect(x: 120, y: 80, width: 360, height: 200)
+
+        XCTAssertTrue(
+            TokenDailyBoardWindowHoverRules.isMouseInsideWindowFrame(
+                windowFrame: windowFrame,
+                mouseLocation: CGPoint(x: 120, y: 80)))
+        XCTAssertTrue(
+            TokenDailyBoardWindowHoverRules.isMouseInsideWindowFrame(
+                windowFrame: windowFrame,
+                mouseLocation: CGPoint(x: 480, y: 280)))
+        XCTAssertFalse(
+            TokenDailyBoardWindowHoverRules.isMouseInsideWindowFrame(
+                windowFrame: windowFrame,
+                mouseLocation: CGPoint(x: 119.5, y: 180)))
+        XCTAssertFalse(
+            TokenDailyBoardWindowHoverRules.isMouseInsideWindowFrame(
+                windowFrame: windowFrame,
+                mouseLocation: CGPoint(x: 481, y: 180)))
+        XCTAssertFalse(
+            TokenDailyBoardWindowHoverRules.isMouseInsideWindowFrame(
+                windowFrame: windowFrame,
+                mouseLocation: CGPoint(x: 220, y: 79.5)))
+        XCTAssertFalse(
+            TokenDailyBoardWindowHoverRules.isMouseInsideWindowFrame(
+                windowFrame: windowFrame,
+                mouseLocation: CGPoint(x: 220, y: 281)))
     }
 
     func test_displayModeTransitionRulesDisableAnimatedWindowFramesAndGateNarrativeUpdates() {
@@ -634,6 +695,7 @@ final class TokenDailyBoardWindowCoordinatorTests: XCTestCase {
         tuning.windowWidth = 812
         tuning.windowGlassOpacity = 0.55
         tuning.windowGlassBlur = 12
+        let naturalWidth = TokenDailyBoardConversationOnlyLayoutRules.compactWindowSize(for: tuning).width
 
         let modeOneAppearance = TokenDailyBoardConversationOnlyDebugRules.resolvedWindowAppearance(
             tuning,
@@ -642,7 +704,7 @@ final class TokenDailyBoardWindowCoordinatorTests: XCTestCase {
             tuning,
             for: .conversationAndToday)
 
-        XCTAssertEqual(modeOneAppearance.resolvedWindowWidth, 812, accuracy: 0.001)
+        XCTAssertEqual(modeOneAppearance.resolvedWindowWidth, naturalWidth, accuracy: 0.001)
         XCTAssertEqual(modeOneAppearance.resolvedGlassOpacity, 0.55, accuracy: 0.001)
         XCTAssertEqual(modeOneAppearance.resolvedGlassBlur, 12, accuracy: 0.001)
         XCTAssertEqual(modeOneAppearance.blurOverlayOpacity, 0.275, accuracy: 0.001)
@@ -707,12 +769,118 @@ final class TokenDailyBoardWindowCoordinatorTests: XCTestCase {
             TokenDailyBoardConversationOnlyAvatarSequenceRules.style(
                 for: .idlePulse,
                 animationEnabled: true),
-            .defaultGroupIntro)
+            .none)
         XCTAssertEqual(
             TokenDailyBoardConversationOnlyAvatarSequenceRules.style(
                 for: .throughputPulse,
                 animationEnabled: true),
             .variantReplacement)
+    }
+
+    func test_modeOneBorderBeamOnlyAppliesToConversationOnlyAndWaitingIsLighter() {
+        let shellShape = TokenDailyBoardWindowShellPresentationRules.conversationOnlyOuterShellShape()
+        let shellMirror = Mirror(reflecting: shellShape)
+        let cornerSize = shellMirror.children.first(where: { $0.label == "cornerSize" })?.value as? CGSize
+
+        XCTAssertTrue(
+            TokenDailyBoardWindowShellPresentationRules.usesRoundedShell(for: .conversationOnly))
+        XCTAssertEqual(
+            TokenDailyBoardWindowShellPresentationRules.outerShellVisualStyle(for: .conversationOnly),
+            .dockGlass)
+        XCTAssertTrue(
+            TokenDailyBoardWindowShellPresentationRules.usesOuterSystemGlassShell(for: .conversationOnly))
+        XCTAssertFalse(
+            TokenDailyBoardWindowShellPresentationRules.usesBackgroundExtensionEffect(for: .conversationOnly))
+        XCTAssertFalse(
+            TokenDailyBoardWindowShadowRules.hasShadow(for: .conversationOnly))
+        XCTAssertEqual(
+            cornerSize?.width,
+            TokenDailyBoardWindowShellPresentationRules.conversationOnlyCornerRadius,
+            accuracy: 0.001)
+        XCTAssertEqual(
+            cornerSize?.height,
+            TokenDailyBoardWindowShellPresentationRules.conversationOnlyCornerRadius,
+            accuracy: 0.001)
+        XCTAssertFalse(
+            TokenDailyBoardWindowShellPresentationRules.usesRoundedShell(for: .conversationAndToday))
+        XCTAssertEqual(
+            TokenDailyBoardWindowShellPresentationRules.outerShellVisualStyle(for: .conversationAndToday),
+            .systemGlass)
+        XCTAssertTrue(
+            TokenDailyBoardWindowShellPresentationRules.usesOuterSystemGlassShell(for: .conversationAndToday))
+        XCTAssertTrue(
+            TokenDailyBoardWindowShellPresentationRules.usesBackgroundExtensionEffect(for: .conversationAndToday))
+        XCTAssertTrue(
+            TokenDailyBoardWindowShadowRules.hasShadow(for: .conversationAndToday))
+        XCTAssertFalse(
+            TokenDailyBoardWindowShellPresentationRules.usesRoundedShell(for: .fullBoard))
+        XCTAssertEqual(
+            TokenDailyBoardWindowShellPresentationRules.outerShellVisualStyle(for: .fullBoard),
+            .systemGlass)
+        XCTAssertTrue(
+            TokenDailyBoardWindowShellPresentationRules.usesOuterSystemGlassShell(for: .fullBoard))
+        XCTAssertTrue(
+            TokenDailyBoardWindowShellPresentationRules.usesBackgroundExtensionEffect(for: .fullBoard))
+        XCTAssertTrue(
+            TokenDailyBoardWindowShadowRules.hasShadow(for: .fullBoard))
+        XCTAssertFalse(
+            TokenDailyBoardConversationOnlyWindowPulseRules.showsBorderBeam(for: .conversationOnly))
+        XCTAssertFalse(
+            TokenDailyBoardConversationOnlyWindowPulseRules.showsBorderBeam(for: .conversationAndToday))
+        XCTAssertFalse(
+            TokenDailyBoardConversationOnlyWindowPulseRules.showsBorderBeam(for: .fullBoard))
+        XCTAssertGreaterThan(
+            TokenDailyBoardConversationOnlyWindowPulseRules.fillPeakOpacity(for: .standardRealtime),
+            TokenDailyBoardConversationOnlyWindowPulseRules.fillPeakOpacity(for: .idlePulse))
+        XCTAssertGreaterThan(
+            TokenDailyBoardConversationOnlyWindowPulseRules.sweepPeakOpacity(for: .standardRealtime),
+            TokenDailyBoardConversationOnlyWindowPulseRules.sweepPeakOpacity(for: .idlePulse))
+        XCTAssertEqual(
+            TokenDailyBoardConversationOnlyWindowPulseRules.sweepBlurRadius,
+            14,
+            accuracy: 0.001)
+    }
+
+    func test_conversationOnlyEffectPresetCatalogsExposeThirtyCases() {
+        XCTAssertEqual(TokenDailyBoardConversationOnlyAvatarEffectPreset.allCases.count, 30)
+        XCTAssertEqual(TokenDailyBoardConversationOnlyBackgroundEffectPreset.allCases.count, 30)
+        XCTAssertEqual(TokenDailyBoardConversationOnlyTextEffectPreset.allCases.count, 30)
+        XCTAssertEqual(
+            TokenDailyBoardConversationOnlyAvatarEffectRules.configuration(for: .avatar01).duration,
+            0.58,
+            accuracy: 0.001)
+        XCTAssertEqual(
+            TokenDailyBoardConversationOnlyBackgroundEffectRules.configuration(for: .background01).sweepWidthMultiplier,
+            0.74,
+            accuracy: 0.001)
+        XCTAssertEqual(
+            TokenDailyBoardConversationOnlyTextEffectRules.configuration(for: .text30).duration,
+            0.32,
+            accuracy: 0.001)
+    }
+
+    func test_conversationOnlyAvatarUsesDedicatedCornerRadius() {
+        XCTAssertEqual(
+            TokenDailyBoardNarrativeLayout.avatarCornerRadius(
+                for: .conversationOnly,
+                usesCircularMask: false,
+                avatarSize: 92),
+            30,
+            accuracy: 0.001)
+        XCTAssertEqual(
+            TokenDailyBoardNarrativeLayout.avatarCornerRadius(
+                for: .conversationAndToday,
+                usesCircularMask: false,
+                avatarSize: 92),
+            TokenDailyBoardNarrativeLayout.avatarCornerRadius,
+            accuracy: 0.001)
+        XCTAssertEqual(
+            TokenDailyBoardNarrativeLayout.avatarCornerRadius(
+                for: .conversationOnly,
+                usesCircularMask: true,
+                avatarSize: 92),
+            TokenDailyBoardNarrativeLayout.avatarCornerRadius,
+            accuracy: 0.001)
     }
 
     func test_narrativePresentationTimelineWaitsForFadeReturnAndQueueGap() {

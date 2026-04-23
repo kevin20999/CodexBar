@@ -198,6 +198,7 @@ struct TokenSpeedPanelContent: View {
     }
 
     var body: some View {
+        let theme = self.settings.menuVisualTheme
         VStack(alignment: .leading, spacing: TokenSpeedPanelLayout.rootSpacing) {
             self.chartCard
                 .fixedSize(horizontal: false, vertical: true)
@@ -216,6 +217,7 @@ struct TokenSpeedPanelContent: View {
                 cornerRadius: TokenSpeedPanelLayout.cornerRadius,
                 tint: TokenMenuTheme.panelGlassTint))
         .clipShape(self.panelShape)
+        .id(theme)
         .environment(\.locale, self.strings.locale)
     }
 

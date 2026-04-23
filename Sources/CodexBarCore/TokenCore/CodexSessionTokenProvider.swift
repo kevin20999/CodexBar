@@ -1,9 +1,20 @@
 import Foundation
 import Logging
 
+public struct TokenStatisticsMigrationStatus: Sendable, Equatable {
+    public let isPending: Bool
+    public let pendingFileCount: Int
+
+    public init(isPending: Bool, pendingFileCount: Int) {
+        self.isPending = isPending
+        self.pendingFileCount = pendingFileCount
+    }
+}
+
 public struct CodexSessionTokenProvider: Sendable {
     private static let currentScanVersion = 11
     private static let duplicateInstructionWindow: TimeInterval = 1.0
+    private static let persistedTokenCountFingerprintLimit = 16
 
     public let sessionRootURL: URL
     public let calendar: Calendar
@@ -31,8 +42,35 @@ public struct CodexSessionTokenProvider: Sendable {
         try self.scan(preserveMissingHistory: false)
     }
 
-    private func scan(preserveMissingHistory: Bool) throws -> TokenRefreshResult {
-        let cachedDocument = try preserveMissingHistory ? (self.historyStore.load()) : .empty
+    public func statisticsMigrationStatus() -> TokenStatisticsMigrationStatus {
+        let cachedDocument = (try? self.historyStore.load()) ?? .empty
+        let pendingFiles = self.migrationCandidateFiles(cachedDocument: cachedDocument)
+        return TokenStatisticsMigrationStatus(
+            isPending: !pendingFiles.isEmpty,
+            pendingFileCount: pendingFiles.count)
+    }
+
+    public func refreshMigrationBatch(maxRuntime: Duration) throws -> TokenRefreshResult {
+        let cachedDocument = (try? self.historyStore.load()) ?? .empty
+        let pendingFiles = self.migrationCandidateFiles(cachedDocument: cachedDocument)
+        guard !pendingFiles.isEmpty else {
+            return try self.scan(preserveMissingHistory: true, files: [])
+        }
+
+        let deadline = ContinuousClock().now + maxRuntime
+        return try self.scan(
+            preserveMissingHistory: true,
+            files: pendingFiles,
+            stopAfterProcessingDeadline: deadline)
+    }
+
+    private func scan(
+        preserveMissingHistory: Bool,
+        files requestedFiles: [URL]? = nil,
+        stopAfterProcessingDeadline: ContinuousClock.Instant? = nil)
+        throws -> TokenRefreshResult
+    {
+        let cachedDocument = preserveMissingHistory ? ((try? self.historyStore.load()) ?? .empty) : .empty
         let cachedSessions = cachedDocument.sessions
         let sessionIDBySourceFile = Dictionary(
             uniqueKeysWithValues: cachedDocument.sessions.values.map { ($0.sourceFile, $0.sessionID) })
@@ -45,9 +83,13 @@ public struct CodexSessionTokenProvider: Sendable {
 
         var errors: [String] = []
         var reusedSessionCount = 0
-        let files = self.sessionFiles()
+        var tailScannedSessionCount = 0
+        let files = requestedFiles ?? self.sessionFiles()
+        let clock = ContinuousClock()
+        var processedFileCount = 0
 
         for fileURL in files {
+            processedFileCount += 1
             scannedSourceFiles.insert(fileURL.path)
             let metadata: SourceFileMetadata
             do {
@@ -81,6 +123,74 @@ public struct CodexSessionTokenProvider: Sendable {
                 continue
             }
 
+            if let cachedSessionID = sessionIDBySourceFile[fileURL.path],
+               let cachedSnapshot = cachedSessions[cachedSessionID]
+            {
+                if let stopAfterProcessingDeadline,
+                   self.needsIncrementalMetadataMigration(cachedSnapshot, metadata: metadata)
+                {
+                    do {
+                        let parsedFile = try self.migrateCachedSnapshotMetadataChunk(
+                            at: fileURL,
+                            metadata: metadata,
+                            cachedSnapshot: cachedSnapshot,
+                            deadline: stopAfterProcessingDeadline)
+                        errors.append(contentsOf: parsedFile.warnings)
+
+                        if let parsedSnapshot = parsedFile.snapshot,
+                           seenSessionIDs.insert(parsedSnapshot.sessionID).inserted
+                        {
+                            currentSessions[parsedSnapshot.sessionID] = parsedSnapshot
+                            sourceFileBySessionID[parsedSnapshot.sessionID] = parsedSnapshot.sourceFile
+                            if let fileIdentity = metadata.fileIdentity ?? parsedSnapshot.sourceFileIdentity {
+                                seenFileIdentities.insert(fileIdentity)
+                            }
+                        }
+
+                        if clock.now >= stopAfterProcessingDeadline {
+                            break
+                        }
+
+                        continue
+                    } catch {
+                        let message =
+                            "Failed migration batch for \(fileURL.lastPathComponent): \(error.localizedDescription)"
+                        self.logger.error("\(message)")
+                        errors.append(message)
+                    }
+                }
+
+                do {
+                    if let parsedFile = try self.parseSessionFileIncrementallyIfPossible(
+                        at: fileURL,
+                        metadata: metadata,
+                        cachedSnapshot: cachedSnapshot)
+                    {
+                        errors.append(contentsOf: parsedFile.warnings)
+
+                        guard let parsedSnapshot = parsedFile.snapshot else {
+                            continue
+                        }
+
+                        guard seenSessionIDs.insert(parsedSnapshot.sessionID).inserted else {
+                            continue
+                        }
+
+                        tailScannedSessionCount += 1
+                        currentSessions[parsedSnapshot.sessionID] = parsedSnapshot
+                        sourceFileBySessionID[parsedSnapshot.sessionID] = parsedSnapshot.sourceFile
+                        if let fileIdentity = metadata.fileIdentity ?? parsedSnapshot.sourceFileIdentity {
+                            seenFileIdentities.insert(fileIdentity)
+                        }
+                        continue
+                    }
+                } catch {
+                    let message = "Failed incremental parse for \(fileURL.lastPathComponent): \(error.localizedDescription)"
+                    self.logger.error("\(message)")
+                    errors.append(message)
+                }
+            }
+
             do {
                 let parsedFile = try self.parseSessionFile(
                     at: fileURL,
@@ -106,6 +216,12 @@ public struct CodexSessionTokenProvider: Sendable {
                 self.logger.error("\(message)")
                 errors.append(message)
             }
+
+            if let stopAfterProcessingDeadline,
+               clock.now >= stopAfterProcessingDeadline
+            {
+                break
+            }
         }
 
         var sessions = preserveMissingHistory
@@ -127,8 +243,9 @@ public struct CodexSessionTokenProvider: Sendable {
             fiveMinuteBuckets: fiveMinuteBuckets,
             outboundMessageDays: outboundMessageDays,
             refreshedAt: Date(),
-            scannedFileCount: files.count,
+            scannedFileCount: processedFileCount,
             reusedSessionCount: reusedSessionCount,
+            tailScannedSessionCount: tailScannedSessionCount,
             errors: errors)
     }
 
@@ -156,6 +273,78 @@ public struct CodexSessionTokenProvider: Sendable {
         }
 
         return files
+    }
+
+    private func migrationCandidateFiles(cachedDocument: TokenHistoryDocument) -> [URL] {
+        let cachedSessions = cachedDocument.sessions
+        let sessionIDBySourceFile = Dictionary(
+            uniqueKeysWithValues: cachedSessions.values.map { ($0.sourceFile, $0.sessionID) })
+        var candidates: [MigrationCandidate] = []
+
+        for fileURL in self.sessionFiles() {
+            let metadata = (try? self.metadata(for: fileURL)) ?? SourceFileMetadata(
+                fileSize: nil,
+                modificationDate: nil,
+                sourceFile: fileURL.path,
+                fileIdentity: nil)
+            let isForkedReplay = ((try? self.initialSessionMetadata(at: fileURL))?.forkedFromSessionID) != nil
+
+            let priority: Int
+            if let cachedSessionID = sessionIDBySourceFile[fileURL.path],
+               let cachedSnapshot = cachedSessions[cachedSessionID]
+            {
+                if self.needsIncrementalMetadataMigration(cachedSnapshot, metadata: metadata) {
+                    priority = 1
+                } else if cachedSnapshot.scanVersion != Self.currentScanVersion {
+                    priority = 2
+                } else {
+                    continue
+                }
+            } else {
+                priority = 0
+            }
+
+            candidates.append(MigrationCandidate(
+                fileURL: fileURL,
+                priority: priority,
+                isForkedReplay: isForkedReplay,
+                modificationDate: metadata.modificationDate ?? .distantPast))
+        }
+
+        candidates.sort { (lhs: MigrationCandidate, rhs: MigrationCandidate) in
+            if lhs.priority != rhs.priority {
+                return lhs.priority < rhs.priority
+            }
+            if lhs.isForkedReplay != rhs.isForkedReplay {
+                return rhs.isForkedReplay
+            }
+            if lhs.modificationDate != rhs.modificationDate {
+                return lhs.modificationDate > rhs.modificationDate
+            }
+            return lhs.fileURL.path < rhs.fileURL.path
+        }
+
+        return candidates.map(\.fileURL)
+    }
+
+    private func needsIncrementalMetadataMigration(
+        _ snapshot: SessionUsageSnapshot,
+        metadata: SourceFileMetadata)
+        -> Bool
+    {
+        if snapshot.incrementalMigrationProgress != nil {
+            return true
+        }
+        if snapshot.lastScannedByteOffset == nil {
+            return true
+        }
+        if snapshot.runningTokenTotals == nil {
+            return true
+        }
+        if snapshot.sourceFileIdentity == nil, metadata.fileIdentity != nil {
+            return true
+        }
+        return false
     }
 
     private func sessionRoots() -> [URL] {
@@ -193,9 +382,15 @@ public struct CodexSessionTokenProvider: Sendable {
     }
 
     private func matchesCachedSnapshot(_ snapshot: SessionUsageSnapshot, metadata: SourceFileMetadata) -> Bool {
+        guard snapshot.incrementalMigrationProgress == nil else { return false }
         guard snapshot.sourceFile == metadata.sourceFile else { return false }
         guard snapshot.sourceFileSize == metadata.fileSize else { return false }
         guard snapshot.scanVersion == Self.currentScanVersion else { return false }
+        if snapshot.sourceFileIdentity != metadata.fileIdentity,
+           snapshot.sourceFileIdentity != nil || metadata.fileIdentity != nil
+        {
+            return false
+        }
 
         switch (snapshot.sourceFileModificationTime, metadata.modificationDate) {
         case (nil, nil):
@@ -207,96 +402,308 @@ public struct CodexSessionTokenProvider: Sendable {
         }
     }
 
+    private func parseSessionFileIncrementallyIfPossible(
+        at fileURL: URL,
+        metadata: SourceFileMetadata,
+        cachedSnapshot: SessionUsageSnapshot)
+        throws -> ParsedSessionFile?
+    {
+        guard cachedSnapshot.incrementalMigrationProgress == nil else { return nil }
+        guard cachedSnapshot.sourceFile == metadata.sourceFile else { return nil }
+        guard cachedSnapshot.scanVersion == Self.currentScanVersion else { return nil }
+        guard let previousFileSize = cachedSnapshot.sourceFileSize,
+              let currentFileSize = metadata.fileSize,
+              currentFileSize > previousFileSize
+        else {
+            return nil
+        }
+        guard let lastScannedByteOffset = cachedSnapshot.lastScannedByteOffset,
+              lastScannedByteOffset >= 0,
+              lastScannedByteOffset <= currentFileSize
+        else {
+            return nil
+        }
+        guard cachedSnapshot.runningTokenTotals != nil else { return nil }
+        if cachedSnapshot.sourceFileIdentity != metadata.fileIdentity,
+           cachedSnapshot.sourceFileIdentity != nil || metadata.fileIdentity != nil
+        {
+            return nil
+        }
+
+        if let initialMetadata = try self.initialSessionMetadata(at: fileURL) {
+            guard initialMetadata.forkedFromSessionID == nil else { return nil }
+            guard initialMetadata.sessionID == cachedSnapshot.sessionID else { return nil }
+            guard initialMetadata.sessionOriginKind == cachedSnapshot.sessionOriginKind else { return nil }
+        }
+
+        var state = ParsedSessionState(snapshot: cachedSnapshot)
+        let progress = try self.forEachNonEmptyLine(at: fileURL, startOffset: lastScannedByteOffset) { line, _ in
+            self.processParsedLine(line, into: &state)
+            return true
+        }
+
+        return self.makeParsedSessionFile(
+            fileURL: fileURL,
+            metadata: metadata,
+            sessionID: cachedSnapshot.sessionID,
+            sessionOriginKind: cachedSnapshot.sessionOriginKind,
+            state: state,
+            warnings: [],
+            sourceFileIdentity: metadata.fileIdentity ?? cachedSnapshot.sourceFileIdentity,
+            lastScannedByteOffset: progress.nextByteOffset)
+    }
+
+    private func migrateCachedSnapshotMetadataChunk(
+        at fileURL: URL,
+        metadata: SourceFileMetadata,
+        cachedSnapshot: SessionUsageSnapshot,
+        deadline: ContinuousClock.Instant)
+        throws -> ParsedSessionFile
+    {
+        let progress = self.resumableMigrationProgress(for: cachedSnapshot, metadata: metadata)
+        var state = ParsedSessionState(progress: progress)
+        let clock = ContinuousClock()
+        let lineProgress = try self.forEachNonEmptyLine(
+            at: fileURL,
+            startOffset: progress.lastScannedByteOffset)
+        { line, _ in
+            self.processParsedLine(line, into: &state)
+            return clock.now < deadline
+        }
+
+        if lineProgress.reachedEOF {
+            return self.makeParsedSessionFile(
+                fileURL: fileURL,
+                metadata: metadata,
+                sessionID: cachedSnapshot.sessionID,
+                sessionOriginKind: cachedSnapshot.sessionOriginKind,
+                state: state,
+                warnings: [],
+                sourceFileIdentity: metadata.fileIdentity ?? progress.sourceFileIdentity,
+                lastScannedByteOffset: lineProgress.nextByteOffset)
+        }
+
+        let nextProgress = SessionIncrementalMigrationProgress(
+            lastScannedByteOffset: lineProgress.nextByteOffset,
+            sourceFileIdentity: metadata.fileIdentity ?? progress.sourceFileIdentity,
+            observedFileSize: metadata.fileSize,
+            observedModificationTime: metadata.modificationDate,
+            scanVersion: Self.currentScanVersion,
+            runningTokenTotals: state.runningTokenTotals,
+            seenTokenCountFingerprints: state.recentTokenCountFingerprints,
+            lastEventAt: state.lastEventAt,
+            dailyBuckets: Array(state.dayBuckets.values),
+            hourlyBuckets: Array(state.hourBuckets.values),
+            fiveMinuteBuckets: Array(state.fiveMinuteBuckets.values),
+            instructionCandidates: state.instructionCandidates.map(\.persistedValue))
+        return ParsedSessionFile(
+            snapshot: SessionUsageSnapshot(
+                sessionID: cachedSnapshot.sessionID,
+                sessionOriginKind: cachedSnapshot.sessionOriginKind,
+                sourceFile: cachedSnapshot.sourceFile,
+                sourceFileIdentity: cachedSnapshot.sourceFileIdentity,
+                sourceFileSize: cachedSnapshot.sourceFileSize,
+                sourceFileModificationTime: cachedSnapshot.sourceFileModificationTime,
+                lastEventAt: cachedSnapshot.lastEventAt,
+                scanVersion: cachedSnapshot.scanVersion,
+                lastScannedByteOffset: cachedSnapshot.lastScannedByteOffset,
+                runningTokenTotals: cachedSnapshot.runningTokenTotals,
+                seenTokenCountFingerprints: cachedSnapshot.seenTokenCountFingerprints,
+                incrementalMigrationProgress: nextProgress,
+                dailyBuckets: cachedSnapshot.dailyBuckets,
+                hourlyBuckets: cachedSnapshot.hourlyBuckets,
+                fiveMinuteBuckets: cachedSnapshot.fiveMinuteBuckets,
+                outboundMessageDailyBuckets: cachedSnapshot.outboundMessageDailyBuckets),
+            warnings: [])
+    }
+
+    private func resumableMigrationProgress(
+        for snapshot: SessionUsageSnapshot,
+        metadata: SourceFileMetadata)
+        -> SessionIncrementalMigrationProgress
+    {
+        if let progress = snapshot.incrementalMigrationProgress,
+           self.canResumeMigrationProgress(progress, metadata: metadata)
+        {
+            return progress
+        }
+
+        return SessionIncrementalMigrationProgress(
+            lastScannedByteOffset: 0,
+            sourceFileIdentity: metadata.fileIdentity,
+            observedFileSize: metadata.fileSize,
+            observedModificationTime: metadata.modificationDate,
+            scanVersion: Self.currentScanVersion)
+    }
+
+    private func canResumeMigrationProgress(
+        _ progress: SessionIncrementalMigrationProgress,
+        metadata: SourceFileMetadata)
+        -> Bool
+    {
+        guard progress.scanVersion == Self.currentScanVersion else { return false }
+        guard progress.lastScannedByteOffset >= 0 else { return false }
+        if let currentSize = metadata.fileSize,
+           progress.lastScannedByteOffset > currentSize
+        {
+            return false
+        }
+        if progress.sourceFileIdentity != metadata.fileIdentity,
+           progress.sourceFileIdentity != nil || metadata.fileIdentity != nil
+        {
+            return false
+        }
+        return true
+    }
+
     private func parseSessionFile(
         at fileURL: URL,
         metadata: SourceFileMetadata,
         sourceFileBySessionID: [String: String])
         throws -> ParsedSessionFile
     {
-        let raw = try String(contentsOf: fileURL, encoding: .utf8)
-        let lines = self.nonEmptyLines(from: raw)
-        let initialMetadata = self.initialSessionMetadata(from: lines)
-        let sessionID = initialMetadata?.sessionID ?? fileURL.path
-        let sessionOriginKind = initialMetadata?.sessionOriginKind ?? .regular
-        var warnings: [String] = []
-        var dayBuckets: [String: DailyTokenStats] = [:]
-        var hourBuckets: [Date: HourlyTokenStats] = [:]
-        var fiveMinuteBuckets: [Date: FiveMinuteTokenStats] = [:]
-        var outboundMessageDayBuckets: [String: DailyOutboundMessageStats] = [:]
-        var instructionCandidates: [HumanInstructionCandidate] = []
-        var seenTokenCountFingerprints: Set<String> = []
-        var runningTokenTotals: RunningTokenTotals?
-        var lastEventAt: Date?
-        let parseLines: [String]
+        var sessionID = fileURL.path
+        var sessionOriginKind = SessionOriginKind.regular
+        var state = ParsedSessionState()
+        var pendingLines: [String] = []
+        var resolvedSessionMetadata = false
+        let progress: LineIterationResult
 
-        if let initialMetadata,
-           let forkedFromSessionID = initialMetadata.forkedFromSessionID
-        {
-            guard let parentSourceFile = sourceFileBySessionID[forkedFromSessionID],
-                  FileManager.default.fileExists(atPath: parentSourceFile)
-            else {
-                let message = "Skipping forked session \(sessionID) from \(fileURL.lastPathComponent): parent session \(forkedFromSessionID) source file is unavailable"
-                self.logger.warning("\(message)")
-                warnings.append(message)
-                return ParsedSessionFile(snapshot: nil, warnings: warnings)
+        do {
+            progress = try self.forEachNonEmptyLine(at: fileURL) { line, index in
+                if !resolvedSessionMetadata {
+                    pendingLines.append(line)
+
+                    if let metadata = self.sessionMetadata(from: line, lineIndex: index) {
+                        sessionID = metadata.sessionID
+                        sessionOriginKind = metadata.sessionOriginKind
+                        if metadata.forkedFromSessionID != nil {
+                            throw ForkedSessionReplayDetected(metadata: metadata)
+                        }
+                        resolvedSessionMetadata = true
+                        for pendingLine in pendingLines {
+                            self.processParsedLine(pendingLine, into: &state)
+                        }
+                        pendingLines.removeAll(keepingCapacity: true)
+                        return true
+                    }
+
+                    if self.parseJSONObject(from: line) != nil {
+                        resolvedSessionMetadata = true
+                        for pendingLine in pendingLines {
+                            self.processParsedLine(pendingLine, into: &state)
+                        }
+                        pendingLines.removeAll(keepingCapacity: true)
+                    }
+                    return true
+                }
+
+                self.processParsedLine(line, into: &state)
+                return true
             }
-
-            let parentRaw = try String(contentsOf: URL(fileURLWithPath: parentSourceFile), encoding: .utf8)
-            let childReplayLines = Array(lines.dropFirst(initialMetadata.lineIndex + 1))
-            let parentLines = self.nonEmptyLines(from: parentRaw)
-            let replayPrefixLength = self.sharedReplayPrefixLength(
-                childReplayLines: childReplayLines,
-                parentLines: parentLines)
-
-            guard replayPrefixLength > 0 else {
-                let message = "Skipping forked session \(sessionID) from \(fileURL.lastPathComponent): failed to resolve replay prefix against parent session \(forkedFromSessionID)"
-                self.logger.warning("\(message)")
-                warnings.append(message)
-                return ParsedSessionFile(snapshot: nil, warnings: warnings)
-            }
-
-            parseLines = Array(childReplayLines.dropFirst(replayPrefixLength))
-        } else {
-            parseLines = lines
+        } catch let forked as ForkedSessionReplayDetected {
+            return try self.parseForkedSessionFile(
+                at: fileURL,
+                metadata: metadata,
+                initialMetadata: forked.metadata,
+                sourceFileBySessionID: sourceFileBySessionID)
         }
 
-        for line in parseLines {
-            guard let payload = self.parseJSONObject(from: line) else { continue }
-
-            if let tokenCountFingerprint = self.parseTokenCountFingerprint(from: payload) {
-                guard seenTokenCountFingerprints.insert(tokenCountFingerprint).inserted else {
-                    continue
-                }
-            }
-
-            if let event = self.parseTokenEvent(from: payload, runningTokenTotals: &runningTokenTotals) {
-                let dayKey = DailyTokenStats.dayKey(for: event.timestamp, calendar: self.calendar)
-                var bucket = dayBuckets[dayKey] ?? DailyTokenStats.empty(for: dayKey)
-                bucket.add(event)
-                dayBuckets[dayKey] = bucket
-                let hourStart = HourlyTokenStats.hourStart(for: event.timestamp, calendar: self.calendar)
-                var hourBucket = hourBuckets[hourStart] ?? HourlyTokenStats.empty(for: hourStart)
-                hourBucket.add(event)
-                hourBuckets[hourStart] = hourBucket
-                let bucketStart = FiveMinuteTokenStats.bucketStart(for: event.timestamp, calendar: self.calendar)
-                var fiveMinuteBucket = fiveMinuteBuckets[bucketStart] ?? FiveMinuteTokenStats.empty(for: bucketStart)
-                fiveMinuteBucket.add(event)
-                fiveMinuteBuckets[bucketStart] = fiveMinuteBucket
-                if lastEventAt == nil || event.timestamp > lastEventAt ?? .distantPast {
-                    lastEventAt = event.timestamp
-                }
-            }
-
-            if let instructionCandidate = self.parseHumanInstructionCandidate(from: payload) {
-                instructionCandidates.append(instructionCandidate)
-                if lastEventAt == nil || instructionCandidate.event.timestamp > lastEventAt ?? .distantPast {
-                    lastEventAt = instructionCandidate.event.timestamp
-                }
+        if !pendingLines.isEmpty {
+            for pendingLine in pendingLines {
+                self.processParsedLine(pendingLine, into: &state)
             }
         }
 
+        return self.makeParsedSessionFile(
+            fileURL: fileURL,
+            metadata: metadata,
+            sessionID: sessionID,
+            sessionOriginKind: sessionOriginKind,
+            state: state,
+            warnings: [],
+            sourceFileIdentity: metadata.fileIdentity,
+            lastScannedByteOffset: progress.nextByteOffset)
+    }
+
+    private func parseForkedSessionFile(
+        at fileURL: URL,
+        metadata: SourceFileMetadata,
+        initialMetadata: InitialSessionMetadata,
+        sourceFileBySessionID: [String: String])
+        throws -> ParsedSessionFile
+    {
+        let sessionID = initialMetadata.sessionID
+        let sessionOriginKind = initialMetadata.sessionOriginKind
+        guard let forkedFromSessionID = initialMetadata.forkedFromSessionID,
+              let parentSourceFile = sourceFileBySessionID[forkedFromSessionID],
+              FileManager.default.fileExists(atPath: parentSourceFile)
+        else {
+            let message = "Skipping forked session \(sessionID) from \(fileURL.lastPathComponent): parent session is unavailable"
+            self.logger.warning("\(message)")
+            return ParsedSessionFile(snapshot: nil, warnings: [message])
+        }
+
+        let childLines = try self.loadNonEmptyLines(at: fileURL)
+        let childReplayLines = Array(childLines.dropFirst(initialMetadata.lineIndex + 1))
+        let parentLines = try self.loadNonEmptyLines(at: URL(fileURLWithPath: parentSourceFile))
+        let replayPrefixLength = self.sharedReplayPrefixLength(
+            childReplayLines: childReplayLines,
+            parentLines: parentLines)
+
+        guard replayPrefixLength > 0 else {
+            let message = "Skipping forked session \(sessionID) from \(fileURL.lastPathComponent): failed to resolve replay prefix against parent session \(forkedFromSessionID)"
+            self.logger.warning("\(message)")
+            return ParsedSessionFile(snapshot: nil, warnings: [message])
+        }
+
+        return self.parseProcessedLines(
+            Array(childReplayLines.dropFirst(replayPrefixLength)),
+            fileURL: fileURL,
+            metadata: metadata,
+            sessionID: sessionID,
+            sessionOriginKind: sessionOriginKind,
+            warnings: [])
+    }
+
+    private func parseProcessedLines(
+        _ lines: [String],
+        fileURL: URL,
+        metadata: SourceFileMetadata,
+        sessionID: String,
+        sessionOriginKind: SessionOriginKind,
+        warnings: [String])
+        -> ParsedSessionFile
+    {
+        var state = ParsedSessionState()
+        for line in lines {
+            self.processParsedLine(line, into: &state)
+        }
+        return self.makeParsedSessionFile(
+            fileURL: fileURL,
+            metadata: metadata,
+            sessionID: sessionID,
+            sessionOriginKind: sessionOriginKind,
+            state: state,
+            warnings: warnings,
+            sourceFileIdentity: metadata.fileIdentity,
+            lastScannedByteOffset: metadata.fileSize)
+    }
+
+    private func makeParsedSessionFile(
+        fileURL: URL,
+        metadata: SourceFileMetadata,
+        sessionID: String,
+        sessionOriginKind: SessionOriginKind,
+        state: ParsedSessionState,
+        warnings: [String],
+        sourceFileIdentity: String?,
+        lastScannedByteOffset: Int64?)
+        -> ParsedSessionFile
+    {
+        var outboundMessageDayBuckets = state.outboundMessageDayBuckets
         if sessionOriginKind != .subagentThreadSpawn {
-            for outboundEvent in self.canonicalOutboundEvents(from: instructionCandidates) {
+            for outboundEvent in self.canonicalOutboundEvents(from: state.instructionCandidates) {
                 let dayKey = DailyTokenStats.dayKey(for: outboundEvent.timestamp, calendar: self.calendar)
                 var bucket = outboundMessageDayBuckets[dayKey] ?? DailyOutboundMessageStats.empty(for: dayKey)
                 bucket.add(outboundEvent)
@@ -304,7 +711,7 @@ public struct CodexSessionTokenProvider: Sendable {
             }
         }
 
-        guard !dayBuckets.isEmpty || !outboundMessageDayBuckets.isEmpty else {
+        guard !state.dayBuckets.isEmpty || !outboundMessageDayBuckets.isEmpty else {
             return ParsedSessionFile(snapshot: nil, warnings: warnings)
         }
 
@@ -312,13 +719,17 @@ public struct CodexSessionTokenProvider: Sendable {
             sessionID: sessionID,
             sessionOriginKind: sessionOriginKind,
             sourceFile: fileURL.path,
+            sourceFileIdentity: sourceFileIdentity,
             sourceFileSize: metadata.fileSize,
             sourceFileModificationTime: metadata.modificationDate,
-            lastEventAt: lastEventAt,
+            lastEventAt: state.lastEventAt,
             scanVersion: Self.currentScanVersion,
-            dailyBuckets: dayBuckets.values.sorted { $0.date < $1.date },
-            hourlyBuckets: hourBuckets.values.sorted { $0.hourStart < $1.hourStart },
-            fiveMinuteBuckets: fiveMinuteBuckets.values.sorted { $0.bucketStart < $1.bucketStart },
+            lastScannedByteOffset: lastScannedByteOffset,
+            runningTokenTotals: state.runningTokenTotals ?? .zero,
+            seenTokenCountFingerprints: state.recentTokenCountFingerprints,
+            dailyBuckets: state.dayBuckets.values.sorted { $0.date < $1.date },
+            hourlyBuckets: state.hourBuckets.values.sorted { $0.hourStart < $1.hourStart },
+            fiveMinuteBuckets: state.fiveMinuteBuckets.values.sorted { $0.bucketStart < $1.bucketStart },
             outboundMessageDailyBuckets: outboundMessageDayBuckets.values.sorted { $0.date < $1.date })
         return ParsedSessionFile(snapshot: snapshot, warnings: warnings)
     }
@@ -384,32 +795,160 @@ public struct CodexSessionTokenProvider: Sendable {
         return object
     }
 
-    private func initialSessionMetadata(from lines: [String]) -> InitialSessionMetadata? {
-        for (index, line) in lines.enumerated() {
-            guard let object = self.parseJSONObject(from: line),
-                  (object["type"] as? String) == "session_meta",
-                  let payload = object["payload"] as? [String: Any],
-                  let sessionID = payload["id"] as? String,
-                  !sessionID.isEmpty
-            else {
-                continue
-            }
-
-            let forkedFromSessionID = (payload["forked_from_id"] as? String)?
-                .trimmingCharacters(in: .whitespacesAndNewlines)
-            let sessionOriginKind = self.sessionOriginKind(from: payload["source"])
-            return InitialSessionMetadata(
-                sessionID: sessionID,
-                forkedFromSessionID: forkedFromSessionID?.isEmpty == false ? forkedFromSessionID : nil,
-                sessionOriginKind: sessionOriginKind,
-                lineIndex: index)
+    private func sessionMetadata(from line: String, lineIndex: Int) -> InitialSessionMetadata? {
+        guard let object = self.parseJSONObject(from: line),
+              (object["type"] as? String) == "session_meta",
+              let payload = object["payload"] as? [String: Any],
+              let sessionID = payload["id"] as? String,
+              !sessionID.isEmpty
+        else {
+            return nil
         }
 
-        return nil
+        let forkedFromSessionID = (payload["forked_from_id"] as? String)?
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        return InitialSessionMetadata(
+            sessionID: sessionID,
+            forkedFromSessionID: forkedFromSessionID?.isEmpty == false ? forkedFromSessionID : nil,
+            sessionOriginKind: self.sessionOriginKind(from: payload["source"]),
+            lineIndex: lineIndex)
     }
 
-    private func nonEmptyLines(from raw: String) -> [String] {
-        raw.split(whereSeparator: \.isNewline).map(String.init)
+    private func initialSessionMetadata(at fileURL: URL) throws -> InitialSessionMetadata? {
+        var metadata: InitialSessionMetadata?
+        _ = try self.forEachNonEmptyLine(at: fileURL) { line, index in
+            if let resolvedMetadata = self.sessionMetadata(from: line, lineIndex: index) {
+                metadata = resolvedMetadata
+                return false
+            }
+            return self.parseJSONObject(from: line) == nil
+        }
+        return metadata
+    }
+
+    private func loadNonEmptyLines(at fileURL: URL) throws -> [String] {
+        var lines: [String] = []
+        _ = try self.forEachNonEmptyLine(at: fileURL) { line, _ in
+            lines.append(line)
+            return true
+        }
+        return lines
+    }
+
+    private func forEachNonEmptyLine(
+        at fileURL: URL,
+        startOffset: Int64 = 0,
+        body: (String, Int) throws -> Bool)
+        throws -> LineIterationResult
+    {
+        let handle = try FileHandle(forReadingFrom: fileURL)
+        defer {
+            try? handle.close()
+        }
+
+        let sanitizedStartOffset = max(0, startOffset)
+        var skipInitialPartialLine = false
+        if sanitizedStartOffset > 0 {
+            try handle.seek(toOffset: UInt64(sanitizedStartOffset - 1))
+            let previousByte = handle.readData(ofLength: 1).first
+            skipInitialPartialLine = previousByte != 0x0A
+        }
+        try handle.seek(toOffset: UInt64(sanitizedStartOffset))
+
+        var buffer = Data()
+        var lineIndex = 0
+        var bufferBaseOffset = sanitizedStartOffset
+        var nextByteOffset = sanitizedStartOffset
+
+        func processLineData(_ lineData: Data) throws -> Bool {
+            guard !lineData.isEmpty else { return true }
+            var normalizedLineData = lineData
+            if normalizedLineData.last == 0x0D {
+                normalizedLineData.removeLast()
+            }
+            guard !normalizedLineData.isEmpty else { return true }
+            let line = String(decoding: normalizedLineData, as: UTF8.self)
+            defer {
+                lineIndex += 1
+            }
+            return try body(line, lineIndex)
+        }
+
+        while true {
+            let chunk = handle.readData(ofLength: 64 * 1024)
+            if chunk.isEmpty {
+                break
+            }
+
+            buffer.append(chunk)
+            while let newlineIndex = buffer.firstIndex(of: 0x0A) {
+                let lineData = buffer.prefix(upTo: newlineIndex)
+                let consumedCount = Int64(newlineIndex + 1)
+                buffer.removeSubrange(...newlineIndex)
+                nextByteOffset = bufferBaseOffset + consumedCount
+                bufferBaseOffset = nextByteOffset
+
+                if skipInitialPartialLine {
+                    skipInitialPartialLine = false
+                    lineIndex += 1
+                    continue
+                }
+
+                if try !processLineData(Data(lineData)) {
+                    return LineIterationResult(nextByteOffset: nextByteOffset, reachedEOF: false)
+                }
+            }
+        }
+
+        if !buffer.isEmpty {
+            if skipInitialPartialLine {
+                return LineIterationResult(nextByteOffset: sanitizedStartOffset, reachedEOF: true)
+            }
+            nextByteOffset = bufferBaseOffset + Int64(buffer.count)
+            if try !processLineData(buffer) {
+                return LineIterationResult(nextByteOffset: nextByteOffset, reachedEOF: false)
+            }
+        }
+
+        return LineIterationResult(nextByteOffset: nextByteOffset, reachedEOF: true)
+    }
+
+    private func processParsedLine(_ line: String, into state: inout ParsedSessionState) {
+        guard let payload = self.parseJSONObject(from: line) else { return }
+
+        if let tokenCountFingerprint = self.parseTokenCountFingerprint(from: payload) {
+            guard state.recordTokenCountFingerprint(tokenCountFingerprint, maxPersistedCount: Self.persistedTokenCountFingerprintLimit) else {
+                return
+            }
+        }
+
+        if let event = self.parseTokenEvent(from: payload, runningTokenTotals: &state.runningTokenTotals) {
+            let dayKey = DailyTokenStats.dayKey(for: event.timestamp, calendar: self.calendar)
+            var dayBucket = state.dayBuckets[dayKey] ?? DailyTokenStats.empty(for: dayKey)
+            dayBucket.add(event)
+            state.dayBuckets[dayKey] = dayBucket
+
+            let hourStart = HourlyTokenStats.hourStart(for: event.timestamp, calendar: self.calendar)
+            var hourBucket = state.hourBuckets[hourStart] ?? HourlyTokenStats.empty(for: hourStart)
+            hourBucket.add(event)
+            state.hourBuckets[hourStart] = hourBucket
+
+            let bucketStart = FiveMinuteTokenStats.bucketStart(for: event.timestamp, calendar: self.calendar)
+            var fiveMinuteBucket = state.fiveMinuteBuckets[bucketStart] ?? FiveMinuteTokenStats.empty(for: bucketStart)
+            fiveMinuteBucket.add(event)
+            state.fiveMinuteBuckets[bucketStart] = fiveMinuteBucket
+
+            if state.lastEventAt == nil || event.timestamp > state.lastEventAt ?? .distantPast {
+                state.lastEventAt = event.timestamp
+            }
+        }
+
+        if let instructionCandidate = self.parseHumanInstructionCandidate(from: payload) {
+            state.instructionCandidates.append(instructionCandidate)
+            if state.lastEventAt == nil || instructionCandidate.event.timestamp > state.lastEventAt ?? .distantPast {
+                state.lastEventAt = instructionCandidate.event.timestamp
+            }
+        }
     }
 
     private func sessionOriginKind(from sourceValue: Any?) -> SessionOriginKind {
@@ -457,7 +996,7 @@ public struct CodexSessionTokenProvider: Sendable {
 
     private func parseTokenEvent(
         from object: [String: Any],
-        runningTokenTotals: inout RunningTokenTotals?)
+        runningTokenTotals: inout SessionRunningTokenTotals?)
         -> TokenUsageEvent?
     {
         guard (object["type"] as? String) == "event_msg",
@@ -471,7 +1010,7 @@ public struct CodexSessionTokenProvider: Sendable {
         }
 
         if let totalUsage = info["total_token_usage"] as? [String: Any] {
-            let currentTotals = RunningTokenTotals(
+            let currentTotals = SessionRunningTokenTotals(
                 inputTokens: max(0, self.integerValue(totalUsage["input_tokens"])),
                 outputTokens: max(0, self.integerValue(totalUsage["output_tokens"])),
                 cachedInputTokens: max(
@@ -802,6 +1341,13 @@ public struct CodexSessionTokenProvider: Sendable {
     }
 }
 
+private struct MigrationCandidate {
+    let fileURL: URL
+    let priority: Int
+    let isForkedReplay: Bool
+    let modificationDate: Date
+}
+
 private struct SourceFileMetadata {
     let fileSize: Int64?
     let modificationDate: Date?
@@ -814,6 +1360,73 @@ private struct ParsedSessionFile {
     let warnings: [String]
 }
 
+private struct LineIterationResult {
+    let nextByteOffset: Int64
+    let reachedEOF: Bool
+}
+
+private struct ParsedSessionState {
+    var dayBuckets: [String: DailyTokenStats]
+    var hourBuckets: [Date: HourlyTokenStats]
+    var fiveMinuteBuckets: [Date: FiveMinuteTokenStats]
+    var outboundMessageDayBuckets: [String: DailyOutboundMessageStats]
+    var instructionCandidates: [HumanInstructionCandidate]
+    var seenTokenCountFingerprints: Set<String>
+    var recentTokenCountFingerprints: [String]
+    var runningTokenTotals: SessionRunningTokenTotals?
+    var lastEventAt: Date?
+
+    init() {
+        self.dayBuckets = [:]
+        self.hourBuckets = [:]
+        self.fiveMinuteBuckets = [:]
+        self.outboundMessageDayBuckets = [:]
+        self.instructionCandidates = []
+        self.seenTokenCountFingerprints = []
+        self.recentTokenCountFingerprints = []
+        self.runningTokenTotals = nil
+        self.lastEventAt = nil
+    }
+
+    init(snapshot: SessionUsageSnapshot) {
+        self.dayBuckets = Dictionary(uniqueKeysWithValues: snapshot.dailyBuckets.map { ($0.date, $0) })
+        self.hourBuckets = Dictionary(uniqueKeysWithValues: snapshot.hourlyBuckets.map { ($0.hourStart, $0) })
+        self.fiveMinuteBuckets = Dictionary(
+            uniqueKeysWithValues: snapshot.fiveMinuteBuckets.map { ($0.bucketStart, $0) })
+        self.outboundMessageDayBuckets = Dictionary(
+            uniqueKeysWithValues: snapshot.outboundMessageDailyBuckets.map { ($0.date, $0) })
+        self.instructionCandidates = []
+        self.recentTokenCountFingerprints = snapshot.seenTokenCountFingerprints
+        self.seenTokenCountFingerprints = Set(snapshot.seenTokenCountFingerprints)
+        self.runningTokenTotals = snapshot.runningTokenTotals
+        self.lastEventAt = snapshot.lastEventAt
+    }
+
+    init(progress: SessionIncrementalMigrationProgress) {
+        self.dayBuckets = Dictionary(uniqueKeysWithValues: progress.dailyBuckets.map { ($0.date, $0) })
+        self.hourBuckets = Dictionary(uniqueKeysWithValues: progress.hourlyBuckets.map { ($0.hourStart, $0) })
+        self.fiveMinuteBuckets = Dictionary(
+            uniqueKeysWithValues: progress.fiveMinuteBuckets.map { ($0.bucketStart, $0) })
+        self.outboundMessageDayBuckets = [:]
+        self.instructionCandidates = progress.instructionCandidates.map(HumanInstructionCandidate.init(persistedValue:))
+        self.recentTokenCountFingerprints = progress.seenTokenCountFingerprints
+        self.seenTokenCountFingerprints = Set(progress.seenTokenCountFingerprints)
+        self.runningTokenTotals = progress.runningTokenTotals
+        self.lastEventAt = progress.lastEventAt
+    }
+
+    mutating func recordTokenCountFingerprint(_ fingerprint: String, maxPersistedCount: Int) -> Bool {
+        guard self.seenTokenCountFingerprints.insert(fingerprint).inserted else {
+            return false
+        }
+        self.recentTokenCountFingerprints.append(fingerprint)
+        if self.recentTokenCountFingerprints.count > maxPersistedCount {
+            self.recentTokenCountFingerprints.removeFirst(self.recentTokenCountFingerprints.count - maxPersistedCount)
+        }
+        return true
+    }
+}
+
 private struct InitialSessionMetadata {
     let sessionID: String
     let forkedFromSessionID: String?
@@ -821,23 +1434,14 @@ private struct InitialSessionMetadata {
     let lineIndex: Int
 }
 
+private struct ForkedSessionReplayDetected: Error {
+    let metadata: InitialSessionMetadata
+}
+
 private struct ParsedHumanInstructionContent {
     let sentCharacters: Int
     let signature: String
     let hasMeaningfulContent: Bool
-}
-
-private struct RunningTokenTotals {
-    let inputTokens: Int
-    let outputTokens: Int
-    let cachedInputTokens: Int
-    let reasoningOutputTokens: Int
-
-    static let zero = RunningTokenTotals(
-        inputTokens: 0,
-        outputTokens: 0,
-        cachedInputTokens: 0,
-        reasoningOutputTokens: 0)
 }
 
 private struct HumanInstructionCandidate {
@@ -858,4 +1462,43 @@ private struct HumanInstructionCandidate {
     let source: Source
     let signature: String
     let event: OutboundMessageUsageEvent
+
+    init(source: Source, signature: String, event: OutboundMessageUsageEvent) {
+        self.source = source
+        self.signature = signature
+        self.event = event
+    }
+
+    init(persistedValue: SessionInstructionCandidate) {
+        self.source = Source(persistedValue: persistedValue.source)
+        self.signature = persistedValue.signature
+        self.event = persistedValue.event
+    }
+
+    var persistedValue: SessionInstructionCandidate {
+        SessionInstructionCandidate(
+            source: self.source.persistedValue,
+            signature: self.signature,
+            event: self.event)
+    }
+}
+
+private extension HumanInstructionCandidate.Source {
+    init(persistedValue: SessionInstructionCandidateSource) {
+        switch persistedValue {
+        case .responseItem:
+            self = .responseItem
+        case .eventMessage:
+            self = .eventMessage
+        }
+    }
+
+    var persistedValue: SessionInstructionCandidateSource {
+        switch self {
+        case .responseItem:
+            .responseItem
+        case .eventMessage:
+            .eventMessage
+        }
+    }
 }

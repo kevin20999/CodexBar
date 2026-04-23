@@ -329,6 +329,78 @@ final class UsageStoreTests: XCTestCase {
         XCTAssertTrue(store.recentTokenSpeedSamples.contains(where: { $0.tokens == 32 }))
     }
 
+    func test_tokenSpeedHistoryLoadsOnlyLatestHundredEntries() throws {
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: UUID().uuidString))
+        let sandbox = try UsageStoreSandbox()
+        let settings = SettingsStore(
+            defaults: defaults,
+            launchAtLoginManager: FakeLaunchAtLoginManager(),
+            preferredLanguages: { ["en-US"] })
+        let provider = CodexSessionTokenProvider(
+            sessionRootURL: sandbox.root.appendingPathComponent("sessions", isDirectory: true),
+            historyStore: TokenHistoryStore(fileURL: sandbox.fileURL))
+        let historyStore = TokenSpeedHistoryStore(
+            fileURL: sandbox.root.appendingPathComponent("token_speed_history.json", isDirectory: false))
+        let baseTimestamp = Date(timeIntervalSince1970: 1_800_000_000)
+        let samples = (0..<150).map { offset in
+            TokenSpeedSample(
+                timestamp: baseTimestamp.addingTimeInterval(Double(offset)),
+                tokens: offset + 1)
+        }
+
+        try historyStore.save(samples: samples)
+
+        let store = UsageStore(
+            settings: settings,
+            provider: provider,
+            dashboardProvider: FakeOpenAIDashboardProvider(),
+            tokenSpeedHistoryStore: historyStore,
+            startupRefresh: false)
+
+        XCTAssertEqual(store.recentTokenSpeedSamples.count, 600)
+        XCTAssertEqual(store.tokenSpeedHistoryEntries.count, 100)
+        XCTAssertEqual(store.tokenSpeedHistoryEntries.first?.tokens, 150)
+        XCTAssertEqual(store.tokenSpeedHistoryEntries.last?.tokens, 51)
+        XCTAssertTrue(store.recentTokenSpeedSamples.contains(where: { $0.tokens == 150 }))
+    }
+
+    func test_tokenSpeedHistoryFlushesImmediatelyWhenMeterStops() async throws {
+        TokenMenuSpeedMeterFeature.supportsVisualPresentationOverride = true
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: UUID().uuidString))
+        let sandbox = try UsageStoreSandbox()
+        let settings = SettingsStore(
+            defaults: defaults,
+            launchAtLoginManager: FakeLaunchAtLoginManager(),
+            preferredLanguages: { ["en-US"] })
+        let provider = CodexSessionTokenProvider(
+            sessionRootURL: sandbox.root.appendingPathComponent("sessions", isDirectory: true),
+            historyStore: TokenHistoryStore(fileURL: sandbox.fileURL))
+        let historyStore = TokenSpeedHistoryStore(
+            fileURL: sandbox.root.appendingPathComponent("token_speed_history.json", isDirectory: false))
+        let monitor = FakeTokenRateMonitor(samples: [
+            TokenSpeedSample(timestamp: Date(timeIntervalSince1970: 1_800_000_000), tokens: 48),
+        ])
+        let store = UsageStore(
+            settings: settings,
+            provider: provider,
+            dashboardProvider: FakeOpenAIDashboardProvider(),
+            tokenRateMonitor: monitor,
+            tokenSpeedHistoryStore: historyStore,
+            startupRefresh: false)
+
+        settings.showsMenuBarTokenSpeedMeter = true
+        try await Task.sleep(for: .milliseconds(150))
+        XCTAssertEqual(store.tokenSpeedHistoryEntries.first?.tokens, 48)
+        XCTAssertTrue(try historyStore.load().isEmpty)
+
+        settings.showsMenuBarTokenSpeedMeter = false
+        try await Task.sleep(for: .milliseconds(100))
+
+        let persistedSamples = try historyStore.load()
+        XCTAssertEqual(persistedSamples.count, 1)
+        XCTAssertEqual(persistedSamples.first?.tokens, 48)
+    }
+
     func test_dualCompactModeUsesFallbackPrimaryWindowLabelWhenExact5hIsMissing() throws {
         let defaults = try XCTUnwrap(UserDefaults(suiteName: UUID().uuidString))
         let sandbox = try UsageStoreSandbox()
@@ -539,16 +611,50 @@ final class UsageStoreTests: XCTestCase {
         XCTAssertEqual(trailingHours[22].totalTokens, 0)
     }
 
-    func test_loadPersistedHistoryIncludesFiveMinuteBuckets() throws {
+    func test_loadPersistedHistoryUsesRegularSessionBucketsWithoutRetainingFiveMinuteHistory() throws {
         let defaults = try XCTUnwrap(UserDefaults(suiteName: UUID().uuidString))
         let sandbox = try UsageStoreSandbox()
         let currentHourStart = Self.currentHourStart()
         let currentBucketStart = try XCTUnwrap(
             Calendar.current.date(byAdding: .minute, value: 10, to: currentHourStart))
-        let nextBucketStart = try XCTUnwrap(
-            Calendar.current.date(byAdding: .minute, value: 15, to: currentHourStart))
         let document = TokenHistoryDocument(
-            sessions: [:],
+            sessions: [
+                "session-regular": SessionUsageSnapshot(
+                    sessionID: "session-regular",
+                    sessionOriginKind: .regular,
+                    sourceFile: "/tmp/session-regular.jsonl",
+                    sourceFileSize: 123,
+                    sourceFileModificationTime: nil,
+                    lastEventAt: currentHourStart,
+                    scanVersion: 11,
+                    dailyBuckets: [
+                        DailyTokenStats(
+                            date: DailyTokenStats.dayKey(for: currentHourStart, calendar: .current),
+                            inputTokens: 10,
+                            outputTokens: 4,
+                            cachedInputTokens: 0,
+                            reasoningOutputTokens: 0,
+                            totalTokens: 14),
+                    ],
+                    hourlyBuckets: [
+                        HourlyTokenStats(
+                            hourStart: currentHourStart,
+                            inputTokens: 10,
+                            outputTokens: 4,
+                            cachedInputTokens: 0,
+                            reasoningOutputTokens: 0,
+                            totalTokens: 14),
+                    ],
+                    fiveMinuteBuckets: [
+                        FiveMinuteTokenStats(
+                            bucketStart: currentBucketStart,
+                            inputTokens: 10,
+                            outputTokens: 4,
+                            cachedInputTokens: 0,
+                            reasoningOutputTokens: 0,
+                            totalTokens: 14),
+                    ]),
+            ],
             days: [],
             hours: [],
             fiveMinuteBuckets: [
@@ -559,13 +665,6 @@ final class UsageStoreTests: XCTestCase {
                     cachedInputTokens: 0,
                     reasoningOutputTokens: 0,
                     totalTokens: 14),
-                FiveMinuteTokenStats(
-                    bucketStart: nextBucketStart,
-                    inputTokens: 2,
-                    outputTokens: 1,
-                    cachedInputTokens: 0,
-                    reasoningOutputTokens: 0,
-                    totalTokens: 3),
             ],
             lastRefreshAt: Date())
         let encoder = JSONEncoder()
@@ -586,11 +685,12 @@ final class UsageStoreTests: XCTestCase {
             dashboardProvider: FakeOpenAIDashboardProvider(),
             startupRefresh: false)
 
-        XCTAssertEqual(store.fiveMinuteBuckets.count, 2)
-        XCTAssertEqual(store.fiveMinuteBuckets.first?.bucketStart, currentBucketStart)
-        XCTAssertEqual(store.fiveMinuteBuckets.last?.bucketStart, nextBucketStart)
-        XCTAssertEqual(store.fiveMinuteBuckets.first?.totalTokens, 14)
-        XCTAssertEqual(store.fiveMinuteBuckets.last?.totalTokens, 3)
+        XCTAssertEqual(store.days, [])
+        XCTAssertEqual(store.hours, [])
+        XCTAssertEqual(store.regularDays.count, 1)
+        XCTAssertEqual(store.regularDays.first?.totalTokens, 14)
+        XCTAssertEqual(store.regularHours.count, 1)
+        XCTAssertEqual(store.regularHours.first?.totalTokens, 14)
     }
 
     func test_trailingFortyEightHoursContainsRequestedWindowAndPadsMissingHours() throws {
@@ -1127,6 +1227,36 @@ final class UsageStoreTests: XCTestCase {
         XCTAssertEqual(store.trailingFortyEightHours.reduce(0) { $0 + $1.totalTokens }, 18)
         XCTAssertEqual(store.trailingFortyEightHours.last?.totalTokens, 18)
         XCTAssertEqual(store.todayOutboundMessages.sentMessages, 1)
+    }
+
+    func test_startupRefreshImmediatelyLoadsQuotaWithoutImmediateHistoryScan() async throws {
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: UUID().uuidString))
+        let sandbox = try UsageStoreSandbox()
+        let settings = SettingsStore(
+            defaults: defaults,
+            launchAtLoginManager: FakeLaunchAtLoginManager(),
+            preferredLanguages: { ["zh-Hans"] })
+        let provider = CodexSessionTokenProvider(
+            sessionRootURL: sandbox.root.appendingPathComponent("sessions", isDirectory: true),
+            historyStore: TokenHistoryStore(fileURL: sandbox.fileURL))
+        let dashboardProvider = FakeOpenAIDashboardProvider()
+        let quotaProvider = SpyCodexQuotaProvider(snapshot: Self.makeCodexQuotaSnapshot(updatedAt: Date()))
+
+        let store = UsageStore(
+            settings: settings,
+            provider: provider,
+            codexQuotaProvider: quotaProvider,
+            dashboardProvider: dashboardProvider,
+            startupRefresh: true)
+
+        try await Task.sleep(for: .milliseconds(150))
+
+        XCTAssertNotNil(store.codexQuotaSnapshot)
+        XCTAssertNil(store.lastRefreshAt)
+        XCTAssertEqual(store.today.totalTokens, 0)
+        XCTAssertTrue(dashboardProvider.refreshCalls.isEmpty)
+        let quotaRefreshCallCount = await quotaProvider.recordedCallCount()
+        XCTAssertEqual(quotaRefreshCallCount, 1)
     }
 
     func test_failedDashboardRefreshKeepsCachedSnapshotMarkedStale() async throws {
@@ -1949,6 +2079,24 @@ private final class FakeOpenAIDashboardProvider: OpenAIDashboardProviding {
             throw refreshError
         }
         return try XCTUnwrap(self.refreshResult)
+    }
+}
+
+private actor SpyCodexQuotaProvider: CodexQuotaProviding {
+    let snapshot: CodexQuotaSnapshot
+    private var callCount = 0
+
+    init(snapshot: CodexQuotaSnapshot) {
+        self.snapshot = snapshot
+    }
+
+    func loadQuotaSnapshot() async throws -> CodexQuotaSnapshot {
+        self.callCount += 1
+        return self.snapshot
+    }
+
+    func recordedCallCount() -> Int {
+        self.callCount
     }
 }
 

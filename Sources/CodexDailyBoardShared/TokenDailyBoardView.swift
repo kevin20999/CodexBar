@@ -31,6 +31,36 @@ public enum TokenDailyBoardWindowLayout {
         window?.screen?.visibleFrame ?? NSScreen.main?.visibleFrame ?? self.fallbackVisibleFrame
     }
 
+    public static func resolvedScreenFrame(for window: NSWindow?) -> CGRect {
+        window?.screen?.frame ?? NSScreen.main?.frame ?? self.fallbackVisibleFrame
+    }
+
+    package static func placementBounds(for displayMode: TokenDailyBoardDisplayMode, screen: NSScreen?) -> CGRect {
+        switch displayMode {
+        case .conversationOnly:
+            screen?.frame ?? NSScreen.main?.frame ?? self.fallbackVisibleFrame
+        case .conversationAndToday, .fullBoard:
+            screen?.visibleFrame ?? NSScreen.main?.visibleFrame ?? self.fallbackVisibleFrame
+        }
+    }
+
+    package static func placementBounds(for displayMode: TokenDailyBoardDisplayMode, window: NSWindow?) -> CGRect {
+        self.placementBounds(for: displayMode, screen: window?.screen)
+    }
+
+    package static func placementBounds(
+        for displayMode: TokenDailyBoardDisplayMode,
+        savedOrigin: CGPoint,
+        fallbackWindow: NSWindow?)
+        -> CGRect
+    {
+        let screen =
+            NSScreen.screens.first(where: { $0.frame.contains(savedOrigin) })
+            ?? fallbackWindow?.screen
+            ?? NSScreen.main
+        return self.placementBounds(for: displayMode, screen: screen)
+    }
+
     public static func defaultSize(for visibleFrame: CGRect) -> CGSize {
         self.defaultSize(for: visibleFrame, displayMode: .fullBoard)
     }
@@ -70,6 +100,15 @@ public enum TokenDailyBoardWindowLayout {
         return CGRect(origin: CGPoint(x: x.rounded(), y: y.rounded()), size: windowFrame.size)
     }
 
+    package static func bottomCenteredFrame(for windowFrame: CGRect, in screenFrame: CGRect) -> CGRect {
+        let x = min(
+            max(screenFrame.midX - (windowFrame.width / 2), screenFrame.minX),
+            screenFrame.maxX - windowFrame.width)
+        return CGRect(
+            origin: CGPoint(x: x.rounded(), y: screenFrame.minY.rounded()),
+            size: windowFrame.size)
+    }
+
     package static func restoredFrame(
         for windowFrame: CGRect,
         savedOrigin: CGPoint,
@@ -82,6 +121,22 @@ public enum TokenDailyBoardWindowLayout {
             x: min(max(savedOrigin.x, visibleFrame.minX), maxX).rounded(),
             y: min(max(savedOrigin.y, visibleFrame.minY), maxY).rounded())
         return CGRect(origin: clampedOrigin, size: windowFrame.size)
+    }
+
+    package static func restoredFrame(
+        for windowFrame: CGRect,
+        savedOrigin: CGPoint,
+        displayMode: TokenDailyBoardDisplayMode,
+        fallbackWindow: NSWindow?)
+        -> CGRect
+    {
+        self.restoredFrame(
+            for: windowFrame,
+            savedOrigin: savedOrigin,
+            in: self.placementBounds(
+                for: displayMode,
+                savedOrigin: savedOrigin,
+                fallbackWindow: fallbackWindow))
     }
 
     public static func configureWindow(
@@ -120,6 +175,7 @@ public enum TokenDailyBoardWindowLayout {
         window.isReleasedWhenClosed = false
         window.isOpaque = false
         window.backgroundColor = .clear
+        window.hasShadow = TokenDailyBoardWindowShadowRules.hasShadow(for: displayMode)
         window.isMovableByWindowBackground = true
         self.styleSystemWindowButtons(window, displayMode: displayMode)
     }
@@ -196,6 +252,7 @@ public enum TokenDailyBoardWindowLayout {
         tuning: TokenDailyBoardConversationOnlyDebugTuning)
     {
         let visibleFrame = self.resolvedVisibleFrame(for: window)
+        let placementBounds = self.placementBounds(for: displayMode, window: window)
         let wasConversationOnlyLocked = self.isConversationOnlyLocked(window, visibleFrame: visibleFrame)
         self.applyWindowSizingBehavior(
             for: displayMode,
@@ -220,9 +277,10 @@ public enum TokenDailyBoardWindowLayout {
         }
 
         if displayMode == .conversationOnly {
-            let frame = self.centeredFrame(
-                for: CGRect(origin: window.frame.origin, size: targetSize),
-                in: visibleFrame)
+            let frame = self.restoredFrame(
+                for: CGRect(origin: .zero, size: targetSize),
+                savedOrigin: window.frame.origin,
+                in: placementBounds)
             window.setFrame(frame.integral, display: true, animate: animated)
         } else {
             var frame = window.frame
@@ -234,6 +292,7 @@ public enum TokenDailyBoardWindowLayout {
                 visibleFrame.maxY - frame.size.height)
             window.setFrame(frame.integral, display: true, animate: animated)
         }
+        window.hasShadow = TokenDailyBoardWindowShadowRules.hasShadow(for: displayMode)
         self.styleSystemWindowButtons(window, displayMode: displayMode)
     }
 
@@ -242,11 +301,7 @@ public enum TokenDailyBoardWindowLayout {
         tuning: TokenDailyBoardConversationOnlyDebugTuning)
         -> CGFloat
     {
-        let naturalWidth = TokenDailyBoardConversationOnlyLayoutRules.compactWindowSize(for: tuning).width
-        let manualWidth = TokenDailyBoardConversationOnlyDebugRules.resolvedWindowWidth(
-            tuning.windowWidth,
-            visibleFrameWidth: visibleFrame.width)
-        return min(max(manualWidth, naturalWidth), visibleFrame.width)
+        min(TokenDailyBoardConversationOnlyLayoutRules.compactWindowSize(for: tuning).width, visibleFrame.width)
     }
 
     private static func resolvedConversationOnlyHeight(
@@ -477,9 +532,18 @@ package enum TokenDailyBoardWindowPinRules {
     }
 }
 
-package enum TokenDailyBoardTitlebarAutoHideRules {
-    package static let delayedAutoHideDelay: Duration = .seconds(3)
+enum TokenDailyBoardWindowShadowRules {
+    static func hasShadow(for displayMode: TokenDailyBoardDisplayMode) -> Bool {
+        switch displayMode {
+        case .conversationOnly:
+            false
+        case .conversationAndToday, .fullBoard:
+            true
+        }
+    }
+}
 
+package enum TokenDailyBoardTitlebarAutoHideRules {
     package static func shouldUseDelayedAutoHide(displayMode: TokenDailyBoardDisplayMode) -> Bool {
         displayMode == .conversationOnly
     }
@@ -491,7 +555,7 @@ package enum TokenDailyBoardTitlebarAutoHideRules {
         -> Bool
     {
         guard self.shouldUseDelayedAutoHide(displayMode: displayMode) else { return true }
-        return isWindowHovered || windowChromeVisible
+        return windowChromeVisible
     }
 
     package static func shouldShowAccessory(
@@ -528,6 +592,15 @@ package enum TokenDailyBoardTitlebarAutoHideRules {
         self.shouldUseDelayedAutoHide(displayMode: displayMode) && !windowChromeVisible
             ? 0
             : TokenDailyBoardWindowChromeStyleRules.trafficLightAlpha
+    }
+}
+
+package enum TokenDailyBoardWindowHoverRules {
+    package static func isMouseInsideWindowFrame(windowFrame: CGRect, mouseLocation: CGPoint) -> Bool {
+        mouseLocation.x >= windowFrame.minX
+            && mouseLocation.x <= windowFrame.maxX
+            && mouseLocation.y >= windowFrame.minY
+            && mouseLocation.y <= windowFrame.maxY
     }
 }
 
@@ -1552,35 +1625,181 @@ private enum TokenDailyBoardValueFormatter {
     }
 }
 
+enum TokenDailyBoardWindowShellPresentationRules {
+    static let conversationOnlyCornerRadius: CGFloat = TokenDailyBoardSurfaceStyle.conversationPanel.cornerRadius
+
+    enum OuterShellVisualStyle: Equatable {
+        case dockGlass
+        case systemGlass
+    }
+
+    static func usesRoundedShell(for displayMode: TokenDailyBoardDisplayMode) -> Bool {
+        displayMode == .conversationOnly
+    }
+
+    static func outerShellVisualStyle(for displayMode: TokenDailyBoardDisplayMode) -> OuterShellVisualStyle {
+        switch displayMode {
+        case .conversationOnly:
+            .dockGlass
+        case .conversationAndToday, .fullBoard:
+            .systemGlass
+        }
+    }
+
+    static func usesOuterSystemGlassShell(for displayMode: TokenDailyBoardDisplayMode) -> Bool {
+        switch self.outerShellVisualStyle(for: displayMode) {
+        case .dockGlass, .systemGlass:
+            true
+        }
+    }
+
+    static func usesBackgroundExtensionEffect(for displayMode: TokenDailyBoardDisplayMode) -> Bool {
+        switch displayMode {
+        case .conversationOnly:
+            false
+        case .conversationAndToday, .fullBoard:
+            true
+        }
+    }
+
+    static func conversationOnlyOuterShellShape() -> RoundedRectangle {
+        RoundedRectangle(
+            cornerRadius: self.conversationOnlyCornerRadius,
+            style: .continuous)
+    }
+}
+
 private struct TokenDailyBoardWindowBackground: View {
+    @Environment(\.colorScheme) private var colorScheme
     let usesGlass: Bool
     let appearance: TokenDailyBoardConversationOnlyWindowAppearance
+    let displayMode: TokenDailyBoardDisplayMode
 
-    var body: some View {
+    private var usesRoundedShell: Bool {
+        TokenDailyBoardWindowShellPresentationRules.usesRoundedShell(for: self.displayMode)
+    }
+
+    private var usesOuterSystemGlassShell: Bool {
+        TokenDailyBoardWindowShellPresentationRules.usesOuterSystemGlassShell(for: self.displayMode)
+    }
+
+    private var outerShellVisualStyle: TokenDailyBoardWindowShellPresentationRules.OuterShellVisualStyle {
+        TokenDailyBoardWindowShellPresentationRules.outerShellVisualStyle(for: self.displayMode)
+    }
+
+    private var usesBackgroundExtensionEffect: Bool {
+        TokenDailyBoardWindowShellPresentationRules.usesBackgroundExtensionEffect(for: self.displayMode)
+    }
+
+    private var roundedShellShape: RoundedRectangle {
+        TokenDailyBoardWindowShellPresentationRules.conversationOnlyOuterShellShape()
+    }
+
+    private var dockGlassSurfaceGloss: LinearGradient {
+        let leadingOpacity: Double = self.colorScheme == .dark ? 0.10 : 0.16
+        let trailingOpacity: Double = self.colorScheme == .dark ? 0.04 : 0.08
+        return LinearGradient(
+            stops: [
+                .init(color: Color.white.opacity(leadingOpacity), location: 0),
+                .init(color: Color.white.opacity(trailingOpacity), location: 0.26),
+                .init(color: Color.white.opacity(self.colorScheme == .dark ? 0.015 : 0.035), location: 0.52),
+                .init(color: .clear, location: 0.82),
+            ],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing)
+    }
+
+    private var dockGlassShellBackground: some View {
+        ZStack {
+            if #available(macOS 26, *), self.usesOuterSystemGlassShell {
+                self.roundedShellShape
+                    .fill(.clear)
+                    .glassEffect(.regular, in: self.roundedShellShape)
+            } else {
+                self.roundedShellShape
+                    .fill(.ultraThinMaterial)
+            }
+
+            self.roundedShellShape
+                .fill(self.dockGlassSurfaceGloss)
+                .blendMode(.screen)
+        }
+        .opacity(self.appearance.resolvedGlassOpacity)
+    }
+
+    package var body: some View {
         if self.usesGlass {
-            ZStack {
-                if self.appearance.blurOverlayOpacity > 0.001 {
-                    Rectangle()
-                        .fill(.ultraThinMaterial)
-                        .opacity(self.appearance.blurOverlayOpacity)
-                        .blur(radius: self.appearance.resolvedGlassBlur)
-                }
+            if self.usesRoundedShell {
+                ZStack {
+                    if self.appearance.blurOverlayOpacity > 0.001 {
+                        self.roundedShellShape
+                            .fill(.ultraThinMaterial)
+                            .opacity(self.appearance.blurOverlayOpacity)
+                            .blur(radius: self.appearance.resolvedGlassBlur)
+                            .mask(self.roundedShellShape)
+                    }
 
-                if #available(macOS 26, *) {
-                    Rectangle()
-                        .fill(.clear)
-                        .glassEffect(.regular, in: Rectangle())
-                        .backgroundExtensionEffect()
-                        .opacity(self.appearance.resolvedGlassOpacity)
-                } else {
-                    Rectangle()
-                        .fill(.ultraThinMaterial)
-                        .opacity(self.appearance.resolvedGlassOpacity)
+                    switch self.outerShellVisualStyle {
+                    case .dockGlass:
+                        self.dockGlassShellBackground
+                    case .systemGlass:
+                        if #available(macOS 26, *), self.usesOuterSystemGlassShell {
+                            if self.usesBackgroundExtensionEffect {
+                                self.roundedShellShape
+                                    .fill(.clear)
+                                    .glassEffect(.regular, in: self.roundedShellShape)
+                                    .backgroundExtensionEffect()
+                                    .opacity(self.appearance.resolvedGlassOpacity)
+                            } else {
+                                self.roundedShellShape
+                                    .fill(.clear)
+                                    .glassEffect(.regular, in: self.roundedShellShape)
+                                    .opacity(self.appearance.resolvedGlassOpacity)
+                            }
+                        } else {
+                            self.roundedShellShape
+                                .fill(.ultraThinMaterial)
+                                .opacity(self.appearance.resolvedGlassOpacity)
+                        }
+                    }
+                }
+            } else {
+                ZStack {
+                    if self.appearance.blurOverlayOpacity > 0.001 {
+                        Rectangle()
+                            .fill(.ultraThinMaterial)
+                            .opacity(self.appearance.blurOverlayOpacity)
+                            .blur(radius: self.appearance.resolvedGlassBlur)
+                    }
+
+                    if #available(macOS 26, *) {
+                        if self.usesBackgroundExtensionEffect {
+                            Rectangle()
+                                .fill(.clear)
+                                .glassEffect(.regular, in: Rectangle())
+                                .backgroundExtensionEffect()
+                                .opacity(self.appearance.resolvedGlassOpacity)
+                        } else {
+                            Rectangle()
+                                .fill(.clear)
+                                .glassEffect(.regular, in: Rectangle())
+                                .opacity(self.appearance.resolvedGlassOpacity)
+                        }
+                    } else {
+                        Rectangle()
+                            .fill(.ultraThinMaterial)
+                            .opacity(self.appearance.resolvedGlassOpacity)
+                    }
                 }
             }
         } else {
-            Rectangle()
-                .fill(.clear)
+            if self.usesRoundedShell {
+                self.roundedShellShape
+                    .fill(.clear)
+            } else {
+                Rectangle()
+                    .fill(.clear)
+            }
         }
     }
 }
@@ -1588,15 +1807,15 @@ private struct TokenDailyBoardWindowBackground: View {
 package enum TokenDailyBoardConversationOnlyWindowPulseRules {
     package static let duration: TimeInterval = 1.0
     package static let fadeOutDuration: TimeInterval = 0.36
-    package static let fillPeakOpacity: Double = 0.08
-    package static let sweepPeakOpacity: Double = 0.36
-    package static let sweepBlurRadius: CGFloat = 24
+    package static let fillPeakOpacity: Double = 0.024
+    package static let sweepPeakOpacity: Double = 0.11
+    package static let sweepBlurRadius: CGFloat = 14
     package static let sweepWidthMultiplier: CGFloat = 0.74
     package static let sweepStartX: CGFloat = -0.58
     package static let sweepMidX: CGFloat = 0.26
     package static let sweepEndX: CGFloat = 1.28
-    package static let idleFillPeakOpacity: Double = 0.052
-    package static let idleSweepPeakOpacity: Double = 0.22
+    package static let idleFillPeakOpacity: Double = 0.014
+    package static let idleSweepPeakOpacity: Double = 0.06
     package static let idleSweepHeightMultiplier: CGFloat = 0.68
     package static let idleSweepStartY: CGFloat = 1.18
     package static let idleSweepEndY: CGFloat = -0.22
@@ -1658,6 +1877,11 @@ package enum TokenDailyBoardConversationOnlyWindowPulseRules {
             self.idleSweepPeakOpacity
         }
     }
+
+    static func showsBorderBeam(for displayMode: TokenDailyBoardDisplayMode) -> Bool {
+        _ = displayMode
+        return false
+    }
 }
 
 package enum TokenDailyBoardConversationOnlyAvatarSequenceRules {
@@ -1673,7 +1897,11 @@ package enum TokenDailyBoardConversationOnlyAvatarSequenceRules {
         case .throughputPulse, .instructionPulse:
             return .variantReplacement
         case .idlePulse:
-            return .defaultGroupIntro
+            return TokenDailyBoardConversationOnlyIdleSwitchRules.animatesAvatar(
+                for: .waitingGroup,
+                displayMode: .conversationOnly)
+                ? .defaultGroupIntro
+                : .none
         case .none, .quiet, .sendCount, .burst, .combo:
             return .none
         }
@@ -2342,18 +2570,30 @@ enum TokenDailyBoardNarrativePresentationTimelineRules {
 
 private struct TokenDailyBoardConversationOnlyWindowPulseOverlay: View {
     let phase: TokenDailyBoardNarrativeWindowPulsePhase
+    let displayMode: TokenDailyBoardDisplayMode
+    let tuning: TokenDailyBoardConversationOnlyDebugTuning
 
     @State private var fillOpacity = 0.0
     @State private var sweepOpacity = 0.0
     @State private var sweepProgress = TokenDailyBoardConversationOnlyWindowPulseRules.sweepStartX
     @State private var animationTask: Task<Void, Never>?
 
+    private var resolvedTuning: TokenDailyBoardConversationOnlyDebugTuning {
+        TokenDailyBoardConversationOnlyDebugRules.clamp(self.tuning)
+    }
+
+    private var effectConfiguration: TokenDailyBoardConversationOnlyBackgroundEffectConfiguration {
+        TokenDailyBoardConversationOnlyBackgroundEffectRules.configuration(
+            for: self.resolvedTuning.backgroundEffectPreset)
+    }
+
     var body: some View {
         GeometryReader { proxy in
             let configuration = self.phase.motionConfiguration
             let style = configuration.style
+            let usesRoundedShell = TokenDailyBoardWindowShellPresentationRules.usesRoundedShell(for: self.displayMode)
             let horizontalSweepWidth = max(
-                proxy.size.width * TokenDailyBoardConversationOnlyWindowPulseRules.sweepWidthMultiplier,
+                proxy.size.width * self.effectConfiguration.sweepWidthMultiplier,
                 1)
             let verticalSweepHeight = max(
                 proxy.size.height * TokenDailyBoardConversationOnlyWindowPulseRules.idleSweepHeightMultiplier,
@@ -2363,20 +2603,27 @@ private struct TokenDailyBoardConversationOnlyWindowPulseOverlay: View {
             let horizontalOffset = (self.sweepProgress * horizontalTravel) - horizontalSweepWidth
             let verticalOffset = (self.sweepProgress * verticalTravel) - verticalSweepHeight
 
-            ZStack {
-                self.fillGradient(for: style)
-                    .opacity(self.fillOpacity)
-
-                self.sweepGradient(for: style)
-                    .frame(
-                        width: style == .idlePulse ? proxy.size.width * 1.2 : horizontalSweepWidth,
-                        height: style == .idlePulse ? verticalSweepHeight : proxy.size.height * 1.28)
-                    .offset(x: style == .idlePulse ? 0 : horizontalOffset, y: style == .idlePulse ? verticalOffset : 0)
-                    .blur(radius: TokenDailyBoardConversationOnlyWindowPulseRules.sweepBlurRadius)
-                    .opacity(self.sweepOpacity)
-                    .blendMode(.plusLighter)
+            if usesRoundedShell {
+                let shellShape = TokenDailyBoardWindowShellPresentationRules.conversationOnlyOuterShellShape()
+                self.pulseFillAndSweep(
+                    for: style,
+                    proxySize: proxy.size,
+                    horizontalSweepWidth: horizontalSweepWidth,
+                    verticalSweepHeight: verticalSweepHeight,
+                    horizontalOffset: horizontalOffset,
+                    verticalOffset: verticalOffset)
+                    .clipShape(shellShape)
+                    .compositingGroup()
+            } else {
+                self.pulseFillAndSweep(
+                    for: style,
+                    proxySize: proxy.size,
+                    horizontalSweepWidth: horizontalSweepWidth,
+                    verticalSweepHeight: verticalSweepHeight,
+                    horizontalOffset: horizontalOffset,
+                    verticalOffset: verticalOffset)
+                    .compositingGroup()
             }
-            .compositingGroup()
         }
         .onAppear {
             self.handlePhaseChange(self.phase)
@@ -2413,9 +2660,9 @@ private struct TokenDailyBoardConversationOnlyWindowPulseOverlay: View {
 
             withAnimation(.easeOut(duration: configuration.duration * 0.24)) {
                 self.fillOpacity = TokenDailyBoardConversationOnlyWindowPulseRules.fillPeakOpacity(
-                    for: configuration.style)
+                    for: configuration.style) * self.effectConfiguration.fillOpacityMultiplier
                 self.sweepOpacity = TokenDailyBoardConversationOnlyWindowPulseRules.sweepPeakOpacity(
-                    for: configuration.style)
+                    for: configuration.style) * self.effectConfiguration.sweepOpacityMultiplier
             }
 
             withAnimation(.linear(duration: configuration.duration)) {
@@ -2463,7 +2710,9 @@ private struct TokenDailyBoardConversationOnlyWindowPulseOverlay: View {
         if self.fillOpacity == 0, self.sweepOpacity == 0 {
             self.sweepProgress = self.startProgress(for: style)
             self.fillOpacity = TokenDailyBoardConversationOnlyWindowPulseRules.fillPeakOpacity(for: style) * 0.7
+                * self.effectConfiguration.fillOpacityMultiplier
             self.sweepOpacity = TokenDailyBoardConversationOnlyWindowPulseRules.sweepPeakOpacity(for: style) * 0.2
+                * self.effectConfiguration.sweepOpacityMultiplier
         }
     }
 
@@ -2491,53 +2740,211 @@ private struct TokenDailyBoardConversationOnlyWindowPulseOverlay: View {
         }
     }
 
+    @ViewBuilder
+    private func pulseFillAndSweep(
+        for style: TokenDailyBoardNarrativePulseStyle,
+        proxySize: CGSize,
+        horizontalSweepWidth: CGFloat,
+        verticalSweepHeight: CGFloat,
+        horizontalOffset: CGFloat,
+        verticalOffset: CGFloat)
+        -> some View
+    {
+        self.fillGradient(for: style)
+            .opacity(self.fillOpacity)
+
+        self.sweepGradient(for: style)
+            .frame(
+                width: style == .idlePulse ? proxySize.width * 1.2 : horizontalSweepWidth,
+                height: style == .idlePulse ? verticalSweepHeight : proxySize.height * 1.28)
+            .offset(x: style == .idlePulse ? 0 : horizontalOffset, y: style == .idlePulse ? verticalOffset : 0)
+            .blur(
+                radius: TokenDailyBoardConversationOnlyWindowPulseRules.sweepBlurRadius
+                    * self.effectConfiguration.sweepBlurMultiplier)
+            .opacity(self.sweepOpacity)
+            .blendMode(.plusLighter)
+    }
+
     private func fillGradient(for style: TokenDailyBoardNarrativePulseStyle) -> LinearGradient {
-        switch style {
-        case .standardRealtime:
-            LinearGradient(
-                colors: [
-                    Color(red: 0.26, green: 0.08, blue: 0.10),
-                    Color(red: 0.47, green: 0.18, blue: 0.18),
-                    Color(red: 0.88, green: 0.82, blue: 0.76),
-                ],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing)
-        case .idlePulse:
-            LinearGradient(
-                colors: [
-                    Color(red: 0.15, green: 0.08, blue: 0.16),
-                    Color(red: 0.28, green: 0.12, blue: 0.24),
-                    Color(red: 0.72, green: 0.56, blue: 0.68),
-                ],
-                startPoint: .bottom,
-                endPoint: .top)
+        let fillColors = self.effectConfiguration.fillColors.map { color -> Color in
+            switch style {
+            case .standardRealtime:
+                color
+            case .idlePulse:
+                color.opacity(0.82)
+            }
         }
+        return LinearGradient(
+            colors: fillColors,
+            startPoint: self.effectConfiguration.fillStartPoint,
+            endPoint: self.effectConfiguration.fillEndPoint)
     }
 
     private func sweepGradient(for style: TokenDailyBoardNarrativePulseStyle) -> LinearGradient {
-        switch style {
-        case .standardRealtime:
-            LinearGradient(
-                stops: [
-                    .init(color: .clear, location: 0),
-                    .init(color: Color(red: 0.52, green: 0.16, blue: 0.16).opacity(0.26), location: 0.22),
-                    .init(color: Color(red: 0.78, green: 0.42, blue: 0.34).opacity(0.36), location: 0.48),
-                    .init(color: Color(red: 0.96, green: 0.92, blue: 0.86).opacity(0.42), location: 0.66),
-                    .init(color: .clear, location: 1),
-                ],
-                startPoint: .leading,
-                endPoint: .trailing)
-        case .idlePulse:
-            LinearGradient(
-                stops: [
-                    .init(color: .clear, location: 0),
-                    .init(color: Color(red: 0.30, green: 0.14, blue: 0.32).opacity(0.18), location: 0.24),
-                    .init(color: Color(red: 0.52, green: 0.30, blue: 0.56).opacity(0.24), location: 0.56),
-                    .init(color: Color(red: 0.90, green: 0.82, blue: 0.90).opacity(0.26), location: 0.74),
-                    .init(color: .clear, location: 1),
-                ],
-                startPoint: .bottom,
-                endPoint: .top)
+        let sweepColors = self.effectConfiguration.sweepColors.map { color -> Color in
+            switch style {
+            case .standardRealtime:
+                color
+            case .idlePulse:
+                color.opacity(0.78)
+            }
+        }
+        return LinearGradient(
+            colors: sweepColors,
+            startPoint: self.effectConfiguration.sweepStartPoint,
+            endPoint: self.effectConfiguration.sweepEndPoint)
+    }
+}
+
+package struct TokenDailyBoardConversationOnlyPreviewScene: View {
+    let tuning: TokenDailyBoardConversationOnlyDebugTuning
+    let avatarSlots: [CodexDailyAvatarResolvedSlot]
+    let previewTrigger: Int
+
+    @State private var pulsePhase: TokenDailyBoardNarrativeWindowPulsePhase = .inactive
+    @State private var avatarReplacementSequenceID = 0
+    @State private var bodyToken = "preview-body-0"
+    @State private var metadataToken = "preview-meta-0"
+    @State private var effectReplayToken = "preview-effect-0"
+    @State private var replayTask: Task<Void, Never>?
+
+    package init(
+        tuning: TokenDailyBoardConversationOnlyDebugTuning,
+        avatarSlots: [CodexDailyAvatarResolvedSlot],
+        previewTrigger: Int)
+    {
+        self.tuning = tuning
+        self.avatarSlots = avatarSlots
+        self.previewTrigger = previewTrigger
+    }
+
+    private var previewTuning: TokenDailyBoardConversationOnlyDebugTuning {
+        var preview = TokenDailyBoardConversationOnlyDebugRules.clamp(self.tuning)
+        preview.enablesPreNarrativeWindowPulse = true
+        preview.enablesAvatarReplacementAnimation = true
+        return preview
+    }
+
+    private var animationProfile: TokenDailyBoardConversationOnlyResolvedAnimationProfile {
+        TokenDailyBoardConversationOnlyAnimationProfileRules.resolvedProfile(tuning: self.previewTuning)
+    }
+
+    private var appearance: TokenDailyBoardConversationOnlyWindowAppearance {
+        TokenDailyBoardConversationOnlyDebugRules.resolvedWindowAppearance(
+            self.previewTuning,
+            for: .conversationOnly)
+    }
+
+    private var previewSize: CGSize {
+        TokenDailyBoardConversationOnlyLayoutRules.compactWindowSize(for: self.previewTuning)
+    }
+
+    private var previewScale: CGFloat {
+        min(280 / max(self.previewSize.width, 1), 1)
+    }
+
+    private var pulseMotion: TokenDailyBoardNarrativePulseMotionConfiguration {
+        self.animationProfile.pulseMotion(for: .standardRealtime)
+            ?? TokenDailyBoardNarrativePulseMotionConfiguration(
+                style: .standardRealtime,
+                duration: TokenDailyBoardConversationOnlyWindowPulseRules.duration,
+                fadeOutDuration: TokenDailyBoardConversationOnlyWindowPulseRules.fadeOutDuration)
+    }
+
+    private var bodyStartDelay: TimeInterval {
+        self.pulseMotion.duration + self.animationProfile.bodyStartDelay(for: .eventGroup)
+    }
+
+    private var metadataStartDelay: TimeInterval {
+        self.bodyStartDelay
+            + TokenDailyBoardNarrativeAnimationRules.typewriterDuration(
+                for: TokenDailyBoardConversationOnlyPreviewSceneRules.sentence.text,
+                charactersPerSecond: self.animationProfile.bodyCharactersPerSecond)
+            + self.animationProfile.metadataStartDelay(for: .eventGroup)
+    }
+
+    package var body: some View {
+        let contentFrame = TokenDailyBoardConversationOnlyLayoutRules.compactContentFrame(
+            in: self.previewSize,
+            tuning: self.previewTuning)
+
+        ZStack {
+            TokenDailyBoardWindowBackground(
+                usesGlass: true,
+                appearance: self.appearance,
+                displayMode: .conversationOnly)
+
+            TokenDailyBoardConversationOnlyWindowPulseOverlay(
+                phase: self.pulsePhase,
+                displayMode: .conversationOnly,
+                tuning: self.previewTuning)
+
+            TokenDailyBoardConversationOnlyNarrativeView(
+                sentence: TokenDailyBoardConversationOnlyPreviewSceneRules.sentence,
+                fontScaleMultiplier: 1,
+                avatarSlots: self.avatarSlots,
+                preferredAvatarSlot: nil,
+                avatarPhase: .resting,
+                avatarReplacementSequenceID: self.avatarReplacementSequenceID,
+                avatarIdleShakeSequenceID: 0,
+                animatesTypewriter: true,
+                typewriterStartDelay: self.bodyStartDelay,
+                typewriterCompletionToken: self.bodyToken,
+                onTypewriterComplete: nil,
+                displayedMetadataText: TokenDailyBoardConversationOnlyPreviewSceneRules.sentence.metadataText,
+                animatesMetadataTypewriter: true,
+                metadataStartDelay: self.metadataStartDelay,
+                metadataCompletionToken: self.metadataToken,
+                contentOpacity: 1,
+                contentVerticalOffset: 0,
+                tuning: self.previewTuning,
+                bodyCharactersPerSecond: self.animationProfile.bodyCharactersPerSecond,
+                metadataCharactersPerSecond: self.animationProfile.metadataCharactersPerSecond,
+                avatarMotionConfiguration: self.animationProfile.avatarMotionConfiguration,
+                isWaitingGroup: false,
+                textColor: .primary,
+                mutedTextColor: .secondary,
+                idleSwitchTransitionToken: "preview-idle-\(self.previewTrigger)",
+                effectReplayToken: self.effectReplayToken)
+                .frame(
+                    width: contentFrame.width,
+                    height: contentFrame.height,
+                    alignment: .center)
+                .position(x: contentFrame.midX, y: contentFrame.midY)
+                .offset(x: self.previewTuning.contentOffset.width, y: self.previewTuning.contentOffset.height)
+        }
+        .frame(width: self.previewSize.width, height: self.previewSize.height)
+        .scaleEffect(self.previewScale, anchor: .topLeading)
+        .frame(
+            width: self.previewSize.width * self.previewScale,
+            height: self.previewSize.height * self.previewScale,
+            alignment: .topLeading)
+        .onAppear {
+            self.replayPreview()
+        }
+        .onChange(of: self.previewTrigger) { _, _ in
+            self.replayPreview()
+        }
+        .onDisappear {
+            self.replayTask?.cancel()
+            self.replayTask = nil
+            self.pulsePhase = .inactive
+        }
+    }
+
+    private func replayPreview() {
+        self.replayTask?.cancel()
+        self.replayTask = nil
+        self.avatarReplacementSequenceID += 1
+        self.bodyToken = "preview-body-\(self.previewTrigger)-\(self.avatarReplacementSequenceID)"
+        self.metadataToken = "preview-meta-\(self.previewTrigger)-\(self.avatarReplacementSequenceID)"
+        self.effectReplayToken = "preview-effect-\(self.previewTrigger)-\(self.avatarReplacementSequenceID)"
+        self.pulsePhase = .active(self.avatarReplacementSequenceID, self.pulseMotion)
+        let fadeDelay = self.pulseMotion.duration
+        self.replayTask = Task { @MainActor in
+            try? await Task.sleep(nanoseconds: UInt64(fadeDelay * 1_000_000_000))
+            guard !Task.isCancelled else { return }
+            self.pulsePhase = .fadingOut(self.avatarReplacementSequenceID, self.pulseMotion)
         }
     }
 }
@@ -4186,6 +4593,17 @@ public struct TokenDailyBoardView: View {
         self.conversationOnlyAvatarIdleShakeSequenceID
     }
 
+    private var activeNarrativeGroupKind: TokenDailyBoardNarrativePresentationGroupKind? {
+        self.activeNarrativeSession?.item.groupKind ?? self.renderedNarrativeSourceItem?.groupKind
+    }
+
+    private var activeNarrativeIdleSwitchTransitionToken: String {
+        guard self.activeNarrativeGroupKind == .waitingGroup else { return "nonwaiting" }
+        return self.activeNarrativeSession?.item.sourceItem.sourceID
+            ?? self.renderedNarrativeSourceItem?.sourceID
+            ?? "idle"
+    }
+
     private var activeNarrativeTypewriterCompletionToken: String {
         self.activeNarrativeSession.map { "session-\($0.item.id)" } ?? "idle"
     }
@@ -4313,6 +4731,7 @@ public struct TokenDailyBoardView: View {
         let contentFrame = TokenDailyBoardConversationOnlyLayoutRules.compactContentFrame(
             in: containerSize,
             tuning: debugTuning)
+        let groupKind = self.activeNarrativeGroupKind ?? .eventGroup
         _ = responsiveMetrics
 
         return TokenDailyBoardConversationOnlyNarrativeView(
@@ -4323,14 +4742,20 @@ public struct TokenDailyBoardView: View {
             avatarPhase: self.activeNarrativeAvatarPhase,
             avatarReplacementSequenceID: self.activeNarrativeAvatarReplacementSequenceID,
             avatarIdleShakeSequenceID: self.activeNarrativeAvatarIdleShakeSequenceID,
-            animatesTypewriter: self.animatesDisplayedNarrativeTypewriter,
+            animatesTypewriter: self.animatesDisplayedNarrativeTypewriter
+                && TokenDailyBoardConversationOnlyIdleSwitchRules.animatesBodyText(
+                    for: groupKind,
+                    displayMode: .conversationOnly),
             typewriterStartDelay: self.activeNarrativeTypewriterStartDelay,
             typewriterCompletionToken: self.activeNarrativeTypewriterCompletionToken,
             onTypewriterComplete: {
                 self.handleTypewriterCompletion(for: self.activeNarrativeTypewriterCompletionToken)
             },
             displayedMetadataText: self.activeNarrativeDisplayedMetadataText,
-            animatesMetadataTypewriter: self.activeNarrativeSession != nil,
+            animatesMetadataTypewriter: self.activeNarrativeSession != nil
+                && TokenDailyBoardConversationOnlyIdleSwitchRules.animatesMetadataText(
+                    for: groupKind,
+                    displayMode: .conversationOnly),
             metadataStartDelay: self.activeNarrativeMetadataStartDelay,
             metadataCompletionToken: self.activeNarrativeMetadataCompletionToken,
             contentOpacity: self.activeNarrativeContentOpacity,
@@ -4339,8 +4764,11 @@ public struct TokenDailyBoardView: View {
             bodyCharactersPerSecond: self.activeNarrativeBodyCharactersPerSecond,
             metadataCharactersPerSecond: self.activeNarrativeMetadataCharactersPerSecond,
             avatarMotionConfiguration: self.activeNarrativeAvatarMotionConfiguration,
+            isWaitingGroup: groupKind == .waitingGroup,
             textColor: self.palette.text,
-            mutedTextColor: self.palette.mutedText)
+            mutedTextColor: self.palette.mutedText,
+            idleSwitchTransitionToken: self.activeNarrativeIdleSwitchTransitionToken,
+            effectReplayToken: self.activeNarrativeTypewriterCompletionToken)
             .frame(
                 width: contentFrame.width,
                 height: contentFrame.height,
@@ -4480,6 +4908,9 @@ public struct TokenDailyBoardView: View {
 
         if self.activeDisplayMode == .conversationOnly {
             let profile = self.conversationOnlyAnimationProfile
+            let usesIdleSwitchPresentation = TokenDailyBoardConversationOnlyIdleSwitchRules.isEnabled(
+                for: item.groupKind,
+                displayMode: .conversationOnly)
             pulseMotion = item.pulseStyle.flatMap { profile.pulseMotion(for: $0) }
             avatarMotionConfiguration = profile.avatarMotionConfiguration
             bodyCharactersPerSecond = profile.bodyCharactersPerSecond
@@ -4488,18 +4919,24 @@ public struct TokenDailyBoardView: View {
             avatarIntroStartAt = pulseEndAt
             typewriterStartAt = avatarIntroStartAt.addingTimeInterval(
                 profile.bodyStartDelay(for: item.groupKind))
-            let bodyDuration = TokenDailyBoardNarrativeAnimationRules.typewriterDuration(
-                for: item.sentence.text,
-                charactersPerSecond: bodyCharactersPerSecond)
+            let bodyDuration = usesIdleSwitchPresentation
+                ? TokenDailyBoardConversationOnlyIdleSwitchRules.crossfadeDuration
+                : TokenDailyBoardNarrativeAnimationRules.typewriterDuration(
+                    for: item.sentence.text,
+                    charactersPerSecond: bodyCharactersPerSecond)
             typewriterCompletedAt = typewriterStartAt.addingTimeInterval(bodyDuration)
             if hasMetadata, let metadataText = item.sentence.metadataText, !metadataText.isEmpty {
-                let startAt = typewriterCompletedAt.addingTimeInterval(
-                    profile.metadataStartDelay(for: item.groupKind))
+                let startAt = usesIdleSwitchPresentation
+                    ? typewriterStartAt
+                    : typewriterCompletedAt.addingTimeInterval(
+                        profile.metadataStartDelay(for: item.groupKind))
                 metadataStartedAt = startAt
-                metadataCompletedAt = startAt.addingTimeInterval(
-                    TokenDailyBoardNarrativeAnimationRules.typewriterDuration(
-                        for: metadataText,
-                        charactersPerSecond: metadataCharactersPerSecond))
+                metadataCompletedAt = usesIdleSwitchPresentation
+                    ? typewriterCompletedAt
+                    : startAt.addingTimeInterval(
+                        TokenDailyBoardNarrativeAnimationRules.typewriterDuration(
+                            for: metadataText,
+                            charactersPerSecond: metadataCharactersPerSecond))
             } else {
                 metadataStartedAt = nil
                 metadataCompletedAt = typewriterCompletedAt
@@ -5189,122 +5626,130 @@ public struct TokenDailyBoardView: View {
         }
     }
 
-    public var body: some View {
-        GeometryReader { geo in
-            let responsiveMetrics = TokenDailyBoardResponsiveMetrics(containerWidth: geo.size.width)
+    private func rootContent(in geo: GeometryProxy) -> some View {
+        let responsiveMetrics = TokenDailyBoardResponsiveMetrics(containerWidth: geo.size.width)
 
-            ZStack {
-                TokenDailyBoardWindowBackground(
-                    usesGlass: self.usesWindowGlassBackground,
-                    appearance: self.conversationOnlyWindowAppearance)
+        return ZStack {
+            TokenDailyBoardWindowBackground(
+                usesGlass: self.usesWindowGlassBackground,
+                appearance: self.conversationOnlyWindowAppearance,
+                displayMode: self.activeDisplayMode)
+                .ignoresSafeArea()
+
+            if self.showsNarrativeWindowPulse {
+                TokenDailyBoardConversationOnlyWindowPulseOverlay(
+                    phase: self.narrativeWindowPulsePhase,
+                    displayMode: self.activeDisplayMode,
+                    tuning: self.store.conversationOnlyDebugTuning)
                     .ignoresSafeArea()
+                    .allowsHitTesting(false)
+                    .id("pulse-\(self.activeDisplayMode.rawValue)")
+            }
 
-                if self.showsNarrativeWindowPulse {
-                    TokenDailyBoardConversationOnlyWindowPulseOverlay(phase: self.narrativeWindowPulsePhase)
-                        .ignoresSafeArea()
-                        .allowsHitTesting(false)
-                        .id("pulse-\(self.activeDisplayMode.rawValue)")
-                }
+            TokenDailyBoardBoardPanelContainer(
+                topInset: self.boardTopInset)
+            {
+                ZStack(alignment: .topLeading) {
+                    VStack(
+                        alignment: .leading,
+                        spacing: TokenDailyBoardLayout.contentSpacing)
+                    {
+                        if self.showsContentChrome {
+                            TokenDailyBoardChromeBarView(
+                                strings: self.strings,
+                                statusText: self.chromeStatusText,
+                                chromeMetrics: self.chromeMetrics)
+                        }
 
-                TokenDailyBoardBoardPanelContainer(
-                    topInset: self.boardTopInset)
-                {
-                    ZStack(alignment: .topLeading) {
-                        VStack(
-                            alignment: .leading,
-                            spacing: TokenDailyBoardLayout.contentSpacing)
-                        {
-                            if self.showsContentChrome {
-                                TokenDailyBoardChromeBarView(
+                        self.mainBoardContent(responsiveMetrics: responsiveMetrics)
+                    }
+                    .id("main-\(self.activeDisplayMode.rawValue)")
+
+                    if self.showsNarrativeOverlay,
+                       self.store.cacheState == .ready,
+                       let displayedNarrativeSentence
+                    {
+                        Group {
+                            if self.activeDisplayMode == .conversationOnly {
+                                self.conversationOnlyNarrativeOverlay(
+                                    sentence: displayedNarrativeSentence,
+                                    containerSize: geo.size,
+                                    responsiveMetrics: responsiveMetrics)
+                            } else {
+                                let overlayID = "overlay-\(self.activeDisplayMode.rawValue)"
+                                TokenDailyBoardNarrativeRailView(
+                                    sentence: displayedNarrativeSentence,
+                                    fontScaleMultiplier: self.store.narrativeBodyFontScale,
+                                    displayMode: self.activeDisplayMode,
+                                    avatarSlots: self.store.avatarResolvedSlots,
+                                    preferredAvatarSlot: self.activeNarrativeAvatarSlot,
+                                    avatarPhase: self.activeNarrativeAvatarPhase,
+                                    avatarReplacementSequenceID: self.activeNarrativeAvatarReplacementSequenceID,
+                                    avatarIdleShakeSequenceID: self.activeNarrativeAvatarIdleShakeSequenceID,
+                                    animatesAvatarReplacement: self.showsNarrativeAvatarReplacementAnimation,
+                                    animatesTypewriter: self.animatesDisplayedNarrativeTypewriter,
+                                    typewriterStartDelay: self.activeNarrativeTypewriterStartDelay,
+                                    typewriterCompletionToken: self.activeNarrativeTypewriterCompletionToken,
+                                    onTypewriterComplete: {
+                                        self.handleTypewriterCompletion(
+                                            for: self.activeNarrativeTypewriterCompletionToken)
+                                    },
+                                    displayedMetadataText: self.activeNarrativeDisplayedMetadataText,
+                                    animatesMetadataTypewriter: self.activeNarrativeSession != nil,
+                                    metadataStartDelay: self.activeNarrativeMetadataStartDelay,
+                                    metadataCompletionToken: self.activeNarrativeMetadataCompletionToken,
+                                    contentOpacity: self.activeNarrativeContentOpacity,
+                                    contentVerticalOffset: self.activeNarrativeContentVerticalOffset,
+                                    bodyCharactersPerSecond: self.activeNarrativeBodyCharactersPerSecond,
+                                    metadataCharactersPerSecond: self.activeNarrativeMetadataCharactersPerSecond,
+                                    chromeButtonsVisible: self.showsModeChromeButtons,
+                                    onCustomize: {
+                                        self.showsNarrativeEditor = true
+                                    },
                                     strings: self.strings,
-                                    statusText: self.chromeStatusText,
-                                    chromeMetrics: self.chromeMetrics)
-                            }
-
-                            self.mainBoardContent(responsiveMetrics: responsiveMetrics)
-                        }
-                        .id("main-\(self.activeDisplayMode.rawValue)")
-
-                        if self.showsNarrativeOverlay,
-                           self.store.cacheState == .ready,
-                           let displayedNarrativeSentence
-                        {
-                            Group {
-                                if self.activeDisplayMode == .conversationOnly {
-                                    self.conversationOnlyNarrativeOverlay(
-                                        sentence: displayedNarrativeSentence,
-                                        containerSize: geo.size,
-                                        responsiveMetrics: responsiveMetrics)
-                                } else {
-                                    let overlayID = "overlay-\(self.activeDisplayMode.rawValue)"
-                                    TokenDailyBoardNarrativeRailView(
-                                        sentence: displayedNarrativeSentence,
-                                        fontScaleMultiplier: self.store.narrativeBodyFontScale,
-                                        displayMode: self.activeDisplayMode,
-                                        avatarSlots: self.store.avatarResolvedSlots,
-                                        preferredAvatarSlot: self.activeNarrativeAvatarSlot,
-                                        avatarPhase: self.activeNarrativeAvatarPhase,
-                                        avatarReplacementSequenceID: self.activeNarrativeAvatarReplacementSequenceID,
-                                        avatarIdleShakeSequenceID: self.activeNarrativeAvatarIdleShakeSequenceID,
-                                        animatesAvatarReplacement: self.showsNarrativeAvatarReplacementAnimation,
-                                        animatesTypewriter: self.animatesDisplayedNarrativeTypewriter,
-                                        typewriterStartDelay: self.activeNarrativeTypewriterStartDelay,
-                                        typewriterCompletionToken: self.activeNarrativeTypewriterCompletionToken,
-                                        onTypewriterComplete: {
-                                            self.handleTypewriterCompletion(
-                                                for: self.activeNarrativeTypewriterCompletionToken)
-                                        },
-                                        displayedMetadataText: self.activeNarrativeDisplayedMetadataText,
-                                        animatesMetadataTypewriter: self.activeNarrativeSession != nil,
-                                        metadataStartDelay: self.activeNarrativeMetadataStartDelay,
-                                        metadataCompletionToken: self.activeNarrativeMetadataCompletionToken,
-                                        contentOpacity: self.activeNarrativeContentOpacity,
-                                        contentVerticalOffset: self.activeNarrativeContentVerticalOffset,
-                                        bodyCharactersPerSecond: self.activeNarrativeBodyCharactersPerSecond,
-                                        metadataCharactersPerSecond: self.activeNarrativeMetadataCharactersPerSecond,
-                                        chromeButtonsVisible: self.showsModeChromeButtons,
-                                        onCustomize: {
-                                            self.showsNarrativeEditor = true
-                                        },
-                                        strings: self.strings,
-                                        textColor: self.palette.text,
-                                        mutedTextColor: self.palette.mutedText)
-                                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-                                        .padding(.top, TokenDailyBoardLayout.narrativeOverlayTopInset)
-                                        .id(overlayID)
-                                }
-                            }
-                        }
-
-                        if self.showsMonthPager {
-                            VStack {
-                                Spacer(minLength: 0)
-
-                                TokenDailyBoardMonthPagerView(
-                                    selectedYear: self.selectedYear,
-                                    selectedMonth: self.selectedMonth,
-                                    availableMonthsWithData: self.model.availableMonthsWithData,
-                                    previousYear: self.previousAvailableYear,
-                                    nextYear: self.nextAvailableYear,
-                                    buttonDiameter: self.monthButtonDiameter,
-                                    onSelectMonth: self.selectMonth,
-                                    onSelectPreviousYear: self.selectPreviousYear,
-                                    onSelectNextYear: self.selectNextYear)
-                                    .padding(.bottom, 8)
+                                    textColor: self.palette.text,
+                                    mutedTextColor: self.palette.mutedText)
+                                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                                    .padding(.top, TokenDailyBoardLayout.narrativeOverlayTopInset)
+                                    .id(overlayID)
                             }
                         }
                     }
-                    .opacity(self.displayModeContentOpacity)
+
+                    if self.showsMonthPager {
+                        VStack {
+                            Spacer(minLength: 0)
+
+                            TokenDailyBoardMonthPagerView(
+                                selectedYear: self.selectedYear,
+                                selectedMonth: self.selectedMonth,
+                                availableMonthsWithData: self.model.availableMonthsWithData,
+                                previousYear: self.previousAvailableYear,
+                                nextYear: self.nextAvailableYear,
+                                buttonDiameter: self.monthButtonDiameter,
+                                onSelectMonth: self.selectMonth,
+                                onSelectPreviousYear: self.selectPreviousYear,
+                                onSelectNextYear: self.selectNextYear)
+                                .padding(.bottom, 8)
+                        }
+                    }
                 }
-                .padding(.horizontal, TokenDailyBoardLayout.windowHorizontalPadding)
-                .padding(.top, self.topContentPadding)
-                .padding(.bottom, TokenDailyBoardLayout.windowVerticalPadding)
+                .opacity(self.displayModeContentOpacity)
             }
-            .environment(\.tokenDailyBoardResponsiveMetrics, responsiveMetrics)
-            .background(
-                TokenDailyBoardWindowAccessor { window in
-                    self.resolveHostWindow(window)
-                })
+            .padding(.horizontal, TokenDailyBoardLayout.windowHorizontalPadding)
+            .padding(.top, self.topContentPadding)
+            .padding(.bottom, TokenDailyBoardLayout.windowVerticalPadding)
+        }
+        .environment(\.tokenDailyBoardResponsiveMetrics, responsiveMetrics)
+        .background(
+            TokenDailyBoardWindowAccessor { window in
+                self.resolveHostWindow(window)
+            })
+    }
+
+    public var body: some View {
+        GeometryReader { geo in
+            self.rootContent(in: geo)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .environment(\.locale, self.strings.locale)

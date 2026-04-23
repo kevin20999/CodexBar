@@ -9,6 +9,10 @@ extension AppStrings {
         self.text(zh: "显示", en: "Display", ja: "表示")
     }
 
+    var settingsThemeCategoryTitle: String {
+        self.text(zh: "主题", en: "Themes", ja: "テーマ")
+    }
+
     var settingsOpenAIWebCategoryTitle: String {
         self.text(zh: "OpenAI Web", en: "OpenAI Web", ja: "OpenAI Web")
     }
@@ -30,9 +34,16 @@ extension AppStrings {
 
     var settingsDisplayCategoryDescription: String {
         self.text(
-            zh: "管理菜单栏和看板显示方式。",
-            en: "Manage menu bar and panel presentation.",
-            ja: "メニューバーとパネルの表示方法を管理します。")
+            zh: "管理菜单栏样式与显示相关设置。",
+            en: "Manage menu bar appearance and display-related options.",
+            ja: "メニューバーの表示スタイルと表示関連設定を管理します。")
+    }
+
+    var settingsThemeCategoryDescription: String {
+        self.text(
+            zh: "集中管理菜单面板主题与弹窗容器风格。",
+            en: "Manage menu panel themes and popup container style in one place.",
+            ja: "メニューパネルのテーマとポップアップコンテナのスタイルをまとめて管理します。")
     }
 
     var settingsOpenAIWebCategoryDescription: String {
@@ -76,5 +87,13 @@ extension AppStrings {
             zh: "管理开机启动和本地存储位置。",
             en: "Manage launch behavior and local storage.",
             ja: "起動設定とローカル保存先を管理します。")
+    }
+
+    var previewAppearanceLabel: String {
+        self.text(zh: "视觉风格", en: "Visual style", ja: "ビジュアルスタイル")
+    }
+
+    var previewContainerStyleLabel: String {
+        self.text(zh: "弹窗容器", en: "Popup container", ja: "ポップアップコンテナ")
     }
 }

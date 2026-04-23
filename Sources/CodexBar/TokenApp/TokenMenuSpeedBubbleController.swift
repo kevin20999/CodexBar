@@ -4,10 +4,16 @@ import SwiftUI
 enum TokenMenuSpeedBubblePlacement {
     static let screenInset: CGFloat = 8
 
-    static func frame(anchorRect: CGRect, bubbleSize: CGSize, visibleFrame: CGRect) -> CGRect {
+    static func frame(
+        anchorRect: CGRect,
+        bubbleSize: CGSize,
+        visibleFrame: CGRect,
+        presentation: TokenMenuSpeedPresentationState)
+        -> CGRect
+    {
         let minX = visibleFrame.minX + Self.screenInset
         let maxX = visibleFrame.maxX - bubbleSize.width - Self.screenInset
-        let overlap = TokenMenuSpeedMeterLayout.bubbleAttachmentOverlap
+        let overlap = TokenMenuSpeedBubbleLayout.overlap(for: presentation)
         let originX = min(max(anchorRect.midX - (bubbleSize.width / 2), minX), maxX)
         let originY = anchorRect.minY + overlap - bubbleSize.height
 
@@ -24,7 +30,6 @@ final class TokenMenuSpeedBubbleController {
     private let model = TokenMenuSpeedBubbleModel()
     private let panel: TokenMenuSpeedBubblePanel
     private let hostingController: NSHostingController<TokenMenuSpeedBubbleView>
-    private var hideTask: Task<Void, Never>?
 
     init() {
         self.hostingController = NSHostingController(rootView: TokenMenuSpeedBubbleView(model: self.model))
@@ -36,65 +41,65 @@ final class TokenMenuSpeedBubbleController {
         self.configurePanel()
     }
 
-    func present(anchorRect: CGRect, visibleFrame: CGRect, metrics: MenuBarTokenSpeedMetrics) {
-        guard metrics.isActive else {
-            self.hide(animated: true)
+    func update(
+        anchorRect: CGRect,
+        visibleFrame: CGRect,
+        presentation: TokenMenuSpeedPresentationState)
+    {
+        guard presentation.keepsBubbleMounted else {
+            self.hideNow()
             return
         }
 
-        self.hideTask?.cancel()
-        self.model.metrics = metrics
-        let targetSize = self.fittingSize(for: metrics)
+        let targetSize = self.fittingSize(for: presentation)
         let frame = TokenMenuSpeedBubblePlacement.frame(
             anchorRect: anchorRect,
             bubbleSize: targetSize,
-            visibleFrame: visibleFrame)
+            visibleFrame: visibleFrame,
+            presentation: presentation)
         let wasVisible = self.panel.isVisible
 
-        self.panel.setFrame(frame, display: false)
-        self.panel.orderFrontRegardless()
+        self.model.presentation = presentation
 
-        if wasVisible {
-            self.model.isPresented = true
-        } else {
-            self.model.isPresented = false
-            Task { @MainActor [weak self] in
-                self?.model.isPresented = true
-            }
-        }
-    }
-
-    func hide(animated: Bool) {
-        self.hideTask?.cancel()
-
-        guard animated else {
+        if !wasVisible, !presentation.bubblePresented {
             self.model.isPresented = false
             self.panel.orderOut(nil)
             return
         }
 
-        self.model.isPresented = false
-        self.hideTask = Task { [weak self] in
-            do {
-                try await Task.sleep(for: .milliseconds(240))
-            } catch {
-                return
+        if wasVisible {
+            NSAnimationContext.runAnimationGroup { context in
+                context.duration = TokenMenuSpeedBubbleAnimation.panelAnimationDuration(for: presentation)
+                context.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+                self.panel.animator().setFrame(frame, display: false)
             }
+        } else {
+            self.panel.setFrame(frame, display: false)
+            self.panel.orderFrontRegardless()
+        }
 
-            await MainActor.run {
-                guard let self else { return }
-                if !self.model.isPresented {
-                    self.panel.orderOut(nil)
-                }
+        if wasVisible {
+            self.model.isPresented = presentation.bubblePresented
+        } else {
+            self.model.isPresented = false
+            Task { @MainActor [weak self] in
+                self?.model.isPresented = presentation.bubblePresented
             }
         }
     }
 
-    private func fittingSize(for metrics: MenuBarTokenSpeedMetrics) -> CGSize {
-        self.model.metrics = metrics
-        self.hostingController.view.layoutSubtreeIfNeeded()
-        let size = self.hostingController.sizeThatFits(in: NSSize(width: 180, height: 80))
-        return CGSize(width: max(size.width, TokenMenuSpeedMeterLayout.bubbleMinimumWidth), height: size.height)
+    func hide() {
+        self.model.isPresented = false
+    }
+
+    func hideNow() {
+        self.model.presentation = .idle
+        self.model.isPresented = false
+        self.panel.orderOut(nil)
+    }
+
+    private func fittingSize(for presentation: TokenMenuSpeedPresentationState) -> CGSize {
+        TokenMenuSpeedBubbleLayout.size(for: presentation)
     }
 
     private func configurePanel() {

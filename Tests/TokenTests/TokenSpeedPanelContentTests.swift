@@ -41,6 +41,29 @@ final class TokenSpeedPanelContentTests: XCTestCase {
         XCTAssertGreaterThan(TokenSpeedPanelContent.panelMetrics(availableScreenHeight: nil).displayHeight, 0)
     }
 
+    func test_speedPanelContentBuildsAfterThemeSwitch() throws {
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: UUID().uuidString))
+        let settings = SettingsStore(
+            defaults: defaults,
+            launchAtLoginManager: TokenSpeedPanelLaunchAtLoginManager(),
+            preferredLanguages: { ["en-US"] })
+        let sandbox = try TokenSpeedPanelSandbox()
+        let provider = CodexSessionTokenProvider(
+            sessionRootURL: sandbox.root.appendingPathComponent("sessions", isDirectory: true),
+            historyStore: TokenHistoryStore(fileURL: sandbox.fileURL))
+        let store = UsageStore(
+            settings: settings,
+            provider: provider,
+            dashboardProvider: TokenSpeedPanelDashboardProvider(),
+            startupRefresh: false)
+
+        _ = TokenSpeedPanelContent(store: store, settings: settings, panelHeight: 404).body
+
+        settings.menuVisualTheme = .cyberNeon
+
+        _ = TokenSpeedPanelContent(store: store, settings: settings, panelHeight: 404).body
+    }
+
     func test_panelModelBuilderUsesRawLogScaleWithoutDecayTail() {
         let base = Date(timeIntervalSince1970: 1_800_000_000)
         let samples = [

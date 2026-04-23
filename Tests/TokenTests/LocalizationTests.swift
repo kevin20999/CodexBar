@@ -192,6 +192,99 @@ final class LocalizationTests: XCTestCase {
         XCTAssertEqual(ja.menuPopupStyleTitle(.systemPopover), "システムポップオーバー")
     }
 
+    func test_menuVisualThemeStringsAreLocalized() {
+        let zh = AppStrings(language: .zhHans)
+        XCTAssertEqual(zh.settingsThemeCategoryTitle, "主题")
+        XCTAssertEqual(zh.settingsThemeCategoryDescription, "集中管理菜单面板主题与弹窗容器风格。")
+        XCTAssertEqual(zh.previewAppearanceLabel, "视觉风格")
+        XCTAssertEqual(zh.previewContainerStyleLabel, "弹窗容器")
+        XCTAssertEqual(zh.menuVisualThemeLabel, "主题风格")
+        XCTAssertEqual(zh.menuVisualThemeTitle(.liquidGlassClassic), "液态玻璃经典")
+        XCTAssertEqual(zh.menuVisualThemeTitle(.pureLiquidGlass), "纯粹液态玻璃")
+        XCTAssertEqual(zh.menuVisualThemeTitle(.pixelGame), "像素游戏")
+        XCTAssertEqual(zh.menuVisualThemeTitle(.pixelArcade), "像素街机")
+        XCTAssertEqual(zh.menuVisualThemeTitle(.insCream), "INS 奶油")
+        XCTAssertEqual(zh.menuVisualThemeTitle(.handbookCollage), "手帐拼贴")
+        XCTAssertEqual(zh.menuVisualThemeTitle(.diaryPaper), "日记纸感")
+        XCTAssertEqual(zh.menuVisualThemeTitle(.retroCopper), "复古铜棕")
+        XCTAssertEqual(zh.menuVisualThemeTitle(.cyberNeon), "赛博霓虹")
+        XCTAssertEqual(zh.menuVisualThemeTitle(.sakura), "少女樱花")
+        XCTAssertEqual(zh.menuVisualThemeTitle(.literaryFresh), "文艺清新")
+        XCTAssertEqual(zh.menuVisualThemeTitle(.minimalBlackWhite), "极简黑白")
+        XCTAssertEqual(zh.menuVisualThemeTitle(.midnightBlue), "深夜蓝调")
+        XCTAssertEqual(zh.menuVisualThemeTitle(.forestMatcha), "森林抹茶")
+        XCTAssertEqual(zh.menuVisualThemeTitle(.citrusSunset), "柑橘日落")
+        XCTAssertEqual(zh.menuVisualThemeTitle(.seaSaltMint), "海盐薄荷")
+        XCTAssertEqual(zh.menuVisualThemeTitle(.purpleMist), "紫雾梦境")
+        XCTAssertEqual(zh.menuVisualThemeTitle(.amberFilm), "琥珀胶片")
+        XCTAssertEqual(zh.menuVisualThemeTitle(.nordicCoolGray), "北欧冷灰")
+        XCTAssertEqual(zh.menuVisualThemeTitle(.industrialUtility), "机能工业")
+        XCTAssertEqual(zh.menuVisualThemeTitle(.frenchCafe), "法式奶咖")
+        XCTAssertEqual(zh.menuVisualThemeDescription, "为菜单面板选择显示主题。你可以在不改变交互方式的情况下，切换颜色、底纹与高亮风格。")
+
+        let en = AppStrings(language: .en)
+        XCTAssertEqual(en.settingsThemeCategoryTitle, "Themes")
+        XCTAssertEqual(en.settingsThemeCategoryDescription, "Manage menu panel themes and popup container style in one place.")
+        XCTAssertEqual(en.previewAppearanceLabel, "Visual style")
+        XCTAssertEqual(en.previewContainerStyleLabel, "Popup container")
+        XCTAssertEqual(en.menuVisualThemeLabel, "Theme style")
+        XCTAssertEqual(en.menuVisualThemeTitle(.liquidGlassClassic), "Liquid Glass Classic")
+        XCTAssertEqual(en.menuVisualThemeTitle(.pureLiquidGlass), "Pure Liquid Glass")
+        XCTAssertEqual(en.menuVisualThemeTitle(.pixelGame), "Pixel Game")
+        XCTAssertEqual(en.menuVisualThemeTitle(.pixelArcade), "Pixel Arcade")
+        XCTAssertEqual(en.menuVisualThemeTitle(.insCream), "INS Cream")
+        XCTAssertEqual(en.menuVisualThemeTitle(.handbookCollage), "Handbook Collage")
+        XCTAssertEqual(en.menuVisualThemeTitle(.diaryPaper), "Diary Paper")
+        XCTAssertEqual(en.menuVisualThemeTitle(.retroCopper), "Retro Copper")
+        XCTAssertEqual(en.menuVisualThemeTitle(.cyberNeon), "Cyber Neon")
+        XCTAssertEqual(en.menuVisualThemeTitle(.sakura), "Sakura Bloom")
+        XCTAssertEqual(en.menuVisualThemeTitle(.literaryFresh), "Literary Fresh")
+        XCTAssertEqual(en.menuVisualThemeTitle(.minimalBlackWhite), "Minimal Black & White")
+        XCTAssertEqual(en.menuVisualThemeTitle(.midnightBlue), "Midnight Blue")
+        XCTAssertEqual(en.menuVisualThemeTitle(.forestMatcha), "Forest Matcha")
+        XCTAssertEqual(en.menuVisualThemeTitle(.citrusSunset), "Citrus Sunset")
+        XCTAssertEqual(en.menuVisualThemeTitle(.seaSaltMint), "Sea Salt Mint")
+        XCTAssertEqual(en.menuVisualThemeTitle(.purpleMist), "Purple Mist")
+        XCTAssertEqual(en.menuVisualThemeTitle(.amberFilm), "Amber Film")
+        XCTAssertEqual(en.menuVisualThemeTitle(.nordicCoolGray), "Nordic Cool Gray")
+        XCTAssertEqual(en.menuVisualThemeTitle(.industrialUtility), "Industrial Utility")
+        XCTAssertEqual(en.menuVisualThemeTitle(.frenchCafe), "French Cafe")
+        XCTAssertEqual(
+            en.menuVisualThemeDescription,
+            "Choose a visual theme for the menu panel. Colors, textures, and accent look change without affecting behavior.")
+
+        let ja = AppStrings(language: .ja)
+        XCTAssertEqual(ja.settingsThemeCategoryTitle, "テーマ")
+        XCTAssertEqual(ja.settingsThemeCategoryDescription, "メニューパネルのテーマとポップアップコンテナのスタイルをまとめて管理します。")
+        XCTAssertEqual(ja.previewAppearanceLabel, "ビジュアルスタイル")
+        XCTAssertEqual(ja.previewContainerStyleLabel, "ポップアップコンテナ")
+        XCTAssertEqual(ja.menuVisualThemeLabel, "テーマスタイル")
+        XCTAssertEqual(ja.menuVisualThemeTitle(.liquidGlassClassic), "リキッドガラス クラシック")
+        XCTAssertEqual(ja.menuVisualThemeTitle(.pureLiquidGlass), "ピュアリキッドガラス")
+        XCTAssertEqual(ja.menuVisualThemeTitle(.pixelGame), "ピクセルゲーム")
+        XCTAssertEqual(ja.menuVisualThemeTitle(.pixelArcade), "ピクセルアーケード")
+        XCTAssertEqual(ja.menuVisualThemeTitle(.insCream), "INS クリーム")
+        XCTAssertEqual(ja.menuVisualThemeTitle(.handbookCollage), "手帳コラージュ")
+        XCTAssertEqual(ja.menuVisualThemeTitle(.diaryPaper), "日記ペーパー")
+        XCTAssertEqual(ja.menuVisualThemeTitle(.retroCopper), "レトロコッパー")
+        XCTAssertEqual(ja.menuVisualThemeTitle(.cyberNeon), "サイバーネオン")
+        XCTAssertEqual(ja.menuVisualThemeTitle(.sakura), "さくらブロッサム")
+        XCTAssertEqual(ja.menuVisualThemeTitle(.literaryFresh), "文芸フレッシュ")
+        XCTAssertEqual(ja.menuVisualThemeTitle(.minimalBlackWhite), "ミニマル白黒")
+        XCTAssertEqual(ja.menuVisualThemeTitle(.midnightBlue), "ミッドナイトブルー")
+        XCTAssertEqual(ja.menuVisualThemeTitle(.forestMatcha), "フォレスト抹茶")
+        XCTAssertEqual(ja.menuVisualThemeTitle(.citrusSunset), "シトラスサンセット")
+        XCTAssertEqual(ja.menuVisualThemeTitle(.seaSaltMint), "シーソルトミント")
+        XCTAssertEqual(ja.menuVisualThemeTitle(.purpleMist), "パープルミスト")
+        XCTAssertEqual(ja.menuVisualThemeTitle(.amberFilm), "アンバーフィルム")
+        XCTAssertEqual(ja.menuVisualThemeTitle(.nordicCoolGray), "北欧クールグレー")
+        XCTAssertEqual(ja.menuVisualThemeTitle(.industrialUtility), "インダストリアルユーティリティ")
+        XCTAssertEqual(ja.menuVisualThemeTitle(.frenchCafe), "フレンチカフェ")
+        XCTAssertEqual(
+            ja.menuVisualThemeDescription,
+            "メニューパネルの外観テーマを選択します。操作挙動は変わらず、配色や質感、アクセントの見た目だけを切り替えます。")
+    }
+
     func test_resetSubtitleIsLocalized() {
         XCTAssertEqual(AppStrings(language: .zhHans).resetSubtitle("19:21"), "重置时间 19:21")
         XCTAssertEqual(AppStrings(language: .zhHans).resetSubtitle("重置时间：19:21"), "重置时间 19:21")
@@ -323,6 +416,26 @@ final class LocalizationTests: XCTestCase {
         XCTAssertEqual(AppStrings(language: .en).compactTokenText(1_560_000_000), "1.6B")
         XCTAssertEqual(AppStrings(language: .ja).compactTokenText(1_560_000_000), "15.6 億")
         XCTAssertEqual(AppStrings(language: .zhHans).compactTokenText(12345), "1.2 万")
+        XCTAssertEqual(AppStrings(language: .en).compactTokenText(12345), "12.3K")
+        XCTAssertEqual(AppStrings(language: .ja).compactTokenText(12345), "1.2 万")
+    }
+
+    func test_refreshFrequencyTitleIncludesOneMinute() {
+        XCTAssertEqual(AppStrings(language: .zhHans).refreshFrequencyTitle(.oneMinute), "每 1 分钟")
+        XCTAssertEqual(AppStrings(language: .en).refreshFrequencyTitle(.oneMinute), "Every 1 minute")
+        XCTAssertEqual(AppStrings(language: .ja).refreshFrequencyTitle(.oneMinute), "1 分ごと")
+    }
+
+    func test_usageStatisticsRefreshFrequencyTitleIncludesThirtyMinutes() {
+        XCTAssertEqual(
+            AppStrings(language: .zhHans).usageStatisticsRefreshFrequencyTitle(.thirtyMinutes),
+            "每 30 分钟")
+        XCTAssertEqual(
+            AppStrings(language: .en).usageStatisticsRefreshFrequencyTitle(.thirtyMinutes),
+            "Every 30 minutes")
+        XCTAssertEqual(
+            AppStrings(language: .ja).usageStatisticsRefreshFrequencyTitle(.thirtyMinutes),
+            "30 分ごと")
     }
 
     func test_thirtyDayPeakTokenTextUsesStaticPeakUnits() {

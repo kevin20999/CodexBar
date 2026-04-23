@@ -102,12 +102,6 @@ Dev loop:
 ./Scripts/compile_and_run.sh
 ```
 
-CodexDaily-only dev loop:
-
-```bash
-./Scripts/compile_and_run_codexdaily.sh
-```
-
 Clean local caches and generated artifacts:
 
 ```bash

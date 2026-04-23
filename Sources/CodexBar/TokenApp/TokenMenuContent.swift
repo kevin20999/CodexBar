@@ -609,6 +609,7 @@ struct MenuContent: View {
     }
 
     var body: some View {
+        let theme = self.settings.menuVisualTheme
         let panelShape = RoundedRectangle(cornerRadius: self.panelCornerRadius, style: .continuous)
         let rootContent = AnyView(
             Group {
@@ -655,6 +656,7 @@ struct MenuContent: View {
                 rootContent
             }
         }
+        .id(theme)
         .environment(\.locale, self.strings.locale)
         .task(id: self.renderPhaseTaskID) {
             await self.advanceRenderPhaseIfNeeded()
@@ -982,7 +984,9 @@ struct MenuContent: View {
     }
 
     private func placeholderCapsule(width: CGFloat, height: CGFloat, opacity: Double = 0.78) -> some View {
-        Capsule(style: .continuous)
+        RoundedRectangle(
+            cornerRadius: TokenMenuTheme.chromeCornerRadius(default: height / 2, pixel: min(max(height * 0.28, 3), 5)),
+            style: .continuous)
             .fill(TokenFloatingCardTheme.track.opacity(opacity))
             .frame(width: width, height: height)
     }
@@ -1376,7 +1380,7 @@ struct MenuContent: View {
 
     private func moduleHeader(_ title: String, systemImage: String) -> some View {
         Label(title, systemImage: systemImage)
-            .font(.system(size: self.moduleHeaderFontSize, weight: .semibold))
+            .font(TokenMenuTheme.labelFont(size: self.moduleHeaderFontSize, weight: .semibold))
             .foregroundStyle(self.lowerSecondaryText)
             .labelStyle(.titleAndIcon)
             .imageScale(.small)
@@ -1404,10 +1408,7 @@ struct MenuContent: View {
                 Spacer(minLength: 0)
 
                 Text(valueText)
-                    .font(
-                        .system(
-                            size: 34,
-                            weight: .bold))
+                    .font(TokenMenuTheme.metricFont(size: 34, weight: .bold))
                     .foregroundStyle(accent)
                     .monospacedDigit()
                     .lineLimit(1)
@@ -1424,7 +1425,7 @@ struct MenuContent: View {
         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
         let displayText = trimmed.isEmpty ? " " : trimmed
         return Text(displayText)
-            .font(.system(size: 11.5, weight: .regular))
+            .font(TokenMenuTheme.labelFont(size: 11.5, weight: .regular))
             .foregroundStyle(tint)
             .lineLimit(1)
             .truncationMode(.tail)
@@ -1577,7 +1578,7 @@ private struct PanelButtonChrome: ButtonStyle {
         case footerSubdued
 
         var cornerRadius: CGFloat {
-            10
+            TokenMenuTheme.chromeCornerRadius(default: 10, pixel: 6)
         }
 
         var fontWeight: Font.Weight {
@@ -1628,7 +1629,7 @@ private struct PanelButtonChromeBody: View {
 
     var body: some View {
         self.configuration.label
-            .font(.system(size: 12, weight: self.style.fontWeight))
+            .font(TokenMenuTheme.labelFont(size: 12, weight: self.style.fontWeight))
             .foregroundStyle(self.isHighlighted ? self.style.highlightedForegroundTint : self.style.foregroundTint)
             .lineLimit(1)
             .padding(.horizontal, self.style.horizontalPadding)
@@ -1706,7 +1707,14 @@ private struct FooterPanelButtonBackground: View {
             }
             .overlay {
                 self.shape
-                    .stroke(self.strokeColor, lineWidth: 0.75)
+                    .stroke(self.strokeColor, lineWidth: TokenMenuTheme.usesPixelChrome ? 1.25 : 0.75)
             }
+            .shadow(
+                color: TokenMenuTheme.usesPixelChrome
+                    ? TokenMenuTheme.pixelShadow.opacity(self.glowOpacity == 0 ? 0 : 0.52)
+                    : Color.clear,
+                radius: 0,
+                x: TokenMenuTheme.usesPixelChrome && self.glowOpacity > 0 ? 2 : 0,
+                y: TokenMenuTheme.usesPixelChrome && self.glowOpacity > 0 ? 2 : 0)
     }
 }

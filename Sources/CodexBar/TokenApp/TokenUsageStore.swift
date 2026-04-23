@@ -48,13 +48,19 @@ struct SummaryCardPresentation: Equatable {
 @MainActor
 @Observable
 final class UsageStore {
+    private static let recentTokenSpeedTimelineCount = 600
+    private static let tokenSpeedHistoryRetentionCount = 100
+    private static let tokenSpeedHistoryPersistDebounce: Duration = .seconds(2)
+    private static let statisticsMigrationInitialDelay: Duration = .seconds(10)
+    private static let statisticsMigrationCadence: Duration = .seconds(60)
+    private static let statisticsMigrationBatchBudget: Duration = .seconds(3)
+    private static let dashboardRefreshInterval: Duration = .seconds(5 * 60)
+
     var days: [DailyTokenStats]
     var regularDays: [DailyTokenStats]
     var hours: [HourlyTokenStats]
     var regularHours: [HourlyTokenStats]
-    var fiveMinuteBuckets: [FiveMinuteTokenStats]
     var outboundMessageDays: [DailyOutboundMessageStats]
-    var sessionSnapshots: [String: SessionUsageSnapshot]
     var codexQuotaSnapshot: CodexQuotaSnapshot?
     var codexQuotaErrorMessage: String?
     var menuBarTokenSpeedMetrics: MenuBarTokenSpeedMetrics
@@ -91,11 +97,21 @@ final class UsageStore {
     @ObservationIgnored private let tokenRateMonitor: any CodexLiveTokenRateMonitoring
     @ObservationIgnored private let tokenSpeedHistoryStore: TokenSpeedHistoryStore
     @ObservationIgnored private let logger = Logger(label: "CodexBar.UsageStore")
-    @ObservationIgnored private var refreshTask: Task<Void, Never>?
+    @ObservationIgnored private var quotaRefreshTask: Task<Void, Never>?
+    @ObservationIgnored private var usageStatisticsRefreshTask: Task<Void, Never>?
+    @ObservationIgnored private var usageStatisticsMigrationTask: Task<Void, Never>?
+    @ObservationIgnored private var dashboardRefreshTask: Task<Void, Never>?
     @ObservationIgnored private var tokenSpeedTask: Task<Void, Never>?
+    @ObservationIgnored private var tokenSpeedHistorySamples: [TokenSpeedSample] = []
+    @ObservationIgnored private var tokenSpeedHistoryPersistTask: Task<Void, Never>?
     @ObservationIgnored private var lastOpenAIDashboardSnapshot: OpenAIDashboardSnapshot?
     @ObservationIgnored private var lastOpenAIDashboardTargetEmail: String?
     @ObservationIgnored private var openAIWebDebugLines: [String] = []
+    @ObservationIgnored private var isStatisticsMigrationPending = false
+    @ObservationIgnored private var statisticsMigrationPendingFileCount = 0
+    @ObservationIgnored private var isRefreshingQuotaData = false
+    @ObservationIgnored private var isRefreshingUsageStatistics = false
+    @ObservationIgnored private var isRefreshingOpenAIDashboard = false
     @ObservationIgnored var onSectionPresentationPublished: ((TokenMenuContentSection) -> Void)?
 
     init(
@@ -121,9 +137,7 @@ final class UsageStore {
         self.regularDays = []
         self.hours = []
         self.regularHours = []
-        self.fiveMinuteBuckets = []
         self.outboundMessageDays = []
-        self.sessionSnapshots = [:]
         self.codexQuotaSnapshot = nil
         self.codexQuotaErrorMessage = nil
         self.menuBarTokenSpeedMetrics = .zero
@@ -160,24 +174,38 @@ final class UsageStore {
 
         self.loadCachedDashboard()
         self.loadPersistedHistory()
+        self.refreshStatisticsMigrationStatus()
         self.loadPersistedTokenSpeedHistory()
         self.rebuildModulePresentationsImmediately()
-        self.observeRefreshSettings()
+        self.observeQuotaRefreshSettings()
+        self.observeUsageStatisticsRefreshSettings()
         self.observeDashboardSettings()
         self.observePresentationSettings()
         self.observeTokenSpeedSettings()
         self.configureTokenSpeedMonitoring()
 
         guard startupRefresh else { return }
-        self.startTimer()
+        self.startQuotaRefreshTimer()
+        self.startUsageStatisticsRefreshTimer()
+        self.startUsageStatisticsMigrationTask()
+        self.startDashboardRefreshTimer()
         Task { [weak self] in
-            await self?.refresh(forceDashboard: false)
+            await self?.refreshCodexQuota(publish: true)
         }
     }
 
     deinit {
-        self.refreshTask?.cancel()
+        self.quotaRefreshTask?.cancel()
+        self.usageStatisticsRefreshTask?.cancel()
+        self.usageStatisticsMigrationTask?.cancel()
+        self.dashboardRefreshTask?.cancel()
         self.tokenSpeedTask?.cancel()
+        self.tokenSpeedHistoryPersistTask?.cancel()
+        if !self.tokenSpeedHistorySamples.isEmpty {
+            try? self.tokenSpeedHistoryStore.save(
+                samples: self.tokenSpeedHistorySamples,
+                keepingLatest: 100)
+        }
     }
 
     var today: DailyTokenStats {
@@ -421,33 +449,27 @@ final class UsageStore {
     }
 
     func refresh(forceDashboard: Bool = false) async {
-        guard !self.isRefreshing else { return }
-        self.isRefreshing = true
-        defer { self.isRefreshing = false }
-
-        await self.refreshTokenHistory()
-        await self.refreshCodexQuota()
+        await self.refreshCodexQuota(publish: false)
         await self.refreshOpenAIDashboard(
             force: forceDashboard,
-            bypassFeatureGate: self.shouldRefreshSparkQuotaFallback)
+            bypassFeatureGate: self.shouldRefreshSparkQuotaFallback,
+            publish: false)
+        await self.refreshUsageStatistics(publish: false)
         await self.publishModulePresentationsSequentially()
     }
 
     func forceRefreshOpenAIDashboardFromSafari() async {
-        guard !self.isRefreshing else { return }
-        self.isRefreshing = true
-        defer { self.isRefreshing = false }
-
         await self.refreshOpenAIDashboard(
             force: true,
             overrideCookieSource: .safari,
-            bypassFeatureGate: true)
+            bypassFeatureGate: true,
+            publish: true)
     }
 
     func rebuildCache() async {
-        guard !self.isRefreshing else { return }
-        self.isRefreshing = true
-        defer { self.isRefreshing = false }
+        guard !self.isRefreshingUsageStatistics else { return }
+        self.setUsageStatisticsRefreshing(true)
+        defer { self.setUsageStatisticsRefreshing(false) }
 
         do {
             let outcome = try await TokenHistoryRefreshExecutor.rebuild(
@@ -462,20 +484,42 @@ final class UsageStore {
         }
     }
 
-    private func refreshTokenHistory() async {
+    private func refreshUsageStatistics(publish: Bool) async {
+        guard !self.isRefreshingUsageStatistics else { return }
+        self.setUsageStatisticsRefreshing(true)
+        defer { self.setUsageStatisticsRefreshing(false) }
+
         do {
-            let outcome = try await TokenHistoryRefreshExecutor.refresh(
-                provider: self.provider,
-                historyStore: self.historyStore)
+            let outcome: TokenHistoryRefreshExecutionResult
+            if self.isStatisticsMigrationPending {
+                outcome = try await TokenHistoryRefreshExecutor.refreshMigrationBatch(
+                    provider: self.provider,
+                    historyStore: self.historyStore,
+                    maxRuntime: Self.statisticsMigrationBatchBudget)
+            } else {
+                outcome = try await TokenHistoryRefreshExecutor.refresh(
+                    provider: self.provider,
+                    historyStore: self.historyStore)
+            }
             self.apply(document: outcome.document)
             self.lastError = outcome.firstError
         } catch {
             self.logger.error("Refresh failed: \(error.localizedDescription)")
             self.lastError = error.localizedDescription
         }
+
+        self.refreshStatisticsMigrationStatus()
+        self.reconcileUsageStatisticsMigrationTask()
+
+        guard publish else { return }
+        await self.publishModulePresentationsSequentially()
     }
 
-    private func refreshCodexQuota() async {
+    private func refreshCodexQuota(publish: Bool) async {
+        guard !self.isRefreshingQuotaData else { return }
+        self.setQuotaRefreshing(true)
+        defer { self.setQuotaRefreshing(false) }
+
         do {
             self.codexQuotaSnapshot = try await self.codexQuotaProvider.loadQuotaSnapshot()
             self.codexQuotaErrorMessage = nil
@@ -484,15 +528,28 @@ final class UsageStore {
             self.codexQuotaSnapshot = nil
             self.codexQuotaErrorMessage = error.localizedDescription
         }
+
+        self.startDashboardRefreshTimer()
+
+        guard publish else { return }
+        await self.publishModulePresentationsSequentially()
     }
 
     private func refreshOpenAIDashboard(
         force: Bool,
         overrideCookieSource: ProviderCookieSource? = nil,
-        bypassFeatureGate: Bool = false) async
+        bypassFeatureGate: Bool = false,
+        publish: Bool) async
     {
+        guard !self.isRefreshingOpenAIDashboard else { return }
+        self.setOpenAIDashboardRefreshing(true)
+        defer { self.setOpenAIDashboardRefreshing(false) }
+
         guard self.isOpenAIWebEnabled, bypassFeatureGate || self.shouldRefreshOpenAIWebData else {
             self.resetDisplayedDashboard()
+            if publish {
+                await self.publishModulePresentationsSequentially()
+            }
             return
         }
 
@@ -553,6 +610,9 @@ final class UsageStore {
         } catch {
             self.applyDashboardFailure(message: error.localizedDescription, requiresLogin: false)
         }
+
+        guard publish else { return }
+        await self.publishModulePresentationsSequentially()
     }
 
     private func handleDashboardImportError(
@@ -690,8 +750,8 @@ final class UsageStore {
 
     private func loadPersistedHistory() {
         do {
-            let document = try self.historyStore.load()
-            self.apply(document: document)
+            let document = try self.historyStore.loadForDisplay()
+            self.apply(displayDocument: document)
         } catch {
             self.lastError = error.localizedDescription
             self.logger.warning("Failed to load persisted history: \(error.localizedDescription)")
@@ -719,20 +779,45 @@ final class UsageStore {
     }
 
     private func apply(document: TokenHistoryDocument) {
-        self.sessionSnapshots = document.sessions
-        self.days = document.days.sorted { $0.date < $1.date }
-        self.regularDays = Self.aggregateDailyBuckets(from: document.sessions.values.compactMap { snapshot in
-            guard snapshot.sessionOriginKind == .regular else { return nil }
-            return snapshot.dailyBuckets
-        })
-        self.hours = document.hours.sorted { $0.hourStart < $1.hourStart }
-        self.regularHours = Self.aggregateHourlyBuckets(from: document.sessions.values.compactMap { snapshot in
-            guard snapshot.sessionOriginKind == .regular else { return nil }
-            return snapshot.hourlyBuckets
-        })
-        self.fiveMinuteBuckets = document.fiveMinuteBuckets.sorted { $0.bucketStart < $1.bucketStart }
-        self.outboundMessageDays = document.outboundMessageDays.sorted { $0.date < $1.date }
-        self.lastRefreshAt = document.lastRefreshAt
+        self.applyHistory(
+            days: document.days.sorted { $0.date < $1.date },
+            regularDays: Self.aggregateDailyBuckets(from: document.sessions.values.compactMap { snapshot in
+                guard snapshot.sessionOriginKind == .regular else { return nil }
+                return snapshot.dailyBuckets
+            }),
+            hours: document.hours.sorted { $0.hourStart < $1.hourStart },
+            regularHours: Self.aggregateHourlyBuckets(from: document.sessions.values.compactMap { snapshot in
+                guard snapshot.sessionOriginKind == .regular else { return nil }
+                return snapshot.hourlyBuckets
+            }),
+            outboundMessageDays: document.outboundMessageDays.sorted { $0.date < $1.date },
+            lastRefreshAt: document.lastRefreshAt)
+    }
+
+    private func apply(displayDocument: TokenHistoryDisplayDocument) {
+        self.applyHistory(
+            days: displayDocument.days,
+            regularDays: displayDocument.regularDays,
+            hours: displayDocument.hours,
+            regularHours: displayDocument.regularHours,
+            outboundMessageDays: displayDocument.outboundMessageDays,
+            lastRefreshAt: displayDocument.lastRefreshAt)
+    }
+
+    private func applyHistory(
+        days: [DailyTokenStats],
+        regularDays: [DailyTokenStats],
+        hours: [HourlyTokenStats],
+        regularHours: [HourlyTokenStats],
+        outboundMessageDays: [DailyOutboundMessageStats],
+        lastRefreshAt: Date?)
+    {
+        self.days = days
+        self.regularDays = regularDays
+        self.hours = hours
+        self.regularHours = regularHours
+        self.outboundMessageDays = outboundMessageDays
+        self.lastRefreshAt = lastRefreshAt
     }
 
     func refreshModulePresentationsForCurrentState() async {
@@ -955,14 +1040,29 @@ final class UsageStore {
             detailText: dashboardModel.updatedDescription ?? " ")
     }
 
-    private func observeRefreshSettings() {
+    private func observeQuotaRefreshSettings() {
         withObservationTracking {
             _ = self.settings.refreshFrequency
         } onChange: { [weak self] in
             Task { @MainActor [weak self] in
                 guard let self else { return }
-                self.observeRefreshSettings()
-                self.startTimer()
+                self.observeQuotaRefreshSettings()
+                self.startQuotaRefreshTimer()
+            }
+        }
+    }
+
+    private func observeUsageStatisticsRefreshSettings() {
+        withObservationTracking {
+            _ = self.settings.usageStatisticsRefreshFrequency
+        } onChange: { [weak self] in
+            Task { @MainActor [weak self] in
+                guard let self else { return }
+                self.observeUsageStatisticsRefreshSettings()
+                self.startUsageStatisticsRefreshTimer()
+                self.usageStatisticsMigrationTask?.cancel()
+                self.usageStatisticsMigrationTask = nil
+                self.reconcileUsageStatisticsMigrationTask()
             }
         }
     }
@@ -982,7 +1082,11 @@ final class UsageStore {
             Task { @MainActor [weak self] in
                 guard let self else { return }
                 self.observeDashboardSettings()
-                await self.refresh(forceDashboard: false)
+                self.startDashboardRefreshTimer()
+                await self.refreshOpenAIDashboard(
+                    force: false,
+                    bypassFeatureGate: self.shouldRefreshSparkQuotaFallback,
+                    publish: true)
             }
         }
     }
@@ -1027,14 +1131,14 @@ final class UsageStore {
         }
     }
 
-    private func startTimer() {
-        self.refreshTask?.cancel()
+    private func startQuotaRefreshTimer() {
+        self.quotaRefreshTask?.cancel()
         guard let interval = self.settings.refreshFrequency.interval else {
-            self.refreshTask = nil
+            self.quotaRefreshTask = nil
             return
         }
 
-        self.refreshTask = Task { [weak self] in
+        self.quotaRefreshTask = Task { [weak self] in
             while !Task.isCancelled {
                 do {
                     try await Task.sleep(for: .seconds(interval))
@@ -1043,9 +1147,126 @@ final class UsageStore {
                 }
 
                 guard !Task.isCancelled else { return }
-                await self?.refresh(forceDashboard: false)
+                await self?.refreshCodexQuota(publish: true)
             }
         }
+    }
+
+    private func startUsageStatisticsRefreshTimer() {
+        self.usageStatisticsRefreshTask?.cancel()
+        guard let interval = self.settings.usageStatisticsRefreshFrequency.interval else {
+            self.usageStatisticsRefreshTask = nil
+            return
+        }
+
+        self.usageStatisticsRefreshTask = Task { [weak self] in
+            while !Task.isCancelled {
+                do {
+                    try await Task.sleep(for: .seconds(interval))
+                } catch {
+                    return
+                }
+
+                guard !Task.isCancelled else { return }
+                await self?.refreshUsageStatistics(publish: true)
+            }
+        }
+    }
+
+    private func startUsageStatisticsMigrationTask() {
+        self.usageStatisticsMigrationTask?.cancel()
+        guard self.isStatisticsMigrationPending,
+              self.settings.usageStatisticsRefreshFrequency != .manual
+        else {
+            self.usageStatisticsMigrationTask = nil
+            return
+        }
+
+        self.usageStatisticsMigrationTask = Task { [weak self] in
+            do {
+                try await Task.sleep(for: Self.statisticsMigrationInitialDelay)
+            } catch {
+                return
+            }
+
+            while !Task.isCancelled {
+                guard let self else { return }
+                guard self.isStatisticsMigrationPending else { return }
+                await self.refreshUsageStatistics(publish: true)
+                guard !Task.isCancelled, self.isStatisticsMigrationPending else { return }
+
+                do {
+                    try await Task.sleep(for: Self.statisticsMigrationCadence)
+                } catch {
+                    return
+                }
+            }
+        }
+    }
+
+    private func reconcileUsageStatisticsMigrationTask() {
+        guard self.isStatisticsMigrationPending,
+              self.settings.usageStatisticsRefreshFrequency != .manual
+        else {
+            self.usageStatisticsMigrationTask?.cancel()
+            self.usageStatisticsMigrationTask = nil
+            return
+        }
+
+        guard self.usageStatisticsMigrationTask == nil else { return }
+        self.startUsageStatisticsMigrationTask()
+    }
+
+    private func startDashboardRefreshTimer() {
+        self.dashboardRefreshTask?.cancel()
+        guard self.isOpenAIWebEnabled,
+              (self.shouldRefreshSparkQuotaFallback || self.shouldRefreshOpenAIWebData)
+        else {
+            self.dashboardRefreshTask = nil
+            return
+        }
+
+        self.dashboardRefreshTask = Task { [weak self] in
+            while !Task.isCancelled {
+                do {
+                    try await Task.sleep(for: Self.dashboardRefreshInterval)
+                } catch {
+                    return
+                }
+
+                guard !Task.isCancelled else { return }
+                await self?.refreshOpenAIDashboard(
+                    force: false,
+                    bypassFeatureGate: self?.shouldRefreshSparkQuotaFallback ?? false,
+                    publish: true)
+            }
+        }
+    }
+
+    private func refreshStatisticsMigrationStatus() {
+        let status = self.provider.statisticsMigrationStatus()
+        self.isStatisticsMigrationPending = status.isPending
+        self.statisticsMigrationPendingFileCount = status.pendingFileCount
+    }
+
+    private func setQuotaRefreshing(_ isRefreshing: Bool) {
+        self.isRefreshingQuotaData = isRefreshing
+        self.updateRefreshingState()
+    }
+
+    private func setUsageStatisticsRefreshing(_ isRefreshing: Bool) {
+        self.isRefreshingUsageStatistics = isRefreshing
+        self.updateRefreshingState()
+    }
+
+    private func setOpenAIDashboardRefreshing(_ isRefreshing: Bool) {
+        self.isRefreshingOpenAIDashboard = isRefreshing
+        self.updateRefreshingState()
+    }
+
+    private func updateRefreshingState() {
+        self.isRefreshing = self.isRefreshingQuotaData || self.isRefreshingUsageStatistics
+            || self.isRefreshingOpenAIDashboard
     }
 
     private func configureTokenSpeedMonitoring() {
@@ -1054,9 +1275,10 @@ final class UsageStore {
         guard self.settings.showsMenuBarTokenSpeedMeter,
               TokenMenuSpeedMeterFeature.supportsVisualPresentation
         else {
+            self.flushTokenSpeedHistoryIfNeeded()
             self.menuBarTokenSpeedMetrics = .zero
             self.recentTokenSpeedSamples = Self.makeRecentTokenSpeedTimeline(
-                from: self.tokenSpeedHistoryEntries.map(Self.sample(from:)),
+                from: self.tokenSpeedHistorySamples,
                 endingAt: Date())
             let tokenRateMonitor = self.tokenRateMonitor
             Task {
@@ -1068,21 +1290,20 @@ final class UsageStore {
 
         self.menuBarTokenSpeedMetrics = .zero
         let tokenRateMonitor = self.tokenRateMonitor
-        let tokenSpeedHistoryStore = self.tokenSpeedHistoryStore
         self.tokenSpeedTask = Task { [weak self] in
             guard let self else { return }
             await tokenRateMonitor.reset()
+            let flushPersistedHistory: @Sendable () async -> Void = { [weak self] in
+                await MainActor.run {
+                    self?.flushTokenSpeedHistoryIfNeeded()
+                }
+            }
 
             while !Task.isCancelled {
                 let sample = await tokenRateMonitor.sample()
-                guard !Task.isCancelled else { return }
-
-                if sample.tokens > 0 {
-                    do {
-                        _ = try tokenSpeedHistoryStore.upsert(sample: sample)
-                    } catch {
-                        self.logger.error("Failed to persist token speed sample: \(error.localizedDescription)")
-                    }
+                guard !Task.isCancelled else {
+                    await flushPersistedHistory()
+                    return
                 }
 
                 await MainActor.run {
@@ -1097,9 +1318,12 @@ final class UsageStore {
                 do {
                     try await Task.sleep(for: .seconds(1))
                 } catch {
+                    await flushPersistedHistory()
                     return
                 }
             }
+
+            await flushPersistedHistory()
         }
     }
 
@@ -1124,13 +1348,15 @@ final class UsageStore {
 
     private func loadPersistedTokenSpeedHistory(referenceDate: Date = Date()) {
         do {
-            let samples = try self.tokenSpeedHistoryStore.load().sorted { $0.timestamp > $1.timestamp }
-            self.tokenSpeedHistoryEntries = samples.map(TokenSpeedHistoryEntry.init(sample:))
+            let samples = try self.tokenSpeedHistoryStore.load(limitToLatest: Self.tokenSpeedHistoryRetentionCount)
+            self.tokenSpeedHistorySamples = samples
+            self.tokenSpeedHistoryEntries = samples.sorted { $0.timestamp > $1.timestamp }.map(TokenSpeedHistoryEntry.init(sample:))
             self.recentTokenSpeedSamples = Self.makeRecentTokenSpeedTimeline(
                 from: samples,
                 endingAt: referenceDate)
         } catch {
             self.logger.error("Failed to load token speed history: \(error.localizedDescription)")
+            self.tokenSpeedHistorySamples = []
             self.tokenSpeedHistoryEntries = []
             self.recentTokenSpeedSamples = Self.makeRecentTokenSpeedTimeline(from: [], endingAt: referenceDate)
         }
@@ -1143,21 +1369,23 @@ final class UsageStore {
 
         guard sample.tokens > 0 else { return }
 
-        let entry = TokenSpeedHistoryEntry(sample: sample)
-        if let existingIndex = self.tokenSpeedHistoryEntries.firstIndex(where: { $0.timestamp == entry.timestamp }) {
-            self.tokenSpeedHistoryEntries[existingIndex] = entry
-        } else {
-            self.tokenSpeedHistoryEntries.append(entry)
-        }
-        self.tokenSpeedHistoryEntries.sort { $0.timestamp > $1.timestamp }
+        self.tokenSpeedHistorySamples = Self.upsertingTokenSpeedSample(
+            sample,
+            into: self.tokenSpeedHistorySamples,
+            keepingLatest: Self.tokenSpeedHistoryRetentionCount)
+        self.tokenSpeedHistoryEntries = self.tokenSpeedHistorySamples
+            .sorted { $0.timestamp > $1.timestamp }
+            .map(TokenSpeedHistoryEntry.init(sample:))
+        self.scheduleTokenSpeedHistoryPersist()
     }
 
     private static func makeRecentTokenSpeedTimeline(
         from samples: [TokenSpeedSample],
         endingAt date: Date,
-        count: Int = 600)
+        count: Int? = nil)
         -> [TokenSpeedSample]
     {
+        let count = count ?? Self.recentTokenSpeedTimelineCount
         let end = TokenSpeedSample.secondStart(for: date)
         var keyedSamples: [Date: TokenSpeedSample] = [:]
         for sample in samples {
@@ -1174,6 +1402,62 @@ final class UsageStore {
 
     private static func sample(from entry: TokenSpeedHistoryEntry) -> TokenSpeedSample {
         TokenSpeedSample(timestamp: entry.timestamp, tokens: entry.tokens)
+    }
+
+    private static func upsertingTokenSpeedSample(
+        _ sample: TokenSpeedSample,
+        into samples: [TokenSpeedSample],
+        keepingLatest count: Int)
+        -> [TokenSpeedSample]
+    {
+        let normalizedSample = TokenSpeedSample(
+            timestamp: TokenSpeedSample.secondStart(for: sample.timestamp),
+            tokens: sample.tokens)
+        var updatedSamples = samples
+        if let existingIndex = updatedSamples.firstIndex(where: { $0.timestamp == normalizedSample.timestamp }) {
+            updatedSamples[existingIndex] = normalizedSample
+        } else {
+            updatedSamples.append(normalizedSample)
+        }
+        updatedSamples.sort { $0.timestamp < $1.timestamp }
+        if updatedSamples.count > count {
+            updatedSamples = Array(updatedSamples.suffix(count))
+        }
+        return updatedSamples
+    }
+
+    private func scheduleTokenSpeedHistoryPersist() {
+        self.tokenSpeedHistoryPersistTask?.cancel()
+        self.tokenSpeedHistoryPersistTask = Task { [weak self] in
+            do {
+                try await Task.sleep(for: Self.tokenSpeedHistoryPersistDebounce)
+            } catch {
+                return
+            }
+
+            await MainActor.run {
+                guard let self else { return }
+                self.flushTokenSpeedHistoryIfNeeded(cancelScheduledTask: false)
+                self.tokenSpeedHistoryPersistTask = nil
+            }
+        }
+    }
+
+    private func flushTokenSpeedHistoryIfNeeded(cancelScheduledTask: Bool = true) {
+        if cancelScheduledTask {
+            self.tokenSpeedHistoryPersistTask?.cancel()
+            self.tokenSpeedHistoryPersistTask = nil
+        }
+
+        guard !self.tokenSpeedHistorySamples.isEmpty else { return }
+
+        do {
+            try self.tokenSpeedHistoryStore.save(
+                samples: self.tokenSpeedHistorySamples,
+                keepingLatest: Self.tokenSpeedHistoryRetentionCount)
+        } catch {
+            self.logger.error("Failed to persist token speed history: \(error.localizedDescription)")
+        }
     }
 
     private func hourSeries(hourCount: Int, from hours: [HourlyTokenStats]) -> [HourlyTokenStats] {

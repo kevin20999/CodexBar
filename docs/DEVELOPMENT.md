@@ -19,14 +19,22 @@ read_when:
 # Just build and package (no tests)
 ./Scripts/package_app.sh
 
+# Launch existing app (no rebuild)
+./Scripts/launch.sh
+```
+
+### Additional Product-Specific Workflows
+
+The default local workflow is intentionally centered on `CodexTokenBar`.
+
+Use these only when you are explicitly working on `CodexDaily`:
+
+```bash
 # CodexDaily only: build, package, and launch without touching CodexTokenBar
 ./Scripts/compile_and_run_codexdaily.sh
 
 # CodexDaily only: just package/install CodexDaily.app
 ./Scripts/package_codexdaily.sh
-
-# Launch existing app (no rebuild)
-./Scripts/launch.sh
 ```
 
 ### Development Workflow

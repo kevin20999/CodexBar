@@ -52,6 +52,15 @@ private enum TokenMenuPanelSizingSource: String {
     case fallback = "default-height"
 }
 
+struct PrimaryStatusItemRenderSignature: Equatable {
+    let mode: MenuBarDisplayMode
+    let quotaStyle: MenuBarQuotaStyle
+    let metrics: MenuBarDisplayMetrics
+    let fallbackText: String?
+    let targetHeight: CGFloat
+    let backingScaleFactor: CGFloat
+}
+
 @MainActor
 final class TokenMenuBarController: NSObject {
     private static let speedButtonHostingViewIdentifier = NSUserInterfaceItemIdentifier(
@@ -61,12 +70,13 @@ final class TokenMenuBarController: NSObject {
     private let store: UsageStore
     private let statusBar: NSStatusBar
     private let statusItem: NSStatusItem
-    private let panelController: TokenMenuPanelController
-    private let popoverController: TokenMenuPopoverController
-    private let speedPanelController: TokenSpeedPanelController
+    private var panelController: TokenMenuPanelController?
+    private var popoverController: TokenMenuPopoverController?
+    private var speedPanelController: TokenSpeedPanelController?
     private let speedFloatingChartStateStore: TokenSpeedFloatingChartStateStore
-    private let speedFloatingChartController: TokenSpeedFloatingChartController
+    private var speedFloatingChartController: TokenSpeedFloatingChartController?
     private let speedBubbleController = TokenMenuSpeedBubbleController()
+    private let speedPresentationCoordinator = TokenMenuSpeedPresentationCoordinator()
     private let speedStatusItemModel = TokenMenuSpeedStatusItemModel()
     private var speedStatusItem: NSStatusItem?
     private var localMouseMonitor: Any?
@@ -79,6 +89,8 @@ final class TokenMenuBarController: NSObject {
     private var mainPanelMeasurementTask: Task<Void, Never>?
     private var mainPanelPendingMeasurementHeightCacheKey: TokenMenuPanelHeightCacheKey?
     private var warmedMainPanelSignature: TokenMenuPanelLayoutSignature?
+    private var primaryStatusItemRenderSignature: PrimaryStatusItemRenderSignature?
+    private var isFloatingChartPresented = false
     private let logger = Logger(label: "CodexBar.token-menu-panel")
 
     init(settings: SettingsStore, store: UsageStore, statusBar: NSStatusBar = .system) {
@@ -87,35 +99,17 @@ final class TokenMenuBarController: NSObject {
         self.store = store
         self.statusBar = statusBar
         self.statusItem = statusBar.statusItem(withLength: NSStatusItem.variableLength)
-        self.panelController = TokenMenuPanelController(settings: settings, store: store)
-        self.popoverController = TokenMenuPopoverController(settings: settings, store: store)
-        self.speedPanelController = TokenSpeedPanelController(settings: settings, store: store)
         self.speedFloatingChartStateStore = floatingChartStateStore
-        self.speedFloatingChartController = TokenSpeedFloatingChartController(
-            settings: settings,
-            store: store,
-            stateStore: floatingChartStateStore)
         super.init()
-        self.panelController.onRequestClose = { [weak self] in
-            self?.hideMainPanel()
-        }
-        self.speedPanelController.onRequestClose = { [weak self] in
-            self?.hideSpeedPanel()
-        }
-        self.speedPanelController.setFloatingChartPresentation(
-            isPresented: false,
-            onToggle: { [weak self] in
-                self?.toggleFloatingChart()
-            })
-        self.speedFloatingChartController.onVisibilityChange = { [weak self] isVisible in
-            self?.updateFloatingChartPresentationState(isPresented: isVisible)
-        }
     }
 
     func start() {
         self.configureStatusItem()
         self.observeLabelState()
+        self.observeSpeedMeterState()
         self.observePanelLayoutState()
+        self.observeVisualThemeState()
+        self.observeSpeedPresentationState()
         self.registerNotifications()
         self.updateStatusItemAppearance()
     }
@@ -136,7 +130,7 @@ final class TokenMenuBarController: NSObject {
         { [weak self] _ in
             Task { @MainActor [weak self] in
                 self?.updatePanelFrameIfNeeded()
-                self?.speedFloatingChartController.reclampToVisibleScreenIfNeeded()
+                self?.speedFloatingChartController?.reclampToVisibleScreenIfNeeded()
                 self?.updateStatusItemAppearance()
             }
         }
@@ -149,7 +143,7 @@ final class TokenMenuBarController: NSObject {
             Task { @MainActor [weak self] in
                 self?.suppressSpeedBubbleWhileInactive = true
                 self?.hideVisiblePanels(restoreSpeedBubble: false)
-                self?.hideSpeedBubble(animated: false)
+                self?.hideSpeedBubbleNow()
             }
         }
 
@@ -170,15 +164,27 @@ final class TokenMenuBarController: NSObject {
             _ = self.settings.appLanguage
             _ = self.settings.menuBarDisplayMode
             _ = self.settings.menuBarQuotaStyle
-            _ = self.settings.showsMenuBarTokenSpeedMeter
             _ = self.store.menuBarDisplayMetrics
-            _ = self.store.menuBarTokenSpeedMetrics
             _ = self.store.menuBarText(for: self.settings.menuBarDisplayMode)
         } onChange: { [weak self] in
             Task { @MainActor [weak self] in
                 guard let self else { return }
                 self.observeLabelState()
-                self.updateStatusItemAppearance()
+                self.updatePrimaryStatusItemAppearance()
+            }
+        }
+    }
+
+    private func observeSpeedMeterState() {
+        withObservationTracking {
+            _ = self.settings.appLanguage
+            _ = self.settings.showsMenuBarTokenSpeedMeter
+            _ = self.store.menuBarTokenSpeedMetrics
+        } onChange: { [weak self] in
+            Task { @MainActor [weak self] in
+                guard let self else { return }
+                self.observeSpeedMeterState()
+                self.updateSpeedStatusItemAppearance()
             }
         }
     }
@@ -195,15 +201,39 @@ final class TokenMenuBarController: NSObject {
         }
     }
 
+    private func observeVisualThemeState() {
+        withObservationTracking {
+            _ = self.settings.menuVisualTheme
+        } onChange: { [weak self] in
+            Task { @MainActor [weak self] in
+                guard let self else { return }
+                self.observeVisualThemeState()
+                self.refreshVisibleThemeIfNeeded()
+            }
+        }
+    }
+
+    private func observeSpeedPresentationState() {
+        withObservationTracking {
+            _ = self.speedPresentationCoordinator.state
+        } onChange: { [weak self] in
+            Task { @MainActor [weak self] in
+                guard let self else { return }
+                self.observeSpeedPresentationState()
+                self.refreshSpeedPresentationAppearance()
+            }
+        }
+    }
+
     private var isMainPopupVisible: Bool {
-        self.panelController.isVisible || self.popoverController.isVisible
+        (self.panelController?.isVisible ?? false) || (self.popoverController?.isVisible ?? false)
     }
 
     private func visibleMainPopupStyle() -> MenuPopupStyle? {
-        if self.panelController.isVisible {
+        if self.panelController?.isVisible == true {
             return .liquidGlass
         }
-        if self.popoverController.isVisible {
+        if self.popoverController?.isVisible == true {
             return .systemPopover
         }
         return nil
@@ -218,6 +248,88 @@ final class TokenMenuBarController: NSObject {
         }
     }
 
+    private func ensurePanelController() -> TokenMenuPanelController {
+        if let panelController = self.panelController {
+            return panelController
+        }
+
+        let panelController = TokenMenuPanelController(settings: self.settings, store: self.store)
+        panelController.onRequestClose = { [weak self] in
+            self?.hideMainPanel()
+        }
+        self.panelController = panelController
+        return panelController
+    }
+
+    private func ensurePopoverController() -> TokenMenuPopoverController {
+        if let popoverController = self.popoverController {
+            return popoverController
+        }
+
+        let popoverController = TokenMenuPopoverController(settings: self.settings, store: self.store)
+        self.popoverController = popoverController
+        return popoverController
+    }
+
+    private func ensureSpeedPanelController() -> TokenSpeedPanelController {
+        if let speedPanelController = self.speedPanelController {
+            return speedPanelController
+        }
+
+        let speedPanelController = TokenSpeedPanelController(settings: self.settings, store: self.store)
+        speedPanelController.onRequestClose = { [weak self] in
+            self?.hideSpeedPanel()
+        }
+        speedPanelController.setFloatingChartPresentation(
+            isPresented: self.isFloatingChartPresented,
+            onToggle: { [weak self] in
+                self?.toggleFloatingChart()
+            })
+        self.speedPanelController = speedPanelController
+        return speedPanelController
+    }
+
+    private func ensureSpeedFloatingChartController() -> TokenSpeedFloatingChartController {
+        if let speedFloatingChartController = self.speedFloatingChartController {
+            return speedFloatingChartController
+        }
+
+        let speedFloatingChartController = TokenSpeedFloatingChartController(
+            settings: self.settings,
+            store: self.store,
+            stateStore: self.speedFloatingChartStateStore)
+        speedFloatingChartController.onVisibilityChange = { [weak self] isVisible in
+            self?.updateFloatingChartPresentationState(isPresented: isVisible)
+        }
+        self.speedFloatingChartController = speedFloatingChartController
+        return speedFloatingChartController
+    }
+
+    private func tearDownMainPanelControllerIfHidden() {
+        guard self.panelController?.isVisible != true else { return }
+        self.panelController = nil
+    }
+
+    private func tearDownPopoverControllerIfHidden() {
+        guard self.popoverController?.isVisible != true else { return }
+        self.popoverController = nil
+    }
+
+    private func tearDownSpeedPanelControllerIfHidden() {
+        guard self.speedPanelController?.isVisible != true else { return }
+        self.speedPanelController = nil
+    }
+
+    private func tearDownSpeedFloatingChartControllerIfHidden() {
+        guard self.speedFloatingChartController?.isVisible != true else { return }
+        self.speedFloatingChartController = nil
+    }
+
+    private func tearDownMainPopupControllersIfHidden() {
+        self.tearDownMainPanelControllerIfHidden()
+        self.tearDownPopoverControllerIfHidden()
+    }
+
     private func updateStatusItemAppearance() {
         self.updatePrimaryStatusItemAppearance()
         self.updateSpeedStatusItemAppearance()
@@ -228,11 +340,22 @@ final class TokenMenuBarController: NSObject {
 
         let labelText = self.store.menuBarText(for: self.settings.menuBarDisplayMode)
         button.toolTip = labelText
-
-        if let rendered = MenuBarDisplayRenderer.render(
+        let renderSignature = Self.makePrimaryStatusItemRenderSignature(
             mode: self.settings.menuBarDisplayMode,
             metrics: self.store.menuBarDisplayMetrics,
-            quotaStyle: self.settings.menuBarQuotaStyle)
+            quotaStyle: self.settings.menuBarQuotaStyle,
+            fallbackText: labelText,
+            targetHeight: MenuBarDisplayRenderer.menuBarTargetHeight,
+            backingScaleFactor: button.window?.screen?.backingScaleFactor ?? NSScreen.main?.backingScaleFactor ?? 2)
+
+        guard self.primaryStatusItemRenderSignature != renderSignature else { return }
+        self.primaryStatusItemRenderSignature = renderSignature
+
+        if let rendered = MenuBarDisplayRenderer.render(
+            mode: renderSignature.mode,
+            metrics: renderSignature.metrics,
+            quotaStyle: renderSignature.quotaStyle,
+            targetHeight: renderSignature.targetHeight)
         {
             let image = rendered.image.copy() as? NSImage ?? rendered.image
             image.size = rendered.displaySize
@@ -251,10 +374,30 @@ final class TokenMenuBarController: NSObject {
         }
     }
 
+    static func makePrimaryStatusItemRenderSignature(
+        mode: MenuBarDisplayMode,
+        metrics: MenuBarDisplayMetrics,
+        quotaStyle: MenuBarQuotaStyle,
+        fallbackText: String?,
+        targetHeight: CGFloat = MenuBarDisplayRenderer.menuBarTargetHeight,
+        backingScaleFactor: CGFloat = NSScreen.main?.backingScaleFactor ?? 2)
+        -> PrimaryStatusItemRenderSignature
+    {
+        PrimaryStatusItemRenderSignature(
+            mode: mode,
+            quotaStyle: quotaStyle,
+            metrics: metrics,
+            fallbackText: fallbackText,
+            targetHeight: targetHeight,
+            backingScaleFactor: backingScaleFactor)
+    }
+
     private func updateSpeedStatusItemAppearance() {
         guard self.settings.showsMenuBarTokenSpeedMeter,
               TokenMenuSpeedMeterFeature.supportsVisualPresentation
         else {
+            self.speedPresentationCoordinator.reset()
+            self.hideSpeedPanel(restoreSpeedBubble: false)
             self.hideFloatingChart()
             self.removeSpeedStatusItem()
             return
@@ -264,20 +407,40 @@ final class TokenMenuBarController: NSObject {
         self.speedStatusItem = statusItem
         statusItem.length = TokenMenuSpeedMeterLayout.statusItemWidth
 
-        guard let button = statusItem.button else { return }
         let metrics = self.store.menuBarTokenSpeedMetrics
-        self.updateSpeedStatusButtonHostedView(button: button, metrics: metrics)
-        button.toolTip = self.settings.strings.menuBarTokenSpeedTooltip(tokensPerSecond: metrics.tokensPerSecond)
+        let bubbleDisplayText = self.settings.strings.compactTokenText(metrics.tokensPerSecond)
+        self.speedPresentationCoordinator.consume(
+            rawMetrics: metrics,
+            bubbleDisplayText: bubbleDisplayText)
+        self.refreshSpeedPresentationAppearance(rawMetrics: metrics)
+    }
 
-        if self.isMainPopupVisible
-            || self.speedPanelController.isVisible
-            || self.suppressSpeedBubbleWhileInactive
-        {
-            self.hideSpeedBubble(animated: false)
+    private func refreshSpeedPresentationAppearance(rawMetrics: MenuBarTokenSpeedMetrics? = nil) {
+        guard self.settings.showsMenuBarTokenSpeedMeter,
+              TokenMenuSpeedMeterFeature.supportsVisualPresentation,
+              let statusItem = self.speedStatusItem,
+              let button = statusItem.button
+        else {
             return
         }
 
-        self.updateSpeedBubble(relativeTo: button, metrics: metrics)
+        let metrics = rawMetrics ?? self.store.menuBarTokenSpeedMetrics
+        let presentation = self.speedPresentationCoordinator.state
+        self.updateSpeedStatusButtonHostedView(button: button, presentation: presentation)
+        let tooltipTokensPerSecond = presentation.usesRocketIcon
+            ? presentation.displayedTokensPerSecond
+            : metrics.tokensPerSecond
+        button.toolTip = self.settings.strings.menuBarTokenSpeedTooltip(tokensPerSecond: tooltipTokensPerSecond)
+
+        if self.isMainPopupVisible
+            || self.speedPanelController?.isVisible == true
+            || self.suppressSpeedBubbleWhileInactive
+        {
+            self.hideSpeedBubbleNow()
+            return
+        }
+
+        self.updateSpeedBubble(relativeTo: button, presentation: presentation)
     }
 
     private func makeSpeedStatusItem() -> NSStatusItem {
@@ -292,7 +455,7 @@ final class TokenMenuBarController: NSObject {
     }
 
     private func removeSpeedStatusItem() {
-        self.hideSpeedBubble(animated: false)
+        self.hideSpeedBubbleNow()
         guard let speedStatusItem = self.speedStatusItem else { return }
         self.statusBar.removeStatusItem(speedStatusItem)
         self.speedStatusItem = nil
@@ -315,7 +478,7 @@ final class TokenMenuBarController: NSObject {
         let anchorButton = (sender as? NSStatusBarButton) ?? self.speedStatusItem?.button
         guard let button = anchorButton else { return }
 
-        if self.speedPanelController.isVisible {
+        if self.speedPanelController?.isVisible == true {
             self.hideSpeedPanel()
         } else {
             self.showSpeedPanel(relativeTo: button)
@@ -325,7 +488,7 @@ final class TokenMenuBarController: NSObject {
     private func showMainPanel(relativeTo button: NSStatusBarButton) {
         guard let anchorRect = self.buttonFrameOnScreen(button) else { return }
         self.hideSpeedPanel(restoreSpeedBubble: false)
-        self.hideSpeedBubble(animated: false)
+        self.hideSpeedBubbleNow()
 
         let popupStyle = self.settings.menuPopupStyle
         let panelContainerContext = self.mainPopupContainerContext(for: popupStyle)
@@ -355,16 +518,18 @@ final class TokenMenuBarController: NSObject {
                 anchorRect: anchorRect,
                 panelSize: preferredSize,
                 visibleFrame: visibleFrame)
-            self.popoverController.hide()
-            self.panelController.present(
+            self.popoverController?.hide()
+            self.tearDownPopoverControllerIfHidden()
+            self.ensurePanelController().present(
                 frame: frame,
                 allowsScrolling: panelMetrics.allowsScrolling,
                 signature: signature,
                 renderPhaseMode: renderPhaseMode)
             self.installDismissMonitors()
         case .systemPopover:
-            self.panelController.hide()
-            self.popoverController.present(
+            self.panelController?.hide()
+            self.tearDownMainPanelControllerIfHidden()
+            self.ensurePopoverController().present(
                 relativeTo: button,
                 displayHeight: panelMetrics.displayHeight,
                 allowsScrolling: panelMetrics.allowsScrolling,
@@ -384,7 +549,7 @@ final class TokenMenuBarController: NSObject {
     private func showSpeedPanel(relativeTo button: NSStatusBarButton) {
         guard let anchorRect = self.buttonFrameOnScreen(button) else { return }
         self.hideMainPanel(restoreSpeedBubble: false)
-        self.hideSpeedBubble(animated: false)
+        self.hideSpeedBubbleNow()
 
         let visibleFrame = self.visibleFrame(for: anchorRect, button: button)
         let panelMetrics = TokenSpeedPanelContent.panelMetrics(availableScreenHeight: visibleFrame.height)
@@ -396,18 +561,19 @@ final class TokenMenuBarController: NSObject {
             panelSize: preferredSize,
             visibleFrame: visibleFrame)
 
-        self.speedPanelController.present(frame: frame)
-        self.updateFloatingChartPresentationState(isPresented: self.speedFloatingChartController.isVisible)
+        self.ensureSpeedPanelController().present(frame: frame)
+        self.updateFloatingChartPresentationState(isPresented: self.speedFloatingChartController?.isVisible == true)
         self.installDismissMonitors()
     }
 
     private func hideMainPanel(restoreSpeedBubble: Bool = true) {
-        self.panelController.hide()
-        self.popoverController.hide()
+        self.panelController?.hide()
+        self.popoverController?.hide()
         self.mainPanelMeasurementTask?.cancel()
         self.mainPanelMeasurementTask = nil
         self.mainPanelPendingMeasurementHeightCacheKey = nil
         self.removeDismissMonitors()
+        self.tearDownMainPopupControllersIfHidden()
 
         if restoreSpeedBubble {
             self.updateStatusItemAppearance()
@@ -415,8 +581,9 @@ final class TokenMenuBarController: NSObject {
     }
 
     private func hideSpeedPanel(restoreSpeedBubble: Bool = true) {
-        self.speedPanelController.hide()
+        self.speedPanelController?.hide()
         self.removeDismissMonitors()
+        self.tearDownSpeedPanelControllerIfHidden()
 
         if restoreSpeedBubble {
             self.updateStatusItemAppearance()
@@ -424,13 +591,15 @@ final class TokenMenuBarController: NSObject {
     }
 
     private func hideVisiblePanels(restoreSpeedBubble: Bool = true) {
-        self.panelController.hide()
-        self.popoverController.hide()
-        self.speedPanelController.hide()
+        self.panelController?.hide()
+        self.popoverController?.hide()
+        self.speedPanelController?.hide()
         self.mainPanelMeasurementTask?.cancel()
         self.mainPanelMeasurementTask = nil
         self.mainPanelPendingMeasurementHeightCacheKey = nil
         self.removeDismissMonitors()
+        self.tearDownMainPopupControllersIfHidden()
+        self.tearDownSpeedPanelControllerIfHidden()
 
         if restoreSpeedBubble {
             self.updateStatusItemAppearance()
@@ -443,23 +612,41 @@ final class TokenMenuBarController: NSObject {
             return
         }
 
-        if self.speedPanelController.isVisible, let button = self.speedStatusItem?.button {
+        if self.speedPanelController?.isVisible == true, let button = self.speedStatusItem?.button {
             self.showSpeedPanel(relativeTo: button)
         }
     }
 
+    private func refreshVisibleThemeIfNeeded() {
+        if self.isMainPopupVisible, let button = self.statusItem.button {
+            self.refreshVisibleMainPanelLayout(relativeTo: button)
+        }
+
+        if self.speedPanelController?.isVisible == true {
+            self.speedPanelController?.refreshTheme()
+        }
+
+        if self.speedFloatingChartController?.isVisible == true {
+            self.speedFloatingChartController?.refreshTheme()
+        }
+    }
+
     private func updateFloatingChartPresentationState(isPresented: Bool) {
-        self.speedPanelController.setFloatingChartPresentation(
+        self.isFloatingChartPresented = isPresented
+        self.speedPanelController?.setFloatingChartPresentation(
             isPresented: isPresented,
             onToggle: { [weak self] in
                 self?.toggleFloatingChart()
             })
     }
 
-    private func updateSpeedStatusButtonHostedView(button: NSStatusBarButton, metrics: MenuBarTokenSpeedMetrics) {
+    private func updateSpeedStatusButtonHostedView(
+        button: NSStatusBarButton,
+        presentation: TokenMenuSpeedPresentationState)
+    {
         _ = self.speedHostingView(in: button)
             ?? self.installSpeedHostingView(in: button)
-        self.speedStatusItemModel.metrics = metrics
+        self.speedStatusItemModel.presentation = presentation
         button.image = nil
         button.imagePosition = .noImage
         button.title = ""
@@ -490,25 +677,25 @@ final class TokenMenuBarController: NSObject {
             >
     }
 
-    private func updateSpeedBubble(relativeTo button: NSStatusBarButton, metrics: MenuBarTokenSpeedMetrics) {
-        guard metrics.isActive, let anchorRect = self.buttonFrameOnScreen(button) else {
-            self.hideSpeedBubble(animated: true)
+    private func updateSpeedBubble(relativeTo button: NSStatusBarButton, presentation: TokenMenuSpeedPresentationState) {
+        guard presentation.keepsBubbleMounted, let anchorRect = self.buttonFrameOnScreen(button) else {
+            self.hideSpeedBubbleNow()
             return
         }
 
         let visibleFrame = self.visibleFrame(for: anchorRect, button: button)
-        self.speedBubbleController.present(
+        self.speedBubbleController.update(
             anchorRect: anchorRect,
             visibleFrame: visibleFrame,
-            metrics: metrics)
+            presentation: presentation)
     }
 
-    private func hideSpeedBubble(animated: Bool) {
-        self.speedBubbleController.hide(animated: animated)
+    private func hideSpeedBubbleNow() {
+        self.speedBubbleController.hideNow()
     }
 
     private func toggleFloatingChart() {
-        if self.speedFloatingChartController.isVisible {
+        if self.speedFloatingChartController?.isVisible == true {
             self.hideFloatingChart()
         } else {
             self.showFloatingChart()
@@ -516,18 +703,19 @@ final class TokenMenuBarController: NSObject {
     }
 
     private func showFloatingChart() {
-        let anchorFrame = self.speedPanelController.isVisible
-            ? self.speedPanelController.frame
+        let anchorFrame = self.speedPanelController?.isVisible == true
+            ? self.speedPanelController?.frame
             : self.speedStatusItem?.button.flatMap(self.buttonFrameOnScreen)
 
         let visibleFrame = self.visibleFrame(forFloatingChartAnchor: anchorFrame)
-        self.speedFloatingChartController.present(
+        self.ensureSpeedFloatingChartController().present(
             anchorFrame: anchorFrame,
             visibleFrame: visibleFrame)
     }
 
     private func hideFloatingChart() {
-        self.speedFloatingChartController.hide()
+        self.speedFloatingChartController?.hide()
+        self.tearDownSpeedFloatingChartControllerIfHidden()
     }
 
     private func installDismissMonitors() {
@@ -566,12 +754,12 @@ final class TokenMenuBarController: NSObject {
     }
 
     private func dismissPanelIfNeeded(for screenPoint: CGPoint) {
-        guard self.isMainPopupVisible || self.speedPanelController.isVisible else { return }
+        guard self.isMainPopupVisible || self.speedPanelController?.isVisible == true else { return }
 
-        if self.panelController.contains(screenPoint: screenPoint)
-            || self.popoverController.contains(screenPoint: screenPoint)
-            || self.speedPanelController.contains(screenPoint: screenPoint)
-            || self.speedFloatingChartController.contains(screenPoint: screenPoint)
+        if self.panelController?.contains(screenPoint: screenPoint) == true
+            || self.popoverController?.contains(screenPoint: screenPoint) == true
+            || self.speedPanelController?.contains(screenPoint: screenPoint) == true
+            || self.speedFloatingChartController?.contains(screenPoint: screenPoint) == true
             || self
             .statusButtonContains(screenPoint: screenPoint)
         {
@@ -655,13 +843,13 @@ final class TokenMenuBarController: NSObject {
                 anchorRect: anchorRect,
                 panelSize: preferredSize,
                 visibleFrame: visibleFrame)
-            self.panelController.present(
+            self.ensurePanelController().present(
                 frame: frame,
                 allowsScrolling: panelMetrics.allowsScrolling,
                 signature: signature,
                 renderPhaseMode: renderPhaseMode)
         case .systemPopover:
-            self.popoverController.present(
+            self.ensurePopoverController().present(
                 relativeTo: button,
                 displayHeight: panelMetrics.displayHeight,
                 allowsScrolling: panelMetrics.allowsScrolling,
@@ -782,7 +970,7 @@ final class TokenMenuBarController: NSObject {
             let resolved = TokenMenuPanelSizing.resolve(
                 naturalHeight: measured.naturalHeight,
                 availableScreenHeight: visibleFrame.height)
-            if self.panelController.isVisible {
+            if self.panelController?.isVisible == true, let panelController = self.panelController {
                 let preferredSize = CGSize(
                     width: MenuContent.preferredPanelWidth,
                     height: resolved.displayHeight)
@@ -791,9 +979,9 @@ final class TokenMenuBarController: NSObject {
                     panelSize: preferredSize,
                     visibleFrame: visibleFrame)
 
-                let heightDelta = abs(self.panelController.frame.height - frame.height)
-                if heightDelta > 6 || self.panelController.currentAllowsScrolling != resolved.allowsScrolling {
-                    self.panelController.present(
+                let heightDelta = abs(panelController.frame.height - frame.height)
+                if heightDelta > 6 || panelController.currentAllowsScrolling != resolved.allowsScrolling {
+                    panelController.present(
                         frame: frame,
                         allowsScrolling: resolved.allowsScrolling,
                         signature: signature,
@@ -803,10 +991,10 @@ final class TokenMenuBarController: NSObject {
                     self.logger.debug(
                         "Applied async main panel remeasure [structureKey: \(heightCacheKey.storageKey), displayHeight: \(resolved.displayHeight), allowsScrolling: \(resolved.allowsScrolling)]")
                 }
-            } else if self.popoverController.isVisible {
-                let heightDelta = abs(self.popoverController.displayHeight - resolved.displayHeight)
-                if heightDelta > 6 || self.popoverController.currentAllowsScrolling != resolved.allowsScrolling {
-                    self.popoverController.present(
+            } else if self.popoverController?.isVisible == true, let popoverController = self.popoverController {
+                let heightDelta = abs(popoverController.displayHeight - resolved.displayHeight)
+                if heightDelta > 6 || popoverController.currentAllowsScrolling != resolved.allowsScrolling {
+                    popoverController.present(
                         relativeTo: button,
                         displayHeight: resolved.displayHeight,
                         allowsScrolling: resolved.allowsScrolling,
@@ -819,6 +1007,51 @@ final class TokenMenuBarController: NSObject {
                 }
             }
         }
+    }
+}
+
+extension TokenMenuBarController {
+    var hasMainPanelControllerForTesting: Bool {
+        self.panelController != nil
+    }
+
+    var hasPopoverControllerForTesting: Bool {
+        self.popoverController != nil
+    }
+
+    var hasSpeedPanelControllerForTesting: Bool {
+        self.speedPanelController != nil
+    }
+
+    var hasSpeedFloatingChartControllerForTesting: Bool {
+        self.speedFloatingChartController != nil
+    }
+
+    func instantiateMainPopupControllerForTesting(style: MenuPopupStyle) {
+        switch style {
+        case .liquidGlass:
+            _ = self.ensurePanelController()
+        case .systemPopover:
+            _ = self.ensurePopoverController()
+        }
+    }
+
+    func instantiateSpeedControllersForTesting(includeFloatingChart: Bool) {
+        _ = self.ensureSpeedPanelController()
+        if includeFloatingChart {
+            _ = self.ensureSpeedFloatingChartController()
+            self.updateFloatingChartPresentationState(isPresented: true)
+        }
+    }
+
+    func releaseAllHiddenControllersForTesting() {
+        self.tearDownMainPopupControllersIfHidden()
+        self.tearDownSpeedPanelControllerIfHidden()
+        self.tearDownSpeedFloatingChartControllerIfHidden()
+    }
+
+    func setFloatingChartPresentedForTesting(_ isPresented: Bool) {
+        self.updateFloatingChartPresentationState(isPresented: isPresented)
     }
 }
 
@@ -1086,6 +1319,10 @@ private final class TokenSpeedPanelController: NSObject {
         self.panel.orderOut(nil)
     }
 
+    func refreshTheme() {
+        self.updateRootView(panelHeight: self.panel.frame.height)
+    }
+
     func contains(screenPoint: CGPoint) -> Bool {
         self.panel.frame.contains(screenPoint)
     }
@@ -1201,6 +1438,12 @@ private final class TokenSpeedFloatingChartController: NSObject {
         guard self.panel.isVisible else { return }
         self.panel.orderOut(nil)
         self.onVisibilityChange?(false)
+    }
+
+    func refreshTheme() {
+        self.hostingController.rootView = TokenSpeedFloatingChartContent(
+            store: self.store,
+            settings: self.settings)
     }
 
     func contains(screenPoint: CGPoint) -> Bool {

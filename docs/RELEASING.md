@@ -37,9 +37,8 @@ SwiftPM-only; package/sign/notarize manually (no Xcode project). Sparkle feed is
 ```
 ./Scripts/build_icon.sh
 ```
-Builds both app icons:
+Refreshes the `CodexTokenBar` release icon:
 - `build/icon/CodexTokenBar/Icon.icns`
-- `build/icon/CodexDailyBoard/Icon.icns`
 
 Also refreshes the TokenBar compatibility mirror at repo root (`Icon.icns`).
 
@@ -94,7 +93,7 @@ After publishing the GitHub release, update the tap cask + Linux CLI formula (se
 - [ ] Read both this file and `~/Projects/agent-scripts/docs/RELEASING-MAC.md`; resolve any conflicts toward CodexTokenBar’s specifics.
 - [ ] Update versions (scripts/Info.plist, CHANGELOG, About text) — changelog top section must be finalized; release script pulls notes from it automatically.
 - [ ] `swiftformat`, `swiftlint`, `swift test` (zero warnings/errors)
-- [ ] `./Scripts/build_icon.sh` if either app icon changed
+- [ ] `./Scripts/build_icon.sh` if the `CodexTokenBar` icon changed
 - [ ] `./Scripts/sign-and-notarize.sh`
 - [ ] Optional: generate Sparkle appcast with private key
   - Upload the dSYM archive alongside the app zip on the GitHub release; the release script now automates this and will fail if it’s missing.

@@ -153,6 +153,24 @@ final class TokenMenuContentSizingTests: XCTestCase {
         XCTAssertNotEqual(liquidGlassKey.storageKey, systemPopoverKey.storageKey)
     }
 
+    func test_panelHeightCacheKeyIgnoresThemeChanges() throws {
+        let context = try self.makeContext()
+        let defaultKey = MenuContent.panelHeightCacheKey(
+            store: context.store,
+            settings: context.settings,
+            previewMode: false)
+
+        context.settings.menuVisualTheme = .cyberNeon
+
+        let changedKey = MenuContent.panelHeightCacheKey(
+            store: context.store,
+            settings: context.settings,
+            previewMode: false)
+
+        XCTAssertEqual(defaultKey, changedKey)
+        XCTAssertEqual(defaultKey.storageKey, changedKey.storageKey)
+    }
+
     func test_panelMetricsGrowAndShrinkWithVisibleModules() throws {
         let context = try self.makeContext()
         let defaultMetrics = MenuContent.panelMetrics(

@@ -353,20 +353,49 @@ struct RecentFortyEightHourBarChartCardView: View {
 
     private func peakLabel(text: String) -> some View {
         Text(text)
-            .font(.system(size: Style.peakLabelFontSize, weight: .bold))
+            .font(TokenMenuTheme.metricFont(size: Style.peakLabelFontSize, weight: .bold))
             .foregroundStyle(TokenFloatingCardTheme.primaryText)
             .lineLimit(1)
             .minimumScaleFactor(0.82)
             .padding(.horizontal, Style.peakLabelHorizontalPadding)
             .background {
-                Capsule(style: .continuous)
-                    .fill(TokenFloatingCardTheme.cardTop.opacity(0.94))
-                    .overlay {
-                        Capsule(style: .continuous)
-                            .stroke(TokenFloatingCardTheme.stroke.opacity(0.9), lineWidth: 0.75)
-                    }
+                if TokenMenuTheme.usesPixelChrome {
+                    RoundedRectangle(
+                        cornerRadius: TokenMenuTheme.chromeCornerRadius(default: 10, pixel: 6),
+                        style: .continuous)
+                        .fill(TokenMenuTheme.panelBase.opacity(0.96))
+                        .overlay(alignment: .topLeading) {
+                            RoundedRectangle(
+                                cornerRadius: TokenMenuTheme.chromeCornerRadius(default: 10, pixel: 5),
+                                style: .continuous)
+                                .stroke(Color.white.opacity(0.44), lineWidth: 1)
+                                .padding(2)
+                                .mask(
+                                    LinearGradient(
+                                        colors: [Color.white, Color.clear],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing))
+                        }
+                        .overlay {
+                            RoundedRectangle(
+                                cornerRadius: TokenMenuTheme.chromeCornerRadius(default: 10, pixel: 6),
+                                style: .continuous)
+                                .stroke(TokenMenuTheme.glassStroke, lineWidth: 1.4)
+                        }
+                } else {
+                    Capsule(style: .continuous)
+                        .fill(TokenFloatingCardTheme.cardTop.opacity(0.94))
+                        .overlay {
+                            Capsule(style: .continuous)
+                                .stroke(TokenFloatingCardTheme.stroke.opacity(0.9), lineWidth: 0.75)
+                        }
+                }
             }
-            .shadow(color: self.barGlow.opacity(0.20), radius: 8, x: 0, y: 2)
+            .shadow(
+                color: self.barGlow.opacity(TokenMenuTheme.usesPixelChrome ? 0.28 : 0.20),
+                radius: TokenMenuTheme.usesPixelChrome ? 0 : 8,
+                x: TokenMenuTheme.usesPixelChrome ? 3 : 0,
+                y: TokenMenuTheme.usesPixelChrome ? 3 : 2)
     }
 
     private func axisLabelMarkers(

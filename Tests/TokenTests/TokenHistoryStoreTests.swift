@@ -175,6 +175,131 @@ final class TokenHistoryStoreTests: XCTestCase {
         XCTAssertEqual(loaded.sessions["session-123"]?.outboundMessageDailyBuckets.first?.sentCharacters, 120)
         XCTAssertEqual(loaded.outboundMessageDays.first?.sentMessages, 3)
     }
+
+    func test_loadForDisplaySkipsSessionFiveMinuteBucketsAndBuildsRegularSeries() throws {
+        let sandbox = try HistorySandbox()
+        let hourStart = Date(timeIntervalSince1970: 1_773_225_600)
+        let document = TokenHistoryDocument(
+            sessions: [
+                "regular": SessionUsageSnapshot(
+                    sessionID: "regular",
+                    sessionOriginKind: .regular,
+                    sourceFile: "/tmp/regular.jsonl",
+                    sourceFileSize: 111,
+                    sourceFileModificationTime: nil,
+                    lastEventAt: hourStart,
+                    scanVersion: 11,
+                    dailyBuckets: [
+                        DailyTokenStats(
+                            date: "2026-03-11",
+                            inputTokens: 12,
+                            outputTokens: 8,
+                            cachedInputTokens: 0,
+                            reasoningOutputTokens: 0,
+                            totalTokens: 20),
+                    ],
+                    hourlyBuckets: [
+                        HourlyTokenStats(
+                            hourStart: hourStart,
+                            inputTokens: 12,
+                            outputTokens: 8,
+                            cachedInputTokens: 0,
+                            reasoningOutputTokens: 0,
+                            totalTokens: 20),
+                    ],
+                    fiveMinuteBuckets: [
+                        FiveMinuteTokenStats(
+                            bucketStart: hourStart,
+                            inputTokens: 12,
+                            outputTokens: 8,
+                            cachedInputTokens: 0,
+                            reasoningOutputTokens: 0,
+                            totalTokens: 20),
+                    ]),
+                "subagent": SessionUsageSnapshot(
+                    sessionID: "subagent",
+                    sessionOriginKind: .subagentThreadSpawn,
+                    sourceFile: "/tmp/subagent.jsonl",
+                    sourceFileSize: 222,
+                    sourceFileModificationTime: nil,
+                    lastEventAt: hourStart,
+                    scanVersion: 11,
+                    dailyBuckets: [
+                        DailyTokenStats(
+                            date: "2026-03-11",
+                            inputTokens: 4,
+                            outputTokens: 1,
+                            cachedInputTokens: 0,
+                            reasoningOutputTokens: 0,
+                            totalTokens: 5),
+                    ],
+                    hourlyBuckets: [
+                        HourlyTokenStats(
+                            hourStart: hourStart,
+                            inputTokens: 4,
+                            outputTokens: 1,
+                            cachedInputTokens: 0,
+                            reasoningOutputTokens: 0,
+                            totalTokens: 5),
+                    ],
+                    fiveMinuteBuckets: [
+                        FiveMinuteTokenStats(
+                            bucketStart: hourStart,
+                            inputTokens: 4,
+                            outputTokens: 1,
+                            cachedInputTokens: 0,
+                            reasoningOutputTokens: 0,
+                            totalTokens: 5),
+                    ]),
+            ],
+            days: [
+                DailyTokenStats(
+                    date: "2026-03-11",
+                    inputTokens: 16,
+                    outputTokens: 9,
+                    cachedInputTokens: 0,
+                    reasoningOutputTokens: 0,
+                    totalTokens: 25),
+            ],
+            hours: [
+                HourlyTokenStats(
+                    hourStart: hourStart,
+                    inputTokens: 16,
+                    outputTokens: 9,
+                    cachedInputTokens: 0,
+                    reasoningOutputTokens: 0,
+                    totalTokens: 25),
+            ],
+            fiveMinuteBuckets: [
+                FiveMinuteTokenStats(
+                    bucketStart: hourStart,
+                    inputTokens: 16,
+                    outputTokens: 9,
+                    cachedInputTokens: 0,
+                    reasoningOutputTokens: 0,
+                    totalTokens: 25),
+            ],
+            outboundMessageDays: [
+                DailyOutboundMessageStats(
+                    date: "2026-03-11",
+                    sentCharacters: 120,
+                    sentMessages: 3),
+            ],
+            lastRefreshAt: hourStart)
+
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        try encoder.encode(document).write(to: sandbox.fileURL, options: .atomic)
+
+        let loaded = try TokenHistoryStore(fileURL: sandbox.fileURL).loadForDisplay()
+
+        XCTAssertEqual(loaded.days.first?.totalTokens, 25)
+        XCTAssertEqual(loaded.hours.first?.totalTokens, 25)
+        XCTAssertEqual(loaded.regularDays.first?.totalTokens, 20)
+        XCTAssertEqual(loaded.regularHours.first?.totalTokens, 20)
+        XCTAssertEqual(loaded.outboundMessageDays.first?.sentMessages, 3)
+        XCTAssertEqual(loaded.lastRefreshAt, hourStart)
+    }
 }
 
 private struct HistorySandbox {

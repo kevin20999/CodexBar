@@ -5,12 +5,8 @@ import SwiftUI
 enum TokenMenuSpeedMeterLayout {
     static let statusItemWidth: CGFloat = 38
     static let statusItemHeight: CGFloat = 22
-    static let bubbleBridgeWidth: CGFloat = 18
-    static let bubbleBridgeHeight: CGFloat = 10
-    static let bubbleInnerHeight: CGFloat = 32
-    static let bubbleHorizontalPadding: CGFloat = 14
-    static let bubbleAttachmentOverlap: CGFloat = 6
-    static let bubbleMinimumWidth: CGFloat = 86
+    static let bubbleHorizontalPadding: CGFloat = 12
+    static let bubbleMinimumWidth: CGFloat = statusItemWidth - 6
 }
 
 final class TokenPassThroughHostingView<Content: View>: NSHostingView<Content> {
@@ -22,14 +18,14 @@ final class TokenPassThroughHostingView<Content: View>: NSHostingView<Content> {
 @MainActor
 @Observable
 final class TokenMenuSpeedBubbleModel {
-    var metrics: MenuBarTokenSpeedMetrics = .zero
+    var presentation: TokenMenuSpeedPresentationState = .idle
     var isPresented = false
 }
 
 @MainActor
 @Observable
 final class TokenMenuSpeedStatusItemModel {
-    var metrics: MenuBarTokenSpeedMetrics = .zero
+    var presentation: TokenMenuSpeedPresentationState = .idle
 }
 
 private enum TokenMenuSpeedSurfaceStyle {
@@ -147,44 +143,270 @@ enum TokenMenuSpeedStatusItemAnimation {
     }
 }
 
-enum TokenMenuSpeedStatusItemAppearance {
-    static func symbolName(for metrics: MenuBarTokenSpeedMetrics) -> String {
-        metrics.usesRocketIcon ? "rocket" : "cup.and.saucer"
+enum TokenMenuSpeedBubbleAnimation {
+    static func capsuleYOffset(for presentation: TokenMenuSpeedPresentationState) -> CGFloat {
+        switch presentation.phase {
+        case .idle:
+            0
+        case .ignite:
+            1
+        case .thrust:
+            2
+        case .hold:
+            0
+        case .dismissing:
+            -4
+        }
     }
 
-    static func fontSize(for metrics: MenuBarTokenSpeedMetrics) -> CGFloat {
-        metrics.usesRocketIcon ? 12.5 : 11
+    static func capsuleScaleX(for presentation: TokenMenuSpeedPresentationState) -> CGFloat {
+        switch presentation.phase {
+        case .idle:
+            0.72
+        case .ignite:
+            0.88
+        case .thrust:
+            1.02
+        case .hold:
+            1
+        case .dismissing:
+            0.84
+        }
+    }
+
+    static func capsuleScaleY(for presentation: TokenMenuSpeedPresentationState) -> CGFloat {
+        switch presentation.phase {
+        case .idle:
+            0.84
+        case .ignite:
+            0.92
+        case .thrust:
+            1.04
+        case .hold:
+            1
+        case .dismissing:
+            0.9
+        }
+    }
+
+    static func capsuleOpacity(for presentation: TokenMenuSpeedPresentationState) -> Double {
+        switch presentation.phase {
+        case .idle:
+            0
+        case .ignite:
+            0.82
+        case .thrust, .hold:
+            1
+        case .dismissing:
+            0
+        }
+    }
+
+    static func textOpacity(for presentation: TokenMenuSpeedPresentationState) -> Double {
+        switch presentation.phase {
+        case .idle, .ignite:
+            0
+        case .thrust:
+            0.92
+        case .hold:
+            1
+        case .dismissing:
+            0
+        }
+    }
+
+    static func textYOffset(for presentation: TokenMenuSpeedPresentationState) -> CGFloat {
+        switch presentation.phase {
+        case .idle:
+            4
+        case .ignite:
+            2
+        case .thrust:
+            0
+        case .hold:
+            0
+        case .dismissing:
+            -2
+        }
+    }
+
+    static func animation(for presentation: TokenMenuSpeedPresentationState) -> Animation {
+        switch presentation.phase {
+        case .idle:
+            .easeOut(duration: 0.16)
+        case .ignite:
+            .easeOut(duration: 0.14)
+        case .thrust:
+            .easeOut(duration: 0.32)
+        case .hold:
+            .spring(response: 0.26, dampingFraction: 0.86)
+        case .dismissing:
+            .easeInOut(duration: 0.42)
+        }
+    }
+
+    static func panelAnimationDuration(for presentation: TokenMenuSpeedPresentationState) -> TimeInterval {
+        switch presentation.phase {
+        case .idle:
+            0.16
+        case .ignite:
+            0.14
+        case .thrust:
+            0.32
+        case .hold:
+            0.18
+        case .dismissing:
+            0.42
+        }
+    }
+}
+
+enum TokenMenuSpeedBubbleLayout {
+    static let compactWidth = TokenMenuSpeedMeterLayout.statusItemWidth - 6
+    static let compactHeight = TokenMenuSpeedMeterLayout.statusItemHeight
+
+    static func width(for presentation: TokenMenuSpeedPresentationState) -> CGFloat {
+        let expandedWidth = self.expandedWidth(for: presentation.bubbleDisplayText)
+        return switch presentation.phase {
+        case .idle, .ignite:
+            self.compactWidth
+        case .thrust:
+            self.compactWidth + ((expandedWidth - self.compactWidth) * 0.78)
+        case .hold:
+            expandedWidth
+        case .dismissing:
+            self.compactWidth + ((expandedWidth - self.compactWidth) * 0.46)
+        }
+    }
+
+    static func size(for presentation: TokenMenuSpeedPresentationState) -> CGSize {
+        CGSize(width: self.width(for: presentation), height: self.compactHeight)
+    }
+
+    static func overlap(for presentation: TokenMenuSpeedPresentationState) -> CGFloat {
+        switch presentation.phase {
+        case .idle:
+            0
+        case .ignite:
+            12
+        case .thrust:
+            8
+        case .hold:
+            5
+        case .dismissing:
+            9
+        }
+    }
+
+    static func expandedWidth(for bubbleDisplayText: String) -> CGFloat {
+        let measurementFont = NSFont.monospacedDigitSystemFont(ofSize: 14, weight: .bold)
+        let measuredText = NSAttributedString(
+            string: bubbleDisplayText,
+            attributes: [.font: measurementFont])
+        let textWidth = ceil(measuredText.size().width)
+        return max(
+            TokenMenuSpeedMeterLayout.bubbleMinimumWidth,
+            textWidth + (TokenMenuSpeedMeterLayout.bubbleHorizontalPadding * 2))
+    }
+}
+
+enum TokenMenuSpeedSymbolGlyph: Equatable {
+    case coffee
+    case rocket
+
+    var systemName: String {
+        switch self {
+        case .coffee:
+            "cup.and.saucer"
+        case .rocket:
+            "rocket"
+        }
+    }
+
+    var fallbackEmoji: String {
+        switch self {
+        case .coffee:
+            "☕️"
+        case .rocket:
+            "🚀"
+        }
+    }
+}
+
+enum TokenMenuSpeedStatusItemAppearance {
+    static func symbolGlyph(for presentation: TokenMenuSpeedPresentationState) -> TokenMenuSpeedSymbolGlyph {
+        presentation.usesRocketIcon ? .rocket : .coffee
+    }
+
+    static func fontSize(for presentation: TokenMenuSpeedPresentationState) -> CGFloat {
+        presentation.usesRocketIcon ? 12.5 : 11
+    }
+
+    static func motion(for presentation: TokenMenuSpeedPresentationState) -> TokenMenuRocketMotion {
+        switch presentation.phase {
+        case .idle:
+            .zero
+        case .ignite, .thrust:
+            TokenMenuSpeedStatusItemAnimation.launchMotion(strength: presentation.launchStrength)
+        case .hold:
+            TokenMenuSpeedStatusItemAnimation.settleMotion(strength: presentation.launchStrength)
+        case .dismissing:
+            TokenMenuRocketMotion(
+                yOffset: -2.4,
+                rotation: 0,
+                scale: 0.98)
+        }
+    }
+
+    static func animation(for presentation: TokenMenuSpeedPresentationState) -> Animation {
+        switch presentation.phase {
+        case .idle:
+            .easeOut(duration: 0.16)
+        case .ignite:
+            .easeOut(duration: 0.14)
+        case .thrust:
+            .easeOut(duration: 0.32)
+        case .hold:
+            .easeOut(duration: 0.18)
+        case .dismissing:
+            .easeInOut(duration: 0.42)
+        }
     }
 }
 
 private struct TokenMenuSpeedSymbol: View {
-    let systemName: String
+    let glyph: TokenMenuSpeedSymbolGlyph
     let fontSize: CGFloat
     let motion: TokenMenuRocketMotion
 
     var body: some View {
-        Image(systemName: self.systemName)
-            .font(.system(size: self.fontSize, weight: .semibold))
-            .symbolRenderingMode(.monochrome)
-            .foregroundStyle(TokenMenuSpeedSurfaceTheme.symbol)
-            .offset(y: self.motion.yOffset)
-            .rotationEffect(.degrees(self.motion.rotation))
-            .scaleEffect(self.motion.scale)
-            .accessibilityHidden(true)
+        Group {
+            if NSImage(systemSymbolName: self.glyph.systemName, accessibilityDescription: nil) != nil {
+                Image(systemName: self.glyph.systemName)
+                    .font(.system(size: self.fontSize, weight: .semibold))
+                    .symbolRenderingMode(.monochrome)
+            } else {
+                Text(self.glyph.fallbackEmoji)
+                    .font(.system(size: self.fontSize + 1))
+            }
+        }
+        .foregroundStyle(TokenMenuSpeedSurfaceTheme.symbol)
+        .offset(y: self.motion.yOffset)
+        .rotationEffect(.degrees(self.motion.rotation))
+        .scaleEffect(self.motion.scale)
+        .accessibilityHidden(true)
     }
 }
 
 struct TokenMenuSpeedStatusItemView: View {
     @Bindable var model: TokenMenuSpeedStatusItemModel
-    @State private var motion = TokenMenuRocketMotion.zero
 
-    private var metrics: MenuBarTokenSpeedMetrics {
-        self.model.metrics
+    private var presentation: TokenMenuSpeedPresentationState {
+        self.model.presentation
     }
 
-    private var animationID: String {
-        let launchTime = self.metrics.launchDate?.timeIntervalSinceReferenceDate ?? -1
-        return "\(self.metrics.tokensPerSecond)-\(self.metrics.launchStrength)-\(launchTime)"
+    private var motion: TokenMenuRocketMotion {
+        TokenMenuSpeedStatusItemAppearance.motion(for: self.presentation)
     }
 
     var body: some View {
@@ -193,10 +415,12 @@ struct TokenMenuSpeedStatusItemView: View {
                 width: TokenMenuSpeedMeterLayout.statusItemWidth - 6,
                 height: TokenMenuSpeedMeterLayout.statusItemHeight)
             .accessibilityElement(children: .ignore)
-            .accessibilityLabel(self.metrics.speedText)
-            .task(id: self.animationID) {
-                await self.runAnimation()
-            }
+            .accessibilityLabel(self.presentation.speedText)
+            .animation(
+                TokenMenuSpeedStatusItemAppearance.animation(for: self.presentation),
+                value: self.presentation.phase)
+            .animation(.easeOut(duration: 0.18), value: self.presentation.burstID)
+            .animation(.easeOut(duration: 0.16), value: self.presentation.displayedTokensPerSecond)
     }
 
     private func iconSurface(motion: TokenMenuRocketMotion) -> some View {
@@ -206,112 +430,62 @@ struct TokenMenuSpeedStatusItemView: View {
                 style: .compact)
 
             TokenMenuSpeedSymbol(
-                systemName: TokenMenuSpeedStatusItemAppearance.symbolName(for: self.metrics),
-                fontSize: TokenMenuSpeedStatusItemAppearance.fontSize(for: self.metrics),
+                glyph: TokenMenuSpeedStatusItemAppearance.symbolGlyph(for: self.presentation),
+                fontSize: TokenMenuSpeedStatusItemAppearance.fontSize(for: self.presentation),
                 motion: motion)
         }
-    }
-
-    private func runAnimation() async {
-        guard self.metrics.usesRocketIcon else {
-            self.motion = .zero
-            return
-        }
-
-        guard self.metrics.launchStrength > 0, self.metrics.launchDate != nil else {
-            self.motion = .zero
-            return
-        }
-
-        withAnimation(.easeOut(duration: TokenMenuSpeedStatusItemAnimation.launchUpDuration)) {
-            self.motion = TokenMenuSpeedStatusItemAnimation.launchMotion(strength: self.metrics.launchStrength)
-        }
-
-        try? await Task.sleep(
-            nanoseconds: UInt64(TokenMenuSpeedStatusItemAnimation.launchUpDuration * 1_000_000_000))
-        guard !Task.isCancelled else { return }
-
-        withAnimation(.easeOut(duration: TokenMenuSpeedStatusItemAnimation.settleDuration)) {
-            self.motion = TokenMenuSpeedStatusItemAnimation.settleMotion(strength: self.metrics.launchStrength)
-        }
-
-        try? await Task.sleep(
-            nanoseconds: UInt64(TokenMenuSpeedStatusItemAnimation.settleDuration * 1_000_000_000))
-        guard !Task.isCancelled else { return }
-
-        withAnimation(.easeOut(duration: 0.16)) {
-            self.motion = .zero
-        }
-    }
-}
-
-struct TokenMenuSpeedBubbleShape: Shape {
-    func path(in rect: CGRect) -> Path {
-        let bridgeWidth = TokenMenuSpeedMeterLayout.bubbleBridgeWidth
-        let bridgeHeight = TokenMenuSpeedMeterLayout.bubbleBridgeHeight
-        let bubbleRect = CGRect(
-            x: 0,
-            y: bridgeHeight - 4,
-            width: rect.width,
-            height: rect.height - bridgeHeight + 4)
-        let bridgeRect = CGRect(
-            x: (rect.width - bridgeWidth) / 2,
-            y: 0,
-            width: bridgeWidth,
-            height: bridgeHeight)
-        let connectorRect = CGRect(
-            x: bridgeRect.minX,
-            y: bridgeRect.midY,
-            width: bridgeRect.width,
-            height: max(bubbleRect.minY - bridgeRect.midY, 0))
-
-        var path = Path()
-        path.addRoundedRect(
-            in: bubbleRect,
-            cornerSize: CGSize(width: bubbleRect.height / 2, height: bubbleRect.height / 2))
-        path.addRoundedRect(
-            in: bridgeRect,
-            cornerSize: CGSize(width: bridgeRect.width / 2, height: bridgeRect.height / 2))
-        path.addRect(connectorRect)
-        return path
     }
 }
 
 struct TokenMenuSpeedBubbleView: View {
     @Bindable var model: TokenMenuSpeedBubbleModel
 
-    private var shape: TokenMenuSpeedBubbleShape {
-        TokenMenuSpeedBubbleShape()
+    private var shape: Capsule {
+        Capsule(style: .continuous)
+    }
+
+    private var presentation: TokenMenuSpeedPresentationState {
+        self.model.presentation
     }
 
     var body: some View {
         self.content
-            .opacity(self.model.isPresented ? 1 : 0)
-            .scaleEffect(self.model.isPresented ? 1 : 0.92, anchor: .top)
+            .opacity(self.model.isPresented ? TokenMenuSpeedBubbleAnimation.capsuleOpacity(for: self.presentation) : 0)
+            .scaleEffect(
+                x: TokenMenuSpeedBubbleAnimation.capsuleScaleX(for: self.presentation),
+                y: TokenMenuSpeedBubbleAnimation.capsuleScaleY(for: self.presentation),
+                anchor: .top)
+            .offset(y: TokenMenuSpeedBubbleAnimation.capsuleYOffset(for: self.presentation))
+            .animation(
+                TokenMenuSpeedBubbleAnimation.animation(for: self.presentation),
+                value: self.presentation.phase)
             .animation(.spring(response: 0.34, dampingFraction: 0.82), value: self.model.isPresented)
-            .animation(.easeOut(duration: 0.16), value: self.model.metrics.tokensPerSecond)
+            .animation(.easeOut(duration: 0.16), value: self.presentation.displayedTokensPerSecond)
             .allowsHitTesting(false)
     }
 
     @ViewBuilder
     private var content: some View {
-        let bubbleText = self.model.metrics.speedText
-
         ZStack {
             TokenMenuSpeedSurfaceBackground(shape: self.shape, style: .bubble)
 
-            Text(bubbleText)
-                .font(.system(size: 12, weight: .semibold, design: .rounded))
-                .foregroundStyle(TokenMenuSpeedSurfaceTheme.bubbleText)
-                .monospacedDigit()
-                .contentTransition(.numericText())
-                .lineLimit(1)
-                .padding(.top, TokenMenuSpeedMeterLayout.bubbleBridgeHeight - 1)
-                .padding(.horizontal, TokenMenuSpeedMeterLayout.bubbleHorizontalPadding)
-                .frame(minWidth: TokenMenuSpeedMeterLayout.bubbleMinimumWidth)
+            HStack(alignment: .center, spacing: 0) {
+                Text(self.presentation.bubbleDisplayText)
+                    .font(.system(size: 14, weight: .bold, design: .rounded))
+                    .foregroundStyle(TokenMenuSpeedSurfaceTheme.bubbleText)
+                    .monospacedDigit()
+                    .contentTransition(.numericText())
+            }
+            .opacity(TokenMenuSpeedBubbleAnimation.textOpacity(for: self.presentation))
+            .offset(y: TokenMenuSpeedBubbleAnimation.textYOffset(for: self.presentation))
+            .lineLimit(1)
+            .padding(.horizontal, TokenMenuSpeedMeterLayout.bubbleHorizontalPadding)
+            .frame(minWidth: TokenMenuSpeedMeterLayout.bubbleMinimumWidth)
         }
-        .frame(height: TokenMenuSpeedMeterLayout.bubbleBridgeHeight + TokenMenuSpeedMeterLayout.bubbleInnerHeight)
+        .frame(width: TokenMenuSpeedBubbleLayout.width(for: self.presentation), height: TokenMenuSpeedBubbleLayout.compactHeight)
         .fixedSize(horizontal: true, vertical: true)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(self.presentation.speedText)
     }
 }
 
@@ -321,18 +495,32 @@ struct TokenMenuSpeedMeterPreviewView: View {
     @State private var bubbleModel = TokenMenuSpeedBubbleModel()
     @State private var statusItemModel = TokenMenuSpeedStatusItemModel()
 
+    private var previewPresentation: TokenMenuSpeedPresentationState {
+        guard self.metrics.tokensPerSecond > 0 else { return .idle }
+
+        return TokenMenuSpeedPresentationState(
+            displayedTokensPerSecond: self.metrics.tokensPerSecond,
+            bubbleDisplayText: AppStrings(
+                language: AppLanguage.resolvePreferredLanguage(Locale.preferredLanguages)
+            ).compactTokenText(self.metrics.tokensPerSecond),
+            launchStrength: max(self.metrics.launchStrength, 0.38),
+            lastBurstDate: self.metrics.launchDate ?? Date(),
+            burstID: 1,
+            phase: .hold)
+    }
+
     var body: some View {
-        VStack(spacing: -(TokenMenuSpeedMeterLayout.bubbleAttachmentOverlap - 1)) {
+        VStack(spacing: -6) {
             TokenMenuSpeedStatusItemView(model: self.statusItemModel)
 
-            if self.metrics.isActive {
+            if self.previewPresentation.keepsBubbleMounted {
                 TokenMenuSpeedBubbleView(model: self.bubbleModel)
             }
         }
         .task(id: self.metrics.tokensPerSecond) {
-            self.statusItemModel.metrics = self.metrics
-            self.bubbleModel.metrics = self.metrics
-            self.bubbleModel.isPresented = self.metrics.isActive
+            self.statusItemModel.presentation = self.previewPresentation
+            self.bubbleModel.presentation = self.previewPresentation
+            self.bubbleModel.isPresented = self.previewPresentation.bubblePresented
         }
     }
 }

@@ -1,3 +1,4 @@
+import CodexBarCore
 import XCTest
 @testable import CodexBar
 
@@ -150,4 +151,68 @@ final class TokenSpeedFloatingChartTests: XCTestCase {
         XCTAssertEqual(darkGuide.blueComponent, 1, accuracy: 0.001)
         XCTAssertEqual(darkGuide.alphaComponent, 0.11, accuracy: 0.001)
     }
+
+    func test_floatingChartContentBuildsAfterThemeSwitch() throws {
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: UUID().uuidString))
+        let settings = SettingsStore(
+            defaults: defaults,
+            launchAtLoginManager: TokenSpeedFloatingChartLaunchAtLoginManager(),
+            preferredLanguages: { ["en-US"] })
+        let sandbox = try TokenSpeedFloatingChartSandbox()
+        let provider = CodexSessionTokenProvider(
+            sessionRootURL: sandbox.root.appendingPathComponent("sessions", isDirectory: true),
+            historyStore: TokenHistoryStore(fileURL: sandbox.fileURL))
+        let store = UsageStore(
+            settings: settings,
+            provider: provider,
+            dashboardProvider: TokenSpeedFloatingChartDashboardProvider(),
+            startupRefresh: false)
+
+        _ = TokenSpeedFloatingChartContent(store: store, settings: settings).body
+
+        settings.menuVisualTheme = .sakura
+
+        _ = TokenSpeedFloatingChartContent(store: store, settings: settings).body
+    }
+}
+
+private struct TokenSpeedFloatingChartSandbox {
+    let root: URL
+    let fileURL: URL
+
+    init() throws {
+        let root = FileManager.default.temporaryDirectory
+            .appendingPathComponent(UUID().uuidString, isDirectory: true)
+        try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
+        self.root = root
+        self.fileURL = root.appendingPathComponent("token_stats.json", isDirectory: false)
+    }
+}
+
+@MainActor
+private final class TokenSpeedFloatingChartDashboardProvider: OpenAIDashboardProviding {
+    func loadCachedDashboard() throws -> OpenAIDashboardCache? {
+        nil
+    }
+
+    func loadAccountInfo() -> CodexAccountInfo {
+        CodexAccountInfo(email: "person@example.com", plan: "Plus")
+    }
+
+    func refresh(
+        settings _: OpenAIDashboardSettings,
+        force _: Bool,
+        logger _: ((String) -> Void)?) async throws -> OpenAIDashboardRefreshResult
+    {
+        throw OpenAIDashboardFetcher.FetchError.loginRequired
+    }
+}
+
+@MainActor
+private final class TokenSpeedFloatingChartLaunchAtLoginManager: LaunchAtLoginManaging {
+    func isEnabled() -> Bool {
+        false
+    }
+
+    func setEnabled(_: Bool) throws {}
 }

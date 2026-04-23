@@ -3,18 +3,24 @@ import XCTest
 
 @MainActor
 final class TokenMenuSpeedMeterViewTests: XCTestCase {
-    func test_statusItemAppearanceUsesCoffeeSymbolWhenIdle() {
-        let metrics = MenuBarTokenSpeedMetrics(tokensPerSecond: 0)
+    func test_statusItemAppearanceUsesCoffeeGlyphWhenIdle() {
+        let presentation = TokenMenuSpeedPresentationState.idle
 
-        XCTAssertEqual(TokenMenuSpeedStatusItemAppearance.symbolName(for: metrics), "cup.and.saucer")
-        XCTAssertEqual(TokenMenuSpeedStatusItemAppearance.fontSize(for: metrics), 11)
+        XCTAssertEqual(TokenMenuSpeedStatusItemAppearance.symbolGlyph(for: presentation), .coffee)
+        XCTAssertEqual(TokenMenuSpeedStatusItemAppearance.fontSize(for: presentation), 11)
     }
 
-    func test_statusItemAppearanceUsesRocketSymbolWhenActive() {
-        let metrics = MenuBarTokenSpeedMetrics(tokensPerSecond: 42)
+    func test_statusItemAppearanceUsesRocketGlyphWhenActive() {
+        let presentation = TokenMenuSpeedPresentationState(
+            displayedTokensPerSecond: 42,
+            bubbleDisplayText: "42",
+            launchStrength: 0.8,
+            lastBurstDate: Date(),
+            burstID: 1,
+            phase: .hold)
 
-        XCTAssertEqual(TokenMenuSpeedStatusItemAppearance.symbolName(for: metrics), "rocket")
-        XCTAssertEqual(TokenMenuSpeedStatusItemAppearance.fontSize(for: metrics), 12.5)
+        XCTAssertEqual(TokenMenuSpeedStatusItemAppearance.symbolGlyph(for: presentation), .rocket)
+        XCTAssertEqual(TokenMenuSpeedStatusItemAppearance.fontSize(for: presentation), 12.5)
     }
 
     func test_launchMotionUsesVerticalLiftRotationAndScaleOnly() {
@@ -31,5 +37,46 @@ final class TokenMenuSpeedMeterViewTests: XCTestCase {
         XCTAssertLessThan(motion.yOffset, 0)
         XCTAssertEqual(motion.rotation, 0)
         XCTAssertEqual(motion.scale, 1)
+    }
+
+    func test_bubbleLayoutStartsAtStatusItemCapsuleWidthDuringIgnite() {
+        let presentation = TokenMenuSpeedPresentationState(
+            displayedTokensPerSecond: 193,
+            bubbleDisplayText: "193",
+            launchStrength: 0.8,
+            lastBurstDate: Date(),
+            burstID: 1,
+            phase: .ignite)
+
+        XCTAssertEqual(TokenMenuSpeedBubbleLayout.width(for: presentation), TokenMenuSpeedBubbleLayout.compactWidth)
+        XCTAssertEqual(TokenMenuSpeedBubbleLayout.size(for: presentation).height, TokenMenuSpeedBubbleLayout.compactHeight)
+    }
+
+    func test_bubbleLayoutExpandsInHoldPhase() {
+        let presentation = TokenMenuSpeedPresentationState(
+            displayedTokensPerSecond: 193,
+            bubbleDisplayText: "193",
+            launchStrength: 0.8,
+            lastBurstDate: Date(),
+            burstID: 1,
+            phase: .hold)
+
+        XCTAssertGreaterThan(TokenMenuSpeedBubbleLayout.width(for: presentation), TokenMenuSpeedBubbleLayout.compactWidth)
+        XCTAssertEqual(TokenMenuSpeedBubbleLayout.overlap(for: presentation), 5)
+    }
+
+    func test_bubbleLayoutUsesCompactLocalizedTextForWidthMeasurement() {
+        let presentation = TokenMenuSpeedPresentationState(
+            displayedTokensPerSecond: 12_345,
+            bubbleDisplayText: "1.2 万",
+            launchStrength: 0.8,
+            lastBurstDate: Date(),
+            burstID: 1,
+            phase: .hold)
+
+        XCTAssertEqual(TokenMenuSpeedBubbleLayout.expandedWidth(for: presentation.bubbleDisplayText), TokenMenuSpeedBubbleLayout.width(for: presentation))
+        XCTAssertLessThan(
+            TokenMenuSpeedBubbleLayout.expandedWidth(for: presentation.bubbleDisplayText),
+            TokenMenuSpeedBubbleLayout.expandedWidth(for: presentation.numericValueText))
     }
 }

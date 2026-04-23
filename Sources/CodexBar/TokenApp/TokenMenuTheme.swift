@@ -1,162 +1,116 @@
 import SwiftUI
 
 enum TokenMenuTheme {
-    static let primaryText = Color.primary
-    static let secondaryText = Color(nsColor: NSColor(
-        srgbRed: 111 / 255,
-        green: 116 / 255,
-        blue: 129 / 255,
-        alpha: 1))
-    static let tertiaryText = Color(nsColor: NSColor(
-        srgbRed: 145 / 255,
-        green: 150 / 255,
-        blue: 163 / 255,
-        alpha: 1))
-    static let footerButtonText = TokenFloatingCardTheme.tertiaryText
-    static let footerButtonHoverText = TokenFloatingCardTheme.secondaryText
-    static let footerButtonHoverFill = TokenMenuTheme.dynamicColor(
-        dark: NSColor(srgbRed: 1, green: 1, blue: 1, alpha: 0.08),
-        light: NSColor(srgbRed: 0.978, green: 0.982, blue: 0.992, alpha: 0.60))
-    static let footerButtonPressedFill = TokenMenuTheme.dynamicColor(
-        dark: NSColor(srgbRed: 1, green: 1, blue: 1, alpha: 0.12),
-        light: NSColor(srgbRed: 0.986, green: 0.990, blue: 0.997, alpha: 0.74))
-    static let footerButtonHoverStroke = TokenMenuTheme.dynamicColor(
-        dark: NSColor(srgbRed: 1, green: 1, blue: 1, alpha: 0.10),
-        light: NSColor(srgbRed: 0.29, green: 0.34, blue: 0.42, alpha: 0.12))
-    static let footerButtonPressedStroke = TokenMenuTheme.dynamicColor(
-        dark: NSColor(srgbRed: 1, green: 1, blue: 1, alpha: 0.16),
-        light: NSColor(srgbRed: 0.25, green: 0.30, blue: 0.38, alpha: 0.18))
-    static let footerButtonGlow = TokenMenuTheme.dynamicColor(
-        dark: NSColor(srgbRed: 1, green: 1, blue: 1, alpha: 0.05),
-        light: NSColor(srgbRed: 0.71, green: 0.78, blue: 0.92, alpha: 0.14))
-    static let warningText = Color(nsColor: .systemOrange)
+    private static var theme: MenuVisualThemeTokens {
+        MenuVisualThemeProvider.tokens
+    }
 
-    static let primaryQuotaTint = Color(nsColor: NSColor(
-        srgbRed: 1.0,
-        green: 122 / 255,
-        blue: 47 / 255,
-        alpha: 1))
-    static let secondaryQuotaTint = Color(nsColor: NSColor(
-        srgbRed: 1.0,
-        green: 164 / 255,
-        blue: 84 / 255,
-        alpha: 1))
-    static let reviewTint = Color(red: 0.99, green: 0.67, blue: 0.30)
-    static let creditsTint = Color(red: 0.37, green: 0.87, blue: 0.84)
-    static let analyticsTint = Color(red: 0.50, green: 0.60, blue: 1.0)
-    static let recentHistoryTint = TokenRecentHistoryTheme.cardAccent
-    static let quotaCardTint = Color(nsColor: NSColor(
-        srgbRed: 1.0,
-        green: 196 / 255,
-        blue: 156 / 255,
-        alpha: 1))
+    static var chromeStyle: MenuVisualChromeStyle { self.theme.chromeStyle }
+    static var usesPixelChrome: Bool { self.chromeStyle == .pixel }
 
-    static let inputTint = TokenFloatingCardTheme.valueColor(for: .input)
-    static let outputTint = TokenFloatingCardTheme.valueColor(for: .output)
+    static var primaryText: Color { Color(nsColor: self.theme.primaryText) }
+    static var secondaryText: Color { Color(nsColor: self.theme.secondaryText) }
+    static var tertiaryText: Color { Color(nsColor: self.theme.tertiaryText) }
+    static var footerButtonText: Color { TokenFloatingCardTheme.tertiaryText }
+    static var footerButtonHoverText: Color { TokenFloatingCardTheme.secondaryText }
+    static var footerButtonHoverFill: Color { Color(nsColor: self.theme.analyticsTint).opacity(0.10) }
+    static var footerButtonPressedFill: Color { Color(nsColor: self.theme.analyticsTint).opacity(0.16) }
+    static var footerButtonHoverStroke: Color { Color(nsColor: self.theme.glassStroke).opacity(0.38) }
+    static var footerButtonPressedStroke: Color { Color(nsColor: self.theme.glassStroke).opacity(0.52) }
+    static var footerButtonGlow: Color { Color(nsColor: self.theme.analyticsTint).opacity(0.18) }
+    static var warningText: Color { Color(nsColor: self.theme.warningText) }
 
-    static let heroNumber = TokenFloatingCardTheme.primaryText
-    static let compactNumber = TokenFloatingCardTheme.primaryText
-    static let metricHighlight = Color.primary.opacity(0.88)
-    static let chartGrid = Color(nsColor: NSColor(
-        srgbRed: 176 / 255,
-        green: 184 / 255,
-        blue: 201 / 255,
-        alpha: 1)).opacity(0.30)
-    static let chartAxis = TokenMenuTheme.secondaryText.opacity(0.82)
+    static var primaryQuotaTint: Color { Color(nsColor: self.theme.primaryQuotaTint) }
+    static var secondaryQuotaTint: Color { Color(nsColor: self.theme.secondaryQuotaTint) }
+    static var reviewTint: Color { Color(nsColor: self.theme.reviewTint) }
+    static var creditsTint: Color { Color(nsColor: self.theme.creditsTint) }
+    static var analyticsTint: Color { Color(nsColor: self.theme.analyticsTint) }
+    static var recentHistoryTint: Color { Color(nsColor: self.theme.recentHistoryTint) }
+    static var quotaCardTint: Color { Color(nsColor: self.theme.primaryQuotaTint.lightened(0.30)) }
 
-    static let glassStroke = Color.white.opacity(0.22)
-    static let glassHighlight = Color.white.opacity(0.34)
-    static let innerStroke = Color.white.opacity(0.14)
-    static let progressTrack = Color(nsColor: NSColor(
-        srgbRed: 216 / 255,
-        green: 219 / 255,
-        blue: 225 / 255,
-        alpha: 1)).opacity(0.94)
-    static let progressTrackStroke = Color.white.opacity(0.48)
-    static let badgeBackground = Color.white.opacity(0.62)
-    static let innerPanel = Color.white.opacity(0.09)
-    static let tertiaryFill = Color.white.opacity(0.18)
-    static let quotaDivider = Color(nsColor: NSColor(
-        srgbRed: 219 / 255,
-        green: 223 / 255,
-        blue: 232 / 255,
-        alpha: 1)).opacity(0.92)
-    static let quotaDividerHighlight = Color.white.opacity(0.56)
+    static var inputTint: Color { TokenFloatingCardTheme.valueColor(for: .input) }
+    static var outputTint: Color { TokenFloatingCardTheme.valueColor(for: .output) }
 
-    static let panelBase = Color(nsColor: NSColor(
-        srgbRed: 244 / 255,
-        green: 246 / 255,
-        blue: 250 / 255,
-        alpha: 1))
-    static let panelGlowTop = Color(red: 1.0, green: 0.74, blue: 0.55).opacity(0.26)
-    static let panelGlowTrailing = Color(red: 0.56, green: 0.72, blue: 1.0).opacity(0.20)
-    static let panelShadow = Color.black.opacity(0.08)
-    static let panelGlassTint = Color(red: 1.0, green: 0.66, blue: 0.42)
-    static let panelLiquidStroke = Color.white.opacity(0.24)
-    static let panelLiquidShadow = Color.black.opacity(0.10)
-    static let tooltipLightSurfaceTop = Color(nsColor: NSColor(
-        srgbRed: 244 / 255,
-        green: 247 / 255,
-        blue: 252 / 255,
-        alpha: 0.96))
-    static let tooltipLightSurfaceBottom = Color(nsColor: NSColor(
-        srgbRed: 229 / 255,
-        green: 236 / 255,
-        blue: 247 / 255,
-        alpha: 0.94))
-    static let tooltipLightStroke = Color(nsColor: NSColor(
-        srgbRed: 185 / 255,
-        green: 198 / 255,
-        blue: 221 / 255,
-        alpha: 0.92))
-    static let tooltipLightInnerHighlight = Color.white.opacity(0.72)
-    static let tooltipLightShadow = Color(nsColor: NSColor(
-        srgbRed: 62 / 255,
-        green: 84 / 255,
-        blue: 118 / 255,
-        alpha: 0.18))
-    static let tooltipLightGlow = Color(nsColor: NSColor(
-        srgbRed: 127 / 255,
-        green: 164 / 255,
-        blue: 221 / 255,
-        alpha: 0.22))
-    static let tooltipLightPrimaryText = Color(nsColor: NSColor(
-        srgbRed: 33 / 255,
-        green: 40 / 255,
-        blue: 54 / 255,
-        alpha: 0.98))
-    static let tooltipLightSecondaryText = Color(nsColor: NSColor(
-        srgbRed: 79 / 255,
-        green: 92 / 255,
-        blue: 114 / 255,
-        alpha: 0.94))
-    static let tooltipLightTertiaryText = Color(nsColor: NSColor(
-        srgbRed: 106 / 255,
-        green: 116 / 255,
-        blue: 135 / 255,
-        alpha: 0.88))
+    static var heroNumber: Color { TokenFloatingCardTheme.primaryText }
+    static var compactNumber: Color { TokenFloatingCardTheme.primaryText }
+    static var metricHighlight: Color { Color(nsColor: self.theme.primaryText).opacity(0.88) }
+    static var chartGrid: Color { Color(nsColor: self.theme.chartGrid) }
+    static var chartAxis: Color { Color(nsColor: self.theme.chartAxis) }
+
+    static var glassStroke: Color { Color(nsColor: self.theme.glassStroke) }
+    static var glassHighlight: Color { Color(nsColor: self.theme.glassHighlight) }
+    static var innerStroke: Color { Color(nsColor: self.theme.glassStroke).opacity(0.55) }
+    static var progressTrack: Color { TokenFloatingCardTheme.track }
+    static var progressTrackStroke: Color { TokenFloatingCardTheme.trackStroke }
+    static var badgeBackground: Color { Color(nsColor: self.theme.panelBase.lightened(0.08)).opacity(0.82) }
+    static var innerPanel: Color { Color(nsColor: self.theme.panelBase.lightened(0.03)).opacity(0.14) }
+    static var tertiaryFill: Color { Color(nsColor: self.theme.panelBase).opacity(0.16) }
+    static var quotaDivider: Color { Color(nsColor: self.theme.glassStroke).opacity(0.58) }
+    static var quotaDividerHighlight: Color { Color(nsColor: self.theme.glassHighlight).opacity(0.72) }
+
+    static var panelBase: Color { Color(nsColor: self.theme.panelBase) }
+    static var panelGlowTop: Color { Color(nsColor: self.theme.panelGlowTop) }
+    static var panelGlowTrailing: Color { Color(nsColor: self.theme.panelGlowTrailing) }
+    static var panelShadow: Color { Color(nsColor: self.theme.panelShadow) }
+    static var panelGlassTint: Color { Color(nsColor: self.theme.panelGlassTint) }
+    static var panelLiquidStroke: Color { Color(nsColor: self.theme.glassStroke) }
+    static var panelLiquidShadow: Color { Color(nsColor: self.theme.panelShadow) }
+
+    static var pixelShadow: Color { Color(nsColor: self.theme.panelShadow) }
+
+    static func labelFont(size: CGFloat, weight: Font.Weight = .semibold) -> Font {
+        if self.usesPixelChrome {
+            return .system(size: size, weight: weight == .regular ? .medium : weight, design: .monospaced)
+        }
+        return .system(size: size, weight: weight)
+    }
+
+    static func metricFont(size: CGFloat, weight: Font.Weight = .bold) -> Font {
+        if self.usesPixelChrome {
+            return .system(size: size, weight: weight, design: .monospaced)
+        }
+        return .system(size: size, weight: weight)
+    }
+
+    static func nsLabelFont(size: CGFloat, weight: NSFont.Weight = .semibold) -> NSFont {
+        if self.usesPixelChrome {
+            return NSFont.monospacedSystemFont(ofSize: size, weight: weight)
+        }
+        return NSFont.systemFont(ofSize: size, weight: weight)
+    }
+
+    static func chromeCornerRadius(default defaultRadius: CGFloat, pixel pixelRadius: CGFloat) -> CGFloat {
+        self.usesPixelChrome ? pixelRadius : defaultRadius
+    }
+
+    static var tooltipLightSurfaceTop: Color { Color(nsColor: self.theme.tooltipSurfaceTop) }
+    static var tooltipLightSurfaceBottom: Color { Color(nsColor: self.theme.tooltipSurfaceBottom) }
+    static var tooltipLightStroke: Color { Color(nsColor: self.theme.tooltipStroke) }
+    static var tooltipLightInnerHighlight: Color { Color(nsColor: self.theme.tooltipInnerHighlight) }
+    static var tooltipLightShadow: Color { Color(nsColor: self.theme.tooltipShadow) }
+    static var tooltipLightGlow: Color { Color(nsColor: self.theme.tooltipGlow) }
+    static var tooltipLightPrimaryText: Color { Color(nsColor: self.theme.tooltipPrimaryText) }
+    static var tooltipLightSecondaryText: Color { Color(nsColor: self.theme.tooltipSecondaryText) }
+    static var tooltipLightTertiaryText: Color { Color(nsColor: self.theme.tooltipTertiaryText) }
 
     static func panelBackdrop() -> some View {
         Group {
             if #available(macOS 26, *) {
                 Color.clear
             } else {
-                let base = TokenMenuTheme.panelBase
-                let glowTop = TokenMenuTheme.panelGlowTop
-                let glowTrailing = TokenMenuTheme.panelGlowTrailing
                 ZStack {
-                    base
+                    self.panelBase
                     LinearGradient(
                         colors: [
-                            glowTop,
+                            self.panelGlowTop,
                             Color.clear,
-                            glowTrailing,
+                            self.panelGlowTrailing,
                         ],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing)
                     RadialGradient(
                         colors: [
-                            Color.white.opacity(0.15),
+                            self.glassHighlight.opacity(0.16),
                             Color.clear,
                         ],
                         center: .topLeading,
@@ -170,9 +124,9 @@ enum TokenMenuTheme {
     static func progressGradient(for tint: Color) -> LinearGradient {
         LinearGradient(
             colors: [
-                tint.opacity(0.72),
+                tint.opacity(0.74),
                 tint,
-                Color.white.opacity(0.86),
+                Color.white.opacity(0.82),
             ],
             startPoint: .leading,
             endPoint: .trailing)
@@ -181,97 +135,39 @@ enum TokenMenuTheme {
     static func quotaValueGradient(for accent: QuotaProgressPresentation.Accent) -> LinearGradient {
         switch accent {
         case .primary:
-            LinearGradient(
-                colors: [
-                    Color(nsColor: NSColor(srgbRed: 1.0, green: 99 / 255, blue: 32 / 255, alpha: 1)),
-                    Color(nsColor: NSColor(srgbRed: 1.0, green: 145 / 255, blue: 63 / 255, alpha: 1)),
-                ],
-                startPoint: .leading,
-                endPoint: .trailing)
+            self.tintGradient(from: self.primaryQuotaTint)
         case .secondary:
-            LinearGradient(
-                colors: [
-                    Color(nsColor: NSColor(srgbRed: 1.0, green: 112 / 255, blue: 43 / 255, alpha: 1)),
-                    Color(nsColor: NSColor(srgbRed: 1.0, green: 169 / 255, blue: 84 / 255, alpha: 1)),
-                ],
-                startPoint: .leading,
-                endPoint: .trailing)
+            self.tintGradient(from: self.secondaryQuotaTint)
         case .review:
-            LinearGradient(
-                colors: [
-                    self.reviewTint,
-                    self.reviewTint.opacity(0.82),
-                ],
-                startPoint: .leading,
-                endPoint: .trailing)
+            self.tintGradient(from: self.reviewTint)
         }
     }
 
     static func tooltipPrimaryText(for colorScheme: ColorScheme, usesFloatingStyle: Bool) -> Color {
-        if colorScheme == .light {
-            self.tooltipLightPrimaryText
-        } else if usesFloatingStyle {
-            TokenFloatingCardTheme.primaryText
-        } else {
-            self.primaryText
-        }
+        self.tooltipLightPrimaryText
     }
 
     static func tooltipSecondaryText(for colorScheme: ColorScheme, usesFloatingStyle: Bool) -> Color {
-        if colorScheme == .light {
-            self.tooltipLightSecondaryText
-        } else if usesFloatingStyle {
-            TokenFloatingCardTheme.secondaryText
-        } else {
-            self.secondaryText
-        }
+        self.tooltipLightSecondaryText
     }
 
     static func tooltipTertiaryText(for colorScheme: ColorScheme, usesFloatingStyle: Bool) -> Color {
-        if colorScheme == .light {
-            self.tooltipLightTertiaryText
-        } else if usesFloatingStyle {
-            TokenFloatingCardTheme.tertiaryText
-        } else {
-            self.tertiaryText
-        }
+        self.tooltipLightTertiaryText
     }
 
     static func tooltipValueGradient(for role: TokenMetricAccentRole, colorScheme: ColorScheme) -> LinearGradient {
-        guard colorScheme == .light else {
-            return TokenFloatingCardTheme.valueGradient(for: role)
-        }
-
-        switch role {
-        case .input:
-            return LinearGradient(
-                colors: [
-                    Color(nsColor: NSColor(srgbRed: 42 / 255, green: 114 / 255, blue: 232 / 255, alpha: 1)),
-                    Color(nsColor: NSColor(srgbRed: 101 / 255, green: 168 / 255, blue: 250 / 255, alpha: 1)),
-                ],
-                startPoint: .leading,
-                endPoint: .trailing)
-        case .output:
-            return LinearGradient(
-                colors: [
-                    Color(nsColor: NSColor(srgbRed: 47 / 255, green: 160 / 255, blue: 79 / 255, alpha: 1)),
-                    Color(nsColor: NSColor(srgbRed: 97 / 255, green: 196 / 255, blue: 116 / 255, alpha: 1)),
-                ],
-                startPoint: .leading,
-                endPoint: .trailing)
-        }
+        TokenFloatingCardTheme.valueGradient(for: role)
     }
 
-    private static func dynamicColor(dark: NSColor, light: NSColor) -> Color {
-        Color(
-            nsColor: NSColor(name: nil) { appearance in
-                switch appearance.bestMatch(from: [.darkAqua, .aqua, .vibrantDark, .vibrantLight]) {
-                case .aqua, .vibrantLight:
-                    light
-                default:
-                    dark
-                }
-            })
+    private static func tintGradient(from tint: Color) -> LinearGradient {
+        LinearGradient(
+            colors: [
+                tint.opacity(0.92),
+                tint,
+                Color.white.opacity(0.28),
+            ],
+            startPoint: .leading,
+            endPoint: .trailing)
     }
 }
 
@@ -283,7 +179,7 @@ private enum TokenGlassSurfaceStyle {
     var baseFillOpacity: Double {
         switch self {
         case .panel:
-            0.26
+            0.28
         case .card:
             0.34
         case .inset:
@@ -307,7 +203,7 @@ private enum TokenGlassSurfaceStyle {
         case .panel:
             0.95
         case .card:
-            1.0
+            1
         case .inset:
             0.78
         }
@@ -351,7 +247,7 @@ private enum TokenGlassSurfaceStyle {
         case .panel:
             1.05
         case .card:
-            1.0
+            1
         case .inset:
             0.72
         }
@@ -421,6 +317,130 @@ private enum TokenGlassSurfaceStyle {
         case .inset:
             2
         }
+    }
+}
+
+enum TokenPixelSurfaceStyle {
+    case panel
+    case card
+    case inset
+    case tooltip
+
+    var strokeWidth: CGFloat {
+        switch self {
+        case .panel:
+            2.2
+        case .card, .tooltip:
+            1.8
+        case .inset:
+            1.4
+        }
+    }
+
+    var shadowOffset: CGFloat {
+        switch self {
+        case .panel:
+            8
+        case .card:
+            6
+        case .inset:
+            3
+        case .tooltip:
+            4
+        }
+    }
+
+    var tintOpacity: Double {
+        switch self {
+        case .panel:
+            0.16
+        case .card:
+            0.10
+        case .inset:
+            0.08
+        case .tooltip:
+            0.12
+        }
+    }
+
+    var highlightOpacity: Double {
+        switch self {
+        case .panel:
+            0.62
+        case .card:
+            0.54
+        case .inset:
+            0.34
+        case .tooltip:
+            0.48
+        }
+    }
+}
+
+struct TokenPixelSurfaceBackground: View {
+    let cornerRadius: CGFloat
+    let tint: Color
+    let style: TokenPixelSurfaceStyle
+
+    private var shape: RoundedRectangle {
+        RoundedRectangle(cornerRadius: self.cornerRadius, style: .continuous)
+    }
+
+    var body: some View {
+        self.shape
+            .fill(
+                LinearGradient(
+                    colors: [
+                        TokenMenuTheme.panelBase,
+                        Color(nsColor: MenuVisualThemeProvider.tokens.panelBase.darkened(0.03)),
+                    ],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing))
+            .overlay {
+                self.shape
+                    .fill(
+                        LinearGradient(
+                            colors: [
+                                TokenMenuTheme.glassHighlight.opacity(self.style.highlightOpacity),
+                                Color.white.opacity(0.04),
+                                Color.clear,
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing))
+            }
+            .overlay(alignment: .topLeading) {
+                RoundedRectangle(
+                    cornerRadius: max(self.cornerRadius - 2, 4),
+                    style: .continuous)
+                    .stroke(Color.white.opacity(0.38), lineWidth: 1)
+                    .padding(3)
+                    .mask(
+                        LinearGradient(
+                            colors: [Color.white, Color.clear],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing))
+            }
+            .overlay {
+                self.shape
+                    .fill(
+                        RadialGradient(
+                            colors: [
+                                self.tint.opacity(self.style.tintOpacity),
+                                Color.clear,
+                            ],
+                            center: .topLeading,
+                            startRadius: 6,
+                            endRadius: 180))
+            }
+            .overlay {
+                self.shape
+                    .stroke(TokenMenuTheme.glassStroke, lineWidth: self.style.strokeWidth)
+            }
+            .shadow(
+                color: TokenMenuTheme.pixelShadow.opacity(0.85),
+                radius: 0,
+                x: self.style.shadowOffset,
+                y: self.style.shadowOffset)
     }
 }
 
@@ -496,19 +516,24 @@ struct TokenGlassPanelBackground: View {
     let cornerRadius: CGFloat
     let tint: Color
 
-    private var shape: RoundedRectangle {
-        RoundedRectangle(cornerRadius: self.cornerRadius, style: .continuous)
+    private var resolvedCornerRadius: CGFloat {
+        TokenMenuTheme.chromeCornerRadius(default: self.cornerRadius, pixel: min(self.cornerRadius, 14))
     }
 
     var body: some View {
         Group {
-            if #available(macOS 26, *) {
-                self.shape
+            if TokenMenuTheme.usesPixelChrome {
+                TokenPixelSurfaceBackground(
+                    cornerRadius: self.resolvedCornerRadius,
+                    tint: self.tint,
+                    style: .panel)
+            } else if #available(macOS 26, *) {
+                RoundedRectangle(cornerRadius: self.resolvedCornerRadius, style: .continuous)
                     .fill(.clear)
-                    .glassEffect(.regular, in: self.shape)
+                    .glassEffect(.regular, in: RoundedRectangle(cornerRadius: self.resolvedCornerRadius, style: .continuous))
             } else {
                 TokenGlassSurfaceBackground(
-                    cornerRadius: self.cornerRadius,
+                    cornerRadius: self.resolvedCornerRadius,
                     tint: self.tint,
                     style: .panel)
             }
@@ -520,11 +545,22 @@ struct TokenGlassCardBackground: View {
     let cornerRadius: CGFloat
     let tint: Color
 
+    private var resolvedCornerRadius: CGFloat {
+        TokenMenuTheme.chromeCornerRadius(default: self.cornerRadius, pixel: min(self.cornerRadius, 12))
+    }
+
     var body: some View {
-        TokenGlassSurfaceBackground(
-            cornerRadius: self.cornerRadius,
-            tint: self.tint,
-            style: .card)
+        if TokenMenuTheme.usesPixelChrome {
+            TokenPixelSurfaceBackground(
+                cornerRadius: self.resolvedCornerRadius,
+                tint: self.tint,
+                style: .card)
+        } else {
+            TokenGlassSurfaceBackground(
+                cornerRadius: self.resolvedCornerRadius,
+                tint: self.tint,
+                style: .card)
+        }
     }
 }
 
@@ -532,152 +568,102 @@ struct TokenGlassInsetBackground: View {
     let cornerRadius: CGFloat
     let tint: Color
 
+    private var resolvedCornerRadius: CGFloat {
+        TokenMenuTheme.chromeCornerRadius(default: self.cornerRadius, pixel: min(self.cornerRadius, 10))
+    }
+
     var body: some View {
-        TokenGlassSurfaceBackground(
-            cornerRadius: self.cornerRadius,
-            tint: self.tint,
-            style: .inset)
+        if TokenMenuTheme.usesPixelChrome {
+            TokenPixelSurfaceBackground(
+                cornerRadius: self.resolvedCornerRadius,
+                tint: self.tint,
+                style: .inset)
+        } else {
+            TokenGlassSurfaceBackground(
+                cornerRadius: self.resolvedCornerRadius,
+                tint: self.tint,
+                style: .inset)
+        }
     }
 }
 
 struct TokenChartTooltipBackground: View {
     let cornerRadius: CGFloat
     let tint: Color
-    @Environment(\.colorScheme) private var colorScheme
+
+    private var resolvedCornerRadius: CGFloat {
+        TokenMenuTheme.chromeCornerRadius(default: self.cornerRadius, pixel: min(self.cornerRadius, 8))
+    }
 
     private var shape: RoundedRectangle {
-        RoundedRectangle(cornerRadius: self.cornerRadius, style: .continuous)
-    }
-
-    private var readabilityGradient: LinearGradient {
-        if self.colorScheme == .light {
-            LinearGradient(
-                colors: [
-                    TokenMenuTheme.tooltipLightSurfaceTop,
-                    TokenMenuTheme.tooltipLightSurfaceBottom,
-                ],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing)
-        } else {
-            LinearGradient(
-                colors: [
-                    TokenFloatingCardTheme.cardTop.opacity(0.60),
-                    TokenFloatingCardTheme.cardBottom.opacity(0.50),
-                ],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing)
-        }
-    }
-
-    private var readabilityOpacity: Double {
-        if self.colorScheme == .light {
-            0.96
-        } else if #available(macOS 26, *) {
-            0.34
-        } else {
-            0.62
-        }
-    }
-
-    private var tintOpacity: Double {
-        self.colorScheme == .light ? 0.08 : 0.20
-    }
-
-    private var glossGradient: LinearGradient {
-        if self.colorScheme == .light {
-            LinearGradient(
-                colors: [
-                    TokenMenuTheme.tooltipLightInnerHighlight,
-                    Color.white.opacity(0.22),
-                    Color.clear,
-                ],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing)
-        } else {
-            LinearGradient(
-                colors: [
-                    Color.white.opacity(0.20),
-                    Color.white.opacity(0.05),
-                    Color.clear,
-                ],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing)
-        }
-    }
-
-    private var glowGradient: RadialGradient {
-        if self.colorScheme == .light {
-            RadialGradient(
-                colors: [
-                    TokenMenuTheme.tooltipLightGlow,
-                    Color.clear,
-                ],
-                center: .topLeading,
-                startRadius: 6,
-                endRadius: 130)
-        } else {
-            RadialGradient(
-                colors: [
-                    self.tint.opacity(0.16),
-                    Color.clear,
-                ],
-                center: .topLeading,
-                startRadius: 6,
-                endRadius: 130)
-        }
+        RoundedRectangle(cornerRadius: self.resolvedCornerRadius, style: .continuous)
     }
 
     var body: some View {
-        ZStack {
-            if self.colorScheme == .light {
-                self.shape
-                    .fill(TokenMenuTheme.tooltipLightSurfaceTop)
+        Group {
+            if TokenMenuTheme.usesPixelChrome {
+                TokenPixelSurfaceBackground(
+                    cornerRadius: self.resolvedCornerRadius,
+                    tint: self.tint,
+                    style: .tooltip)
             } else {
-                self.shape
-                    .fill(.regularMaterial)
+                ZStack {
+                    self.shape
+                        .fill(TokenMenuTheme.tooltipLightSurfaceTop)
+
+                    self.shape
+                        .fill(
+                            LinearGradient(
+                                colors: [
+                                    TokenMenuTheme.tooltipLightSurfaceTop,
+                                    TokenMenuTheme.tooltipLightSurfaceBottom,
+                                ],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing))
+
+                    self.shape
+                        .fill(
+                            LinearGradient(
+                                colors: [
+                                    TokenMenuTheme.tooltipLightInnerHighlight,
+                                    Color.white.opacity(0.18),
+                                    Color.clear,
+                                ],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing))
+                        .blendMode(.screen)
+
+                    self.shape
+                        .fill(
+                            RadialGradient(
+                                colors: [
+                                    TokenMenuTheme.tooltipLightGlow,
+                                    Color.clear,
+                                ],
+                                center: .topLeading,
+                                startRadius: 6,
+                                endRadius: 130))
+                        .opacity(0.58)
+                }
+                .overlay(
+                    self.shape
+                        .stroke(TokenMenuTheme.tooltipLightStroke, lineWidth: 0.95))
+                .overlay(
+                    self.shape
+                        .stroke(TokenMenuTheme.tooltipLightInnerHighlight.opacity(0.84), lineWidth: 0.6)
+                        .blur(radius: 1))
+                .shadow(
+                    color: TokenMenuTheme.tooltipLightGlow.opacity(0.54),
+                    radius: 10,
+                    x: 0,
+                    y: 3)
+                .shadow(
+                    color: TokenMenuTheme.tooltipLightShadow,
+                    radius: 20,
+                    x: 0,
+                    y: 10)
             }
-
-            self.shape
-                .fill(self.readabilityGradient)
-                .opacity(self.readabilityOpacity)
-
-            self.shape
-                .fill(self.glossGradient)
-                .blendMode(.screen)
-
-            self.shape
-                .fill(self.glowGradient)
-                .opacity(self.colorScheme == .light ? 0.56 : 0.78)
         }
-        .overlay(
-            self.shape
-                .stroke(
-                    self.colorScheme == .light
-                        ? TokenMenuTheme.tooltipLightStroke
-                        : TokenMenuTheme.glassStroke.opacity(0.90),
-                    lineWidth: self.colorScheme == .light ? 0.95 : 0.85))
-        .overlay(
-            self.shape
-                .stroke(
-                    self.colorScheme == .light
-                        ? TokenMenuTheme.tooltipLightInnerHighlight.opacity(0.84)
-                        : Color.white.opacity(0.14),
-                    lineWidth: self.colorScheme == .light ? 0.6 : 0.45)
-                .blur(radius: 1.0))
-        .shadow(
-            color: self.colorScheme == .light
-                ? TokenMenuTheme.tooltipLightGlow.opacity(0.54)
-                : self.tint.opacity(0.16),
-            radius: self.colorScheme == .light ? 10 : 12,
-            x: 0,
-            y: self.colorScheme == .light ? 3 : 4)
-        .shadow(
-            color: self.colorScheme == .light
-                ? TokenMenuTheme.tooltipLightShadow
-                : TokenFloatingCardTheme.outerShadow.opacity(0.45),
-            radius: self.colorScheme == .light ? 20 : 16,
-            x: 0,
-            y: self.colorScheme == .light ? 10 : 6)
     }
 }
 
@@ -697,20 +683,23 @@ struct TokenProgressBar: View {
             let minimumVisibleWidth = max(self.height * 1.6, 10)
             let fillWidth = self.clampedFraction == 0 ? 0 : max(width * self.clampedFraction, minimumVisibleWidth)
             let strokeWidth = self.height <= 7 ? 0.65 : 0.8
+            let cornerRadius = TokenMenuTheme.usesPixelChrome
+                ? min(max(self.height * 0.28, 3), 5)
+                : self.height / 2
 
             ZStack(alignment: .leading) {
-                Capsule(style: .continuous)
+                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
                     .fill(TokenMenuTheme.progressTrack)
                     .overlay(
-                        Capsule(style: .continuous)
+                        RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
                             .stroke(TokenMenuTheme.progressTrackStroke, lineWidth: strokeWidth))
 
                 if fillWidth > 0 {
-                    Capsule(style: .continuous)
+                    RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
                         .fill(self.fillGradient)
                         .frame(width: min(fillWidth, width))
                         .overlay(alignment: .top) {
-                            Capsule(style: .continuous)
+                            RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
                                 .fill(
                                     LinearGradient(
                                         colors: [
@@ -720,7 +709,7 @@ struct TokenProgressBar: View {
                                         startPoint: .top,
                                         endPoint: .bottom))
                                 .frame(height: max(self.height * 0.42, 2.5))
-                                .clipShape(Capsule(style: .continuous))
+                                .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
                         }
                         .shadow(
                             color: self.glowColor.opacity(self.height <= 7 ? 0.22 : 0.28),

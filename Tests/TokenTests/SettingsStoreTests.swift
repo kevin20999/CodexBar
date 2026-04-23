@@ -14,12 +14,14 @@ final class SettingsStoreTests: XCTestCase {
 
         settings.appLanguage = .ja
         settings.refreshFrequency = .fifteenSeconds
+        settings.usageStatisticsRefreshFrequency = .sixtyMinutes
         settings.menuBarDisplayMode = .quota5h
         settings.menuBarQuotaStyle = .outline
         settings.showsMenuBarTokenSpeedMeter = true
         settings.remainingQuotaCardStyle = .fitness
         settings.menuPanelVersion = .unifiedCompact
         settings.menuPopupStyle = .systemPopover
+        settings.menuVisualTheme = .cyberNeon
         settings.openAIWebAccessEnabled = false
         settings.backgroundBrowserAutoImportEnabled = false
         settings.codexCookieSource = .manual
@@ -27,6 +29,9 @@ final class SettingsStoreTests: XCTestCase {
 
         XCTAssertEqual(defaults.string(forKey: "tokenAppLanguage"), AppLanguage.ja.rawValue)
         XCTAssertEqual(defaults.string(forKey: "tokenRefreshFrequency"), RefreshFrequency.fifteenSeconds.rawValue)
+        XCTAssertEqual(
+            defaults.string(forKey: "tokenUsageStatisticsRefreshFrequency"),
+            UsageStatisticsRefreshFrequency.sixtyMinutes.rawValue)
         XCTAssertEqual(defaults.string(forKey: "tokenMenuBarDisplayMode"), MenuBarDisplayMode.quota5h.rawValue)
         XCTAssertEqual(defaults.string(forKey: "tokenMenuBarQuotaStyle"), MenuBarQuotaStyle.outline.rawValue)
         XCTAssertEqual(defaults.bool(forKey: "tokenShowsMenuBarTokenSpeedMeter"), true)
@@ -39,10 +44,53 @@ final class SettingsStoreTests: XCTestCase {
         XCTAssertEqual(
             defaults.string(forKey: "tokenMenuPopupStyle"),
             MenuPopupStyle.systemPopover.rawValue)
+        XCTAssertEqual(
+            defaults.string(forKey: "tokenMenuVisualTheme"),
+            MenuVisualTheme.cyberNeon.rawValue)
         XCTAssertEqual(defaults.bool(forKey: "tokenOpenAIWebAccessEnabled"), false)
         XCTAssertEqual(defaults.bool(forKey: "tokenBackgroundBrowserAutoImportEnabled"), false)
         XCTAssertEqual(defaults.string(forKey: "tokenCodexCookieSource"), ProviderCookieSource.manual.rawValue)
         XCTAssertEqual(defaults.string(forKey: "tokenCodexCookieHeader"), "foo=bar")
+    }
+
+    func test_defaultsRefreshFrequencyToOneMinute() throws {
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: UUID().uuidString))
+
+        let settings = SettingsStore(
+            defaults: defaults,
+            launchAtLoginManager: StubLaunchAtLoginManager(),
+            preferredLanguages: { ["en-US"] })
+
+        XCTAssertEqual(settings.refreshFrequency, .oneMinute)
+        XCTAssertEqual(settings.usageStatisticsRefreshFrequency, .thirtyMinutes)
+    }
+
+    func test_legacyAutomaticRefreshFrequencyMigratesToOneMinute() throws {
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: UUID().uuidString))
+        defaults.set(RefreshFrequency.fifteenSeconds.rawValue, forKey: "tokenRefreshFrequency")
+
+        let settings = SettingsStore(
+            defaults: defaults,
+            launchAtLoginManager: StubLaunchAtLoginManager(),
+            preferredLanguages: { ["en-US"] })
+
+        XCTAssertEqual(settings.refreshFrequency, .oneMinute)
+        XCTAssertEqual(defaults.string(forKey: "tokenRefreshFrequency"), RefreshFrequency.oneMinute.rawValue)
+        XCTAssertEqual(defaults.bool(forKey: "tokenRefreshFrequencyMigratedToOneMinute"), true)
+    }
+
+    func test_manualRefreshFrequencyDoesNotMigrate() throws {
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: UUID().uuidString))
+        defaults.set(RefreshFrequency.manual.rawValue, forKey: "tokenRefreshFrequency")
+
+        let settings = SettingsStore(
+            defaults: defaults,
+            launchAtLoginManager: StubLaunchAtLoginManager(),
+            preferredLanguages: { ["en-US"] })
+
+        XCTAssertEqual(settings.refreshFrequency, .manual)
+        XCTAssertEqual(defaults.string(forKey: "tokenRefreshFrequency"), RefreshFrequency.manual.rawValue)
+        XCTAssertEqual(defaults.bool(forKey: "tokenRefreshFrequencyMigratedToOneMinute"), true)
     }
 
     func test_legacyMenuBarDisplayModeMigratesToTodayIO() throws {
@@ -226,6 +274,7 @@ final class SettingsStoreTests: XCTestCase {
         XCTAssertFalse(settings.showsMenuBarTokenSpeedMeter)
         XCTAssertEqual(settings.menuPanelVersion, .current)
         XCTAssertEqual(settings.menuPopupStyle, .liquidGlass)
+        XCTAssertEqual(settings.menuVisualTheme, .liquidGlassClassic)
         XCTAssertFalse(settings.openAIWebAccessEnabled)
         XCTAssertFalse(settings.backgroundBrowserAutoImportEnabled)
         XCTAssertEqual(settings.codexCookieSource, .manual)
@@ -253,6 +302,7 @@ final class SettingsStoreTests: XCTestCase {
         settings.recentFortyEightHourChartStyle = .wave
         settings.menuPanelVersion = .unifiedCompact
         settings.menuPopupStyle = .systemPopover
+        settings.menuVisualTheme = .frenchCafe
         settings.showCodeReviewCard = false
         settings.showCreditsCard = false
         settings.showUsageBreakdownCard = false
@@ -289,6 +339,9 @@ final class SettingsStoreTests: XCTestCase {
         XCTAssertEqual(
             defaults.string(forKey: "tokenMenuPanelVersion"),
             MenuPanelVersion.unifiedCompact.rawValue)
+        XCTAssertEqual(
+            defaults.string(forKey: "tokenMenuVisualTheme"),
+            MenuVisualTheme.frenchCafe.rawValue)
         XCTAssertEqual(defaults.object(forKey: "tokenShowCodeReviewCard") as? Bool, false)
         XCTAssertEqual(defaults.object(forKey: "tokenShowCreditsCard") as? Bool, false)
         XCTAssertEqual(defaults.object(forKey: "tokenShowUsageBreakdownCard") as? Bool, false)
@@ -329,6 +382,7 @@ final class SettingsStoreTests: XCTestCase {
         XCTAssertEqual(reloaded.recentFortyEightHourChartStyle, .wave)
         XCTAssertEqual(reloaded.menuPanelVersion, .unifiedCompact)
         XCTAssertEqual(reloaded.menuPopupStyle, .systemPopover)
+        XCTAssertEqual(reloaded.menuVisualTheme, .frenchCafe)
         XCTAssertFalse(reloaded.showCodeReviewCard)
         XCTAssertFalse(reloaded.showCreditsCard)
         XCTAssertFalse(reloaded.showUsageBreakdownCard)
@@ -356,6 +410,18 @@ final class SettingsStoreTests: XCTestCase {
                 .recentFortyEightHours,
                 .remainingQuota,
             ])
+    }
+
+    func test_unknownMenuVisualThemeFallsBackToDefault() throws {
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: UUID().uuidString))
+        defaults.set("random-theme", forKey: "tokenMenuVisualTheme")
+
+        let settings = SettingsStore(
+            defaults: defaults,
+            launchAtLoginManager: StubLaunchAtLoginManager(),
+            preferredLanguages: { ["en-US"] })
+
+        XCTAssertEqual(settings.menuVisualTheme, .liquidGlassClassic)
     }
 
     func test_savedDashboardCardVisibilityOverridesNewFirstInstallDefaults() throws {

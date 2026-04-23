@@ -5,6 +5,7 @@ import UniformTypeIdentifiers
 private enum TokenPreferencesSection: String, CaseIterable, Identifiable {
     case general
     case display
+    case theme
     case openAIWeb
     case dashboard
     case system
@@ -19,6 +20,8 @@ private enum TokenPreferencesSection: String, CaseIterable, Identifiable {
             "slider.horizontal.3"
         case .display:
             "eye"
+        case .theme:
+            "paintpalette"
         case .openAIWeb:
             "globe.badge.chevron.backward"
         case .dashboard:
@@ -34,6 +37,8 @@ private enum TokenPreferencesSection: String, CaseIterable, Identifiable {
             TokenMenuTheme.analyticsTint
         case .display:
             TokenMenuTheme.primaryQuotaTint
+        case .theme:
+            TokenMenuTheme.analyticsTint
         case .openAIWeb:
             TokenMenuTheme.creditsTint
         case .dashboard:
@@ -49,6 +54,8 @@ private enum TokenPreferencesSection: String, CaseIterable, Identifiable {
             strings.settingsGeneralCategoryTitle
         case .display:
             strings.settingsDisplayCategoryTitle
+        case .theme:
+            strings.settingsThemeCategoryTitle
         case .openAIWeb:
             strings.settingsOpenAIWebCategoryTitle
         case .dashboard:
@@ -64,6 +71,8 @@ private enum TokenPreferencesSection: String, CaseIterable, Identifiable {
             strings.settingsGeneralCategoryDescription
         case .display:
             strings.settingsDisplayCategoryDescription
+        case .theme:
+            strings.settingsThemeCategoryDescription
         case .openAIWeb:
             strings.settingsOpenAIWebCategoryDescription
         case .dashboard:
@@ -248,6 +257,9 @@ struct PreferencesView: View {
         case .display:
             self.menuBarCard
 
+        case .theme:
+            self.themeCard
+
         case .openAIWeb:
             self.openAIWebCard
 
@@ -269,15 +281,15 @@ struct PreferencesView: View {
             VStack(alignment: .leading, spacing: 20) {
                 HStack(alignment: .center, spacing: 18) {
                     VStack(alignment: .leading, spacing: 6) {
-                        Text(self.strings.menuBarSectionTitle)
+                        Text(self.strings.previewAppearanceLabel)
                             .font(.system(size: 13, weight: .semibold))
                             .foregroundStyle(TokenFloatingCardTheme.secondaryText)
 
-                        Text(self.strings.menuBarAppearanceTitle(self.currentMenuBarAppearanceOption))
+                        Text(self.strings.menuVisualThemeTitle(self.settings.menuVisualTheme))
                             .font(.system(size: 16, weight: .semibold))
                             .foregroundStyle(TokenFloatingCardTheme.primaryText)
 
-                        Text(self.strings.menuBarAppearanceDescription(self.currentMenuBarAppearanceOption))
+                        Text("\(self.strings.previewContainerStyleLabel) · \(self.strings.menuPopupStyleTitle(self.settings.menuPopupStyle))")
                             .font(.system(size: 12))
                             .foregroundStyle(TokenFloatingCardTheme.tertiaryText)
                             .fixedSize(horizontal: false, vertical: true)
@@ -308,30 +320,46 @@ struct PreferencesView: View {
         PreferencesCard(title: self.strings.settingsGeneralCategoryTitle, systemImage: "slider.horizontal.3") {
             VStack(alignment: .leading, spacing: 16) {
                 self.pickerRow(title: self.strings.languageLabel) {
-                    Picker(self.strings.languageLabel, selection: self.$settings.appLanguage) {
-                        ForEach(AppLanguage.allCases) { language in
-                            Text(self.strings.languageOptionLabel(language)).tag(language)
-                        }
+                    PreferencesMenuPicker(
+                        title: self.strings.languageLabel,
+                        selection: self.$settings.appLanguage,
+                        options: AppLanguage.allCases,
+                        width: 180)
+                    { language in
+                        self.strings.languageOptionLabel(language)
                     }
-                    .pickerStyle(.menu)
-                    .labelsHidden()
-                    .frame(width: 180)
                 }
 
                 PreferencesDivider()
 
                 VStack(alignment: .leading, spacing: 10) {
-                    self.pickerRow(title: self.strings.refreshFrequencyLabel) {
-                        Picker(self.strings.refreshFrequencyLabel, selection: self.$settings.refreshFrequency) {
-                            ForEach(RefreshFrequency.allCases) { frequency in
-                                Text(self.strings.refreshFrequencyTitle(frequency)).tag(frequency)
-                            }
+                    self.pickerRow(title: self.strings.quotaRefreshFrequencyLabel) {
+                        PreferencesMenuPicker(
+                            title: self.strings.quotaRefreshFrequencyLabel,
+                            selection: self.$settings.refreshFrequency,
+                            options: RefreshFrequency.allCases,
+                            width: 180)
+                        { frequency in
+                            self.strings.refreshFrequencyTitle(frequency)
                         }
-                        .pickerStyle(.menu)
-                        .labelsHidden()
-                        .frame(width: 180)
                     }
 
+                    PreferencesNote(self.strings.quotaRefreshFrequencyDescription)
+
+                    PreferencesDivider()
+
+                    self.pickerRow(title: self.strings.usageStatisticsRefreshFrequencyLabel) {
+                        PreferencesMenuPicker(
+                            title: self.strings.usageStatisticsRefreshFrequencyLabel,
+                            selection: self.$settings.usageStatisticsRefreshFrequency,
+                            options: UsageStatisticsRefreshFrequency.allCases,
+                            width: 180)
+                        { frequency in
+                            self.strings.usageStatisticsRefreshFrequencyTitle(frequency)
+                        }
+                    }
+
+                    PreferencesNote(self.strings.usageStatisticsRefreshFrequencyDescription)
                     PreferencesNote(self.strings.manualRefreshHint)
                 }
             }
@@ -342,21 +370,6 @@ struct PreferencesView: View {
         PreferencesCard(title: self.strings.menuBarSectionTitle, systemImage: "rectangle.topthird.inset.filled") {
             VStack(alignment: .leading, spacing: 16) {
                 PreferencesNote(self.strings.menuBarAppearanceSelectionDescription)
-
-                self.pickerRow(title: self.strings.menuPopupStyleLabel) {
-                    Picker(self.strings.menuPopupStyleLabel, selection: self.$settings.menuPopupStyle) {
-                        ForEach(MenuPopupStyle.allCases) { style in
-                            Text(self.strings.menuPopupStyleTitle(style)).tag(style)
-                        }
-                    }
-                    .pickerStyle(.menu)
-                    .labelsHidden()
-                    .frame(width: 180)
-                }
-
-                PreferencesNote(self.strings.menuPopupStyleDescription)
-
-                PreferencesDivider()
 
                 PreferencesToggleRow(
                     title: self.strings.menuBarTokenSpeedMeterLabel,
@@ -379,6 +392,40 @@ struct PreferencesView: View {
         }
     }
 
+    private var themeCard: some View {
+        PreferencesCard(title: self.strings.settingsThemeCategoryTitle, systemImage: "paintpalette") {
+            VStack(alignment: .leading, spacing: 16) {
+                self.pickerRow(title: self.strings.menuVisualThemeLabel) {
+                    PreferencesMenuPicker(
+                        title: self.strings.menuVisualThemeLabel,
+                        selection: self.$settings.menuVisualTheme,
+                        options: MenuVisualTheme.allCases,
+                        width: 220)
+                    { theme in
+                        self.strings.menuVisualThemeTitle(theme)
+                    }
+                }
+
+                PreferencesNote(self.strings.menuVisualThemeDescription)
+
+                PreferencesDivider()
+
+                self.pickerRow(title: self.strings.menuPopupStyleLabel) {
+                    PreferencesMenuPicker(
+                        title: self.strings.menuPopupStyleLabel,
+                        selection: self.$settings.menuPopupStyle,
+                        options: MenuPopupStyle.allCases,
+                        width: 180)
+                    { style in
+                        self.strings.menuPopupStyleTitle(style)
+                    }
+                }
+
+                PreferencesNote(self.strings.menuPopupStyleDescription)
+            }
+        }
+    }
+
     private var openAIWebCard: some View {
         PreferencesCard(title: self.strings.openAIWebSectionTitle, systemImage: "globe.badge.chevron.backward") {
             VStack(alignment: .leading, spacing: 16) {
@@ -391,14 +438,14 @@ struct PreferencesView: View {
                     PreferencesDivider()
 
                     self.pickerRow(title: self.strings.cookieSourceLabel) {
-                        Picker(self.strings.cookieSourceLabel, selection: self.$settings.codexCookieSource) {
-                            ForEach(ProviderCookieSource.allCases) { source in
-                                Text(self.strings.cookieSourceTitle(source)).tag(source)
-                            }
+                        PreferencesMenuPicker(
+                            title: self.strings.cookieSourceLabel,
+                            selection: self.$settings.codexCookieSource,
+                            options: ProviderCookieSource.allCases,
+                            width: 220)
+                        { source in
+                            self.strings.cookieSourceTitle(source)
                         }
-                        .pickerStyle(.menu)
-                        .labelsHidden()
-                        .frame(width: 220)
                     }
 
                     Toggle(
@@ -801,6 +848,7 @@ struct PreferencesView: View {
 struct TokenSettingsPreviewMeasurementKey: Equatable {
     let menuPanelVersion: MenuPanelVersion
     let menuPopupStyle: MenuPopupStyle
+    let menuVisualTheme: MenuVisualTheme
     let dashboardModuleOrder: [DashboardModule]
     let showRemainingQuotaCard: Bool
     let showSparkQuotaCard: Bool
@@ -829,6 +877,7 @@ struct TokenSettingsPreviewMeasurementKey: Equatable {
     init(settings: SettingsStore, store: UsageStore) {
         self.menuPanelVersion = settings.menuPanelVersion
         self.menuPopupStyle = settings.menuPopupStyle
+        self.menuVisualTheme = settings.menuVisualTheme
         self.dashboardModuleOrder = settings.dashboardModuleOrder
         self.showRemainingQuotaCard = settings.showRemainingQuotaCard
         self.showSparkQuotaCard = settings.showSparkQuotaCard
@@ -914,6 +963,90 @@ private struct PreferencesNote: View {
             .font(.system(size: 12))
             .foregroundStyle(TokenFloatingCardTheme.tertiaryText)
             .fixedSize(horizontal: false, vertical: true)
+    }
+}
+
+private struct PreferencesMenuPicker<Option: Hashable>: View {
+    let title: String
+    @Binding var selection: Option
+    let options: [Option]
+    let width: CGFloat
+    let titleForOption: (Option) -> String
+
+    @State private var isHovered = false
+
+    var body: some View {
+        Menu {
+            ForEach(self.options, id: \.self) { option in
+                Button {
+                    self.selection = option
+                } label: {
+                    HStack(spacing: 8) {
+                        Image(systemName: option == self.selection ? "checkmark" : "circle.fill")
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundStyle(
+                                option == self.selection
+                                    ? TokenFloatingCardTheme.primaryText
+                                    : TokenFloatingCardTheme.tertiaryText.opacity(0.34))
+
+                        Text(self.titleForOption(option))
+                    }
+                }
+            }
+        } label: {
+            HStack(spacing: 10) {
+                Text(self.titleForOption(self.selection))
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundStyle(TokenFloatingCardTheme.primaryText)
+                    .lineLimit(1)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                Image(systemName: "chevron.up.chevron.down")
+                    .font(.system(size: 10, weight: .bold))
+                    .foregroundStyle(TokenFloatingCardTheme.secondaryText)
+            }
+            .padding(.horizontal, 14)
+            .padding(.vertical, 10)
+            .frame(width: self.width, alignment: .leading)
+            .background(
+                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    .fill(self.backgroundFill))
+            .overlay {
+                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    .stroke(self.borderStroke, lineWidth: 0.9)
+            }
+            .shadow(color: self.shadowColor, radius: 10, x: 0, y: 4)
+            .contentShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+        }
+        .buttonStyle(.plain)
+        .onHover { isHovered in
+            self.isHovered = isHovered
+        }
+        .accessibilityLabel(self.title)
+    }
+
+    private var backgroundFill: Color {
+        if self.isHovered {
+            return TokenFloatingCardTheme.selectionBand.opacity(0.78)
+        }
+
+        return TokenFloatingCardTheme.selectionBand.opacity(0.58)
+    }
+
+    private var borderStroke: Color {
+        if self.isHovered {
+            return TokenFloatingCardTheme.stroke.opacity(0.92)
+        }
+
+        return TokenFloatingCardTheme.stroke.opacity(0.7)
+    }
+
+    private var shadowColor: Color {
+        if self.isHovered {
+            return TokenFloatingCardTheme.outerShadow.opacity(0.16)
+        }
+
+        return TokenFloatingCardTheme.outerShadow.opacity(0.08)
     }
 }
 

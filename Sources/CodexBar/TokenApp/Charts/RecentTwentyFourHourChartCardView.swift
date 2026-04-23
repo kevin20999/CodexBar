@@ -804,42 +804,98 @@ struct RecentTwentyFourHourChartCardView: View {
 
     private func peakLabel(text: String) -> some View {
         Text(text)
-            .font(.system(size: Style.peakLabelFontSize, weight: .bold))
+            .font(TokenMenuTheme.metricFont(size: Style.peakLabelFontSize, weight: .bold))
             .foregroundStyle(self.peakLabelSurface.text)
             .lineLimit(1)
             .minimumScaleFactor(0.82)
             .padding(.horizontal, Style.peakLabelHorizontalPadding)
             .background {
-                Capsule(style: .continuous)
-                    .fill(
-                        LinearGradient(
-                            colors: [
-                                self.peakLabelSurface.top,
-                                self.peakLabelSurface.bottom,
-                            ],
-                            startPoint: .top,
-                            endPoint: .bottom))
-                    .overlay(alignment: .top) {
-                        Capsule(style: .continuous)
-                            .fill(
-                                LinearGradient(
-                                    colors: [
-                                        Color.white.opacity(self.isDarkMode ? 0.28 : 0.28),
-                                        Color.clear,
-                                    ],
-                                    startPoint: .top,
-                                    endPoint: .bottom))
-                            .frame(height: Style.peakLabelHighlightHeight)
-                            .clipShape(Capsule(style: .continuous))
-                    }
-                    .overlay {
-                        Capsule(style: .continuous)
-                            .stroke(
-                                self.peakLabelSurface.stroke,
-                                lineWidth: Style.peakLabelStrokeWidth)
-                    }
+                if TokenMenuTheme.usesPixelChrome {
+                    RoundedRectangle(
+                        cornerRadius: TokenMenuTheme.chromeCornerRadius(default: 10, pixel: 6),
+                        style: .continuous)
+                        .fill(
+                            LinearGradient(
+                                colors: [
+                                    self.peakLabelSurface.top,
+                                    self.peakLabelSurface.bottom,
+                                ],
+                                startPoint: .top,
+                                endPoint: .bottom))
+                        .overlay(alignment: .topLeading) {
+                            RoundedRectangle(
+                                cornerRadius: TokenMenuTheme.chromeCornerRadius(default: 10, pixel: 5),
+                                style: .continuous)
+                                .stroke(Color.white.opacity(0.38), lineWidth: 1)
+                                .padding(2)
+                                .mask(
+                                    LinearGradient(
+                                        colors: [Color.white, Color.clear],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing))
+                        }
+                        .overlay(alignment: .top) {
+                            RoundedRectangle(
+                                cornerRadius: TokenMenuTheme.chromeCornerRadius(default: 10, pixel: 4),
+                                style: .continuous)
+                                .fill(
+                                    LinearGradient(
+                                        colors: [
+                                            Color.white.opacity(self.isDarkMode ? 0.26 : 0.24),
+                                            Color.clear,
+                                        ],
+                                        startPoint: .top,
+                                        endPoint: .bottom))
+                                .frame(height: Style.peakLabelHighlightHeight)
+                                .clipShape(
+                                    RoundedRectangle(
+                                        cornerRadius: TokenMenuTheme.chromeCornerRadius(default: 10, pixel: 4),
+                                        style: .continuous))
+                        }
+                        .overlay {
+                            RoundedRectangle(
+                                cornerRadius: TokenMenuTheme.chromeCornerRadius(default: 10, pixel: 6),
+                                style: .continuous)
+                                .stroke(
+                                    self.peakLabelSurface.stroke,
+                                    lineWidth: max(Style.peakLabelStrokeWidth, 1.3))
+                        }
+                } else {
+                    Capsule(style: .continuous)
+                        .fill(
+                            LinearGradient(
+                                colors: [
+                                    self.peakLabelSurface.top,
+                                    self.peakLabelSurface.bottom,
+                                ],
+                                startPoint: .top,
+                                endPoint: .bottom))
+                        .overlay(alignment: .top) {
+                            Capsule(style: .continuous)
+                                .fill(
+                                    LinearGradient(
+                                        colors: [
+                                            Color.white.opacity(self.isDarkMode ? 0.28 : 0.28),
+                                            Color.clear,
+                                        ],
+                                        startPoint: .top,
+                                        endPoint: .bottom))
+                                .frame(height: Style.peakLabelHighlightHeight)
+                                .clipShape(Capsule(style: .continuous))
+                        }
+                        .overlay {
+                            Capsule(style: .continuous)
+                                .stroke(
+                                    self.peakLabelSurface.stroke,
+                                    lineWidth: Style.peakLabelStrokeWidth)
+                        }
+                }
             }
-            .shadow(color: self.peakGlowColor.opacity(self.isDarkMode ? 0.24 : 0.12), radius: 6, x: 0, y: 2)
+            .shadow(
+                color: self.peakGlowColor.opacity(self.isDarkMode ? 0.24 : 0.12),
+                radius: TokenMenuTheme.usesPixelChrome ? 0 : 6,
+                x: TokenMenuTheme.usesPixelChrome ? 3 : 0,
+                y: TokenMenuTheme.usesPixelChrome ? 3 : 2)
     }
 
     private func axisLabel(
@@ -849,7 +905,7 @@ struct RecentTwentyFourHourChartCardView: View {
         -> some View
     {
         Text(text)
-            .font(.system(size: self.axisLabelFontSize(for: priority), weight: self.axisLabelTextWeight(for: priority)))
+            .font(TokenMenuTheme.labelFont(size: self.axisLabelFontSize(for: priority), weight: self.axisLabelTextWeight(for: priority)))
             .foregroundStyle(self.axisLabelTint(for: priority))
             .lineLimit(1)
             .minimumScaleFactor(0.88)
@@ -858,7 +914,7 @@ struct RecentTwentyFourHourChartCardView: View {
     }
 
     private func peakLabelWidth(for text: String) -> CGFloat {
-        let textWidth = self.textWidth(text, font: .systemFont(ofSize: Style.peakLabelFontSize, weight: .bold))
+        let textWidth = self.textWidth(text, font: TokenMenuTheme.nsLabelFont(size: Style.peakLabelFontSize, weight: .bold))
         let width = textWidth + (Style.peakLabelHorizontalPadding * 2)
         return min(max(width, Style.peakLabelMinWidth), Style.peakLabelMaxWidth)
     }
@@ -866,8 +922,8 @@ struct RecentTwentyFourHourChartCardView: View {
     private func axisLabelWidth(for text: String, priority: RecentTwentyFourHourChartAxisMarker.Priority) -> CGFloat {
         self.textWidth(
             text,
-            font: .monospacedDigitSystemFont(
-                ofSize: self.axisLabelFontSize(for: priority),
+            font: TokenMenuTheme.nsLabelFont(
+                size: self.axisLabelFontSize(for: priority),
                 weight: self.axisLabelMeasurementWeight(for: priority)))
             + (Style.axisLabelHorizontalPadding * 2)
     }

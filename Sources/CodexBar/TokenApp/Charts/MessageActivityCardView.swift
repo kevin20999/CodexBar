@@ -349,7 +349,7 @@ struct MessageActivityCardView: View {
         self.metricValueColumns { column, _ in
             VStack(alignment: .leading, spacing: MessageActivityCardLayoutMetrics.metricLabelTopSpacing) {
                 Text(self.countValueText(column.stats.instructionCount))
-                    .font(.system(size: MessageActivityCardLayoutMetrics.metricValueFontSize, weight: .bold))
+                    .font(TokenMenuTheme.metricFont(size: MessageActivityCardLayoutMetrics.metricValueFontSize, weight: .bold))
                     .foregroundStyle(self.metricValueStyle)
                     .monospacedDigit()
                     .lineLimit(1)
@@ -357,7 +357,7 @@ struct MessageActivityCardView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
 
                 Text(column.title)
-                    .font(.system(size: MessageActivityCardLayoutMetrics.metricLabelFontSize, weight: .semibold))
+                    .font(TokenMenuTheme.labelFont(size: MessageActivityCardLayoutMetrics.metricLabelFontSize, weight: .semibold))
                     .foregroundStyle(self.secondaryText)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }

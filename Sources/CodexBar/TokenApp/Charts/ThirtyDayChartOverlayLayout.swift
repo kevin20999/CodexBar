@@ -164,20 +164,49 @@ func dashboardThirtyDayBarTopY(
 
 func dashboardThirtyDayPeakLabel(text: String) -> some View {
     Text(text)
-        .font(.system(size: DashboardThirtyDayBarStyle.peakLabelFontSize, weight: .bold))
+        .font(TokenMenuTheme.metricFont(size: DashboardThirtyDayBarStyle.peakLabelFontSize, weight: .bold))
         .foregroundStyle(TokenFloatingCardTheme.primaryText)
         .lineLimit(1)
         .minimumScaleFactor(0.82)
         .padding(.horizontal, DashboardThirtyDayBarStyle.peakLabelHorizontalPadding)
         .background {
-            Capsule(style: .continuous)
-                .fill(TokenFloatingCardTheme.cardTop.opacity(0.94))
-                .overlay {
-                    Capsule(style: .continuous)
-                        .stroke(TokenFloatingCardTheme.stroke.opacity(0.9), lineWidth: 0.75)
-                }
+            if TokenMenuTheme.usesPixelChrome {
+                RoundedRectangle(
+                    cornerRadius: TokenMenuTheme.chromeCornerRadius(default: 10, pixel: 6),
+                    style: .continuous)
+                    .fill(TokenMenuTheme.panelBase.opacity(0.96))
+                    .overlay(alignment: .topLeading) {
+                        RoundedRectangle(
+                            cornerRadius: TokenMenuTheme.chromeCornerRadius(default: 10, pixel: 5),
+                            style: .continuous)
+                            .stroke(Color.white.opacity(0.44), lineWidth: 1)
+                            .padding(2)
+                            .mask(
+                                LinearGradient(
+                                    colors: [Color.white, Color.clear],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing))
+                    }
+                    .overlay {
+                        RoundedRectangle(
+                            cornerRadius: TokenMenuTheme.chromeCornerRadius(default: 10, pixel: 6),
+                            style: .continuous)
+                            .stroke(TokenMenuTheme.glassStroke, lineWidth: 1.4)
+                    }
+            } else {
+                Capsule(style: .continuous)
+                    .fill(TokenFloatingCardTheme.cardTop.opacity(0.94))
+                    .overlay {
+                        Capsule(style: .continuous)
+                            .stroke(TokenFloatingCardTheme.stroke.opacity(0.9), lineWidth: 0.75)
+                    }
+            }
         }
-        .shadow(color: dashboardThirtyDayBarGlow().opacity(0.20), radius: 8, x: 0, y: 2)
+        .shadow(
+            color: dashboardThirtyDayBarGlow().opacity(TokenMenuTheme.usesPixelChrome ? 0.28 : 0.20),
+            radius: TokenMenuTheme.usesPixelChrome ? 0 : 8,
+            x: TokenMenuTheme.usesPixelChrome ? 3 : 0,
+            y: TokenMenuTheme.usesPixelChrome ? 3 : 2)
 }
 
 func dashboardThirtyDayAxisLabel(
@@ -187,7 +216,7 @@ func dashboardThirtyDayAxisLabel(
     -> some View
 {
     Text(text)
-        .font(.system(size: DashboardThirtyDayBarStyle.axisLabelFontSize, weight: .medium))
+        .font(TokenMenuTheme.labelFont(size: DashboardThirtyDayBarStyle.axisLabelFontSize, weight: .medium))
         .foregroundStyle(dashboardChartAxisTint(usesFloatingLowerCards: usesFloatingLowerCards))
         .lineLimit(1)
         .minimumScaleFactor(0.88)
@@ -197,7 +226,7 @@ func dashboardThirtyDayAxisLabel(
 func dashboardThirtyDayPeakLabelWidth(for text: String) -> CGFloat {
     let textWidth = dashboardChartTextWidth(
         text,
-        font: .systemFont(ofSize: DashboardThirtyDayBarStyle.peakLabelFontSize, weight: .bold))
+        font: TokenMenuTheme.nsLabelFont(size: DashboardThirtyDayBarStyle.peakLabelFontSize, weight: .bold))
     let width = textWidth + (DashboardThirtyDayBarStyle.peakLabelHorizontalPadding * 2)
     return min(max(width, DashboardThirtyDayBarStyle.peakLabelMinWidth), DashboardThirtyDayBarStyle.peakLabelMaxWidth)
 }
@@ -205,7 +234,7 @@ func dashboardThirtyDayPeakLabelWidth(for text: String) -> CGFloat {
 func dashboardThirtyDayAxisLabelWidth(for text: String) -> CGFloat {
     dashboardChartTextWidth(
         text,
-        font: .systemFont(ofSize: DashboardThirtyDayBarStyle.axisLabelFontSize, weight: .medium))
+        font: TokenMenuTheme.nsLabelFont(size: DashboardThirtyDayBarStyle.axisLabelFontSize, weight: .medium))
         + (DashboardThirtyDayBarStyle.axisLabelHorizontalPadding * 2)
 }
 

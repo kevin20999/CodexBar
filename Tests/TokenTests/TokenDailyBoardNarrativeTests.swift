@@ -819,6 +819,88 @@ final class TokenDailyBoardNarrativeTests: XCTestCase {
         XCTAssertEqual(profile.avatarMotionConfiguration.variantShakeAmplitude, 5.265, accuracy: 0.001)
     }
 
+    func test_conversationOnlyIdlePresentationUsesExpectedOpacityRange() {
+        XCTAssertEqual(TokenDailyBoardConversationOnlyIdlePresentationRules.baseOpacity, 0.60, accuracy: 0.001)
+        XCTAssertEqual(TokenDailyBoardConversationOnlyIdlePresentationRules.peakOpacity, 0.75, accuracy: 0.001)
+        XCTAssertEqual(
+            TokenDailyBoardConversationOnlyIdlePresentationRules.breathingDuration,
+            2.8,
+            accuracy: 0.001)
+    }
+
+    func test_conversationOnlyIdlePresentationEnablesOnlyForMode1WaitingGroup() {
+        XCTAssertTrue(
+            TokenDailyBoardConversationOnlyIdlePresentationRules.isEnabled(
+                for: .waitingGroup,
+                displayMode: .conversationOnly))
+        XCTAssertFalse(
+            TokenDailyBoardConversationOnlyIdlePresentationRules.isEnabled(
+                for: .eventGroup,
+                displayMode: .conversationOnly))
+        XCTAssertFalse(
+            TokenDailyBoardConversationOnlyIdlePresentationRules.isEnabled(
+                for: .waitingGroup,
+                displayMode: .fullBoard))
+    }
+
+    func test_conversationOnlyIdleSwitchRulesDisableWaitingAnimationsOnlyInMode1() {
+        XCTAssertFalse(
+            TokenDailyBoardConversationOnlyIdleSwitchRules.animatesAvatar(
+                for: .waitingGroup,
+                displayMode: .conversationOnly))
+        XCTAssertFalse(
+            TokenDailyBoardConversationOnlyIdleSwitchRules.animatesBodyText(
+                for: .waitingGroup,
+                displayMode: .conversationOnly))
+        XCTAssertFalse(
+            TokenDailyBoardConversationOnlyIdleSwitchRules.animatesMetadataText(
+                for: .waitingGroup,
+                displayMode: .conversationOnly))
+        XCTAssertTrue(
+            TokenDailyBoardConversationOnlyIdleSwitchRules.animatesAvatar(
+                for: .eventGroup,
+                displayMode: .conversationOnly))
+        XCTAssertTrue(
+            TokenDailyBoardConversationOnlyIdleSwitchRules.animatesBodyText(
+                for: .waitingGroup,
+                displayMode: .conversationAndToday))
+        XCTAssertEqual(
+            TokenDailyBoardConversationOnlyIdleSwitchRules.crossfadeDuration,
+            0.12,
+            accuracy: 0.001)
+    }
+
+    func test_conversationOnlyAvatarCornerRadiusScalesWithAvatarSize() {
+        XCTAssertEqual(
+            TokenDailyBoardNarrativeLayout.conversationOnlyAvatarCornerRadius(for: 92),
+            30,
+            accuracy: 0.001)
+        XCTAssertEqual(
+            TokenDailyBoardNarrativeLayout.conversationOnlyAvatarCornerRadius(for: 56),
+            18,
+            accuracy: 0.001)
+    }
+
+    func test_conversationOnlyEffectTracksStayIndependentAndWaitingStaysWeaker() {
+        XCTAssertNotEqual(
+            TokenDailyBoardConversationOnlyAvatarEffectRules.configuration(for: .avatar01).haloScale,
+            TokenDailyBoardConversationOnlyAvatarEffectRules.configuration(for: .avatar30).haloScale)
+        XCTAssertNotEqual(
+            TokenDailyBoardConversationOnlyBackgroundEffectRules.configuration(for: .background01).fillStartPoint,
+            TokenDailyBoardConversationOnlyBackgroundEffectRules.configuration(for: .background30).fillStartPoint)
+        XCTAssertNotEqual(
+            TokenDailyBoardConversationOnlyTextEffectRules.configuration(for: .text01).rotationDegrees,
+            TokenDailyBoardConversationOnlyTextEffectRules.configuration(for: .text30).rotationDegrees)
+        XCTAssertEqual(
+            TokenDailyBoardConversationOnlyTextEffectRules.intensityMultiplier(isWaitingGroup: true),
+            0.72,
+            accuracy: 0.001)
+        XCTAssertEqual(
+            TokenDailyBoardConversationOnlyTextEffectRules.intensityMultiplier(isWaitingGroup: false),
+            1.0,
+            accuracy: 0.001)
+    }
+
     func test_conversationOnlyAnimationProfilePulseMotionRetainsWaitingAndEventContrast() {
         let profile = TokenDailyBoardConversationOnlyAnimationProfileRules.resolvedProfile(
             tuning: TokenDailyBoardConversationOnlyDebugTuning(
@@ -990,7 +1072,7 @@ final class TokenDailyBoardNarrativeTests: XCTestCase {
         XCTAssertFalse(TokenDailyBoardNarrativePresentationRules.showsOutlineStroke(for: .conversationOnly))
         XCTAssertTrue(TokenDailyBoardNarrativePresentationRules.showsOutlineStroke(for: .conversationAndToday))
         XCTAssertTrue(TokenDailyBoardNarrativePresentationRules.showsOutlineStroke(for: .fullBoard))
-        XCTAssertFalse(TokenDailyBoardNarrativePresentationRules.usesSystemGlass(for: .conversationOnly))
+        XCTAssertTrue(TokenDailyBoardNarrativePresentationRules.usesSystemGlass(for: .conversationOnly))
         XCTAssertTrue(TokenDailyBoardNarrativePresentationRules.usesSystemGlass(for: .conversationAndToday))
         XCTAssertTrue(TokenDailyBoardNarrativePresentationRules.usesSystemGlass(for: .fullBoard))
         XCTAssertFalse(TokenDailyBoardNarrativePresentationRules.showsOuterShadow(for: .conversationOnly))

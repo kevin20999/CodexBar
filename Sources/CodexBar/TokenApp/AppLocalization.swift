@@ -79,6 +79,28 @@ struct AppStrings {
         self.text(zh: "频率", en: "Frequency", ja: "頻度")
     }
 
+    var quotaRefreshFrequencyLabel: String {
+        self.text(zh: "额度刷新频率", en: "Quota refresh frequency", ja: "残量更新頻度")
+    }
+
+    var quotaRefreshFrequencyDescription: String {
+        self.text(
+            zh: "用于剩余额度数据。启动会立即刷新一次，后台按分钟级自动更新。",
+            en: "Used for remaining quota data. Refreshes immediately on launch and then updates on a minute-level cadence.",
+            ja: "残量データに使います。起動時に即時更新し、その後は分単位で自動更新します。")
+    }
+
+    var usageStatisticsRefreshFrequencyLabel: String {
+        self.text(zh: "统计刷新频率", en: "Usage refresh frequency", ja: "統計更新頻度")
+    }
+
+    var usageStatisticsRefreshFrequencyDescription: String {
+        self.text(
+            zh: "用于 30 天、48 小时、消息统计等重计算数据。频率越低越省 CPU 和内存，但统计会更慢更新。",
+            en: "Used for heavy statistics such as 30-day, 48-hour, and message activity data. Lower frequency saves CPU and memory but updates stats more slowly.",
+            ja: "30 日、48 時間、メッセージ統計などの重い集計に使います。頻度を下げるほど CPU とメモリを節約できますが、統計の更新は遅くなります。")
+    }
+
     var menuBarDisplayLabel: String {
         self.text(zh: "显示格式", en: "Display", ja: "表示形式")
     }
@@ -208,6 +230,17 @@ struct AppStrings {
             zh: "切换点击菜单栏图标时使用的主弹窗容器。液态玻璃保留当前自定义面板，系统 popover 使用 macOS 原生弹窗。",
             en: "Switch the main popup container used when clicking the menu bar item. Liquid Glass keeps the current custom panel, while System Popover uses the native macOS popover.",
             ja: "メニューバーアイコンをクリックしたときに使うメインポップアップのコンテナを切り替えます。リキッドガラスは現在のカスタムパネルを維持し、システムポップオーバーは macOS 標準のポップオーバーを使います。")
+    }
+
+    var menuVisualThemeLabel: String {
+        self.text(zh: "主题风格", en: "Theme style", ja: "テーマスタイル")
+    }
+
+    var menuVisualThemeDescription: String {
+        self.text(
+            zh: "为菜单面板选择显示主题。你可以在不改变交互方式的情况下，切换颜色、底纹与高亮风格。",
+            en: "Choose a visual theme for the menu panel. Colors, textures, and accent look change without affecting behavior.",
+            ja: "メニューパネルの外観テーマを選択します。操作挙動は変わらず、配色や質感、アクセントの見た目だけを切り替えます。")
     }
 
     var launchAtLoginLabel: String {
@@ -823,6 +856,141 @@ struct AppStrings {
         }
     }
 
+    func menuVisualThemeTitle(_ theme: MenuVisualTheme) -> String {
+        switch (self.resolvedLanguage, theme) {
+        case (.zhHans, .liquidGlassClassic):
+            "液态玻璃经典"
+        case (.zhHans, .pureLiquidGlass):
+            "纯粹液态玻璃"
+        case (.zhHans, .pixelGame):
+            "像素游戏"
+        case (.zhHans, .pixelArcade):
+            "像素街机"
+        case (.zhHans, .insCream):
+            "INS 奶油"
+        case (.zhHans, .handbookCollage):
+            "手帐拼贴"
+        case (.zhHans, .diaryPaper):
+            "日记纸感"
+        case (.zhHans, .retroCopper):
+            "复古铜棕"
+        case (.zhHans, .cyberNeon):
+            "赛博霓虹"
+        case (.zhHans, .sakura):
+            "少女樱花"
+        case (.zhHans, .literaryFresh):
+            "文艺清新"
+        case (.zhHans, .minimalBlackWhite):
+            "极简黑白"
+        case (.zhHans, .midnightBlue):
+            "深夜蓝调"
+        case (.zhHans, .forestMatcha):
+            "森林抹茶"
+        case (.zhHans, .citrusSunset):
+            "柑橘日落"
+        case (.zhHans, .seaSaltMint):
+            "海盐薄荷"
+        case (.zhHans, .purpleMist):
+            "紫雾梦境"
+        case (.zhHans, .amberFilm):
+            "琥珀胶片"
+        case (.zhHans, .nordicCoolGray):
+            "北欧冷灰"
+        case (.zhHans, .industrialUtility):
+            "机能工业"
+        case (.zhHans, .frenchCafe):
+            "法式奶咖"
+
+        case (.en, .liquidGlassClassic):
+            "Liquid Glass Classic"
+        case (.en, .pureLiquidGlass):
+            "Pure Liquid Glass"
+        case (.en, .pixelGame):
+            "Pixel Game"
+        case (.en, .pixelArcade):
+            "Pixel Arcade"
+        case (.en, .insCream):
+            "INS Cream"
+        case (.en, .handbookCollage):
+            "Handbook Collage"
+        case (.en, .diaryPaper):
+            "Diary Paper"
+        case (.en, .retroCopper):
+            "Retro Copper"
+        case (.en, .cyberNeon):
+            "Cyber Neon"
+        case (.en, .sakura):
+            "Sakura Bloom"
+        case (.en, .literaryFresh):
+            "Literary Fresh"
+        case (.en, .minimalBlackWhite):
+            "Minimal Black & White"
+        case (.en, .midnightBlue):
+            "Midnight Blue"
+        case (.en, .forestMatcha):
+            "Forest Matcha"
+        case (.en, .citrusSunset):
+            "Citrus Sunset"
+        case (.en, .seaSaltMint):
+            "Sea Salt Mint"
+        case (.en, .purpleMist):
+            "Purple Mist"
+        case (.en, .amberFilm):
+            "Amber Film"
+        case (.en, .nordicCoolGray):
+            "Nordic Cool Gray"
+        case (.en, .industrialUtility):
+            "Industrial Utility"
+        case (.en, .frenchCafe):
+            "French Cafe"
+
+        case (.ja, .liquidGlassClassic):
+            "リキッドガラス クラシック"
+        case (.ja, .pureLiquidGlass):
+            "ピュアリキッドガラス"
+        case (.ja, .pixelGame):
+            "ピクセルゲーム"
+        case (.ja, .pixelArcade):
+            "ピクセルアーケード"
+        case (.ja, .insCream):
+            "INS クリーム"
+        case (.ja, .handbookCollage):
+            "手帳コラージュ"
+        case (.ja, .diaryPaper):
+            "日記ペーパー"
+        case (.ja, .retroCopper):
+            "レトロコッパー"
+        case (.ja, .cyberNeon):
+            "サイバーネオン"
+        case (.ja, .sakura):
+            "さくらブロッサム"
+        case (.ja, .literaryFresh):
+            "文芸フレッシュ"
+        case (.ja, .minimalBlackWhite):
+            "ミニマル白黒"
+        case (.ja, .midnightBlue):
+            "ミッドナイトブルー"
+        case (.ja, .forestMatcha):
+            "フォレスト抹茶"
+        case (.ja, .citrusSunset):
+            "シトラスサンセット"
+        case (.ja, .seaSaltMint):
+            "シーソルトミント"
+        case (.ja, .purpleMist):
+            "パープルミスト"
+        case (.ja, .amberFilm):
+            "アンバーフィルム"
+        case (.ja, .nordicCoolGray):
+            "北欧クールグレー"
+        case (.ja, .industrialUtility):
+            "インダストリアルユーティリティ"
+        case (.ja, .frenchCafe):
+            "フレンチカフェ"
+        default:
+            "Liquid Glass Classic"
+        }
+    }
+
     var hoverForDetails: String {
         self.text(zh: "将鼠标移动到柱子上查看详情", en: "Hover a bar for details", ja: "バーにカーソルを合わせると詳細を表示")
     }
@@ -856,6 +1024,8 @@ struct AppStrings {
             "每 10 秒"
         case (.zhHans, .fifteenSeconds):
             "每 15 秒"
+        case (.zhHans, .oneMinute):
+            "每 1 分钟"
         case (.zhHans, .manual):
             "仅手动"
         case (.en, .fiveSeconds):
@@ -864,6 +1034,8 @@ struct AppStrings {
             "Every 10 seconds"
         case (.en, .fifteenSeconds):
             "Every 15 seconds"
+        case (.en, .oneMinute):
+            "Every 1 minute"
         case (.en, .manual):
             "Manual only"
         case (.ja, .fiveSeconds):
@@ -872,10 +1044,43 @@ struct AppStrings {
             "10 秒ごと"
         case (.ja, .fifteenSeconds):
             "15 秒ごと"
+        case (.ja, .oneMinute):
+            "1 分ごと"
         case (.ja, .manual):
             "手動のみ"
         default:
             "每 10 秒"
+        }
+    }
+
+    func usageStatisticsRefreshFrequencyTitle(_ frequency: UsageStatisticsRefreshFrequency) -> String {
+        switch (self.resolvedLanguage, frequency) {
+        case (.zhHans, .fifteenMinutes):
+            "每 15 分钟"
+        case (.zhHans, .thirtyMinutes):
+            "每 30 分钟"
+        case (.zhHans, .sixtyMinutes):
+            "每 60 分钟"
+        case (.zhHans, .manual):
+            "仅手动"
+        case (.en, .fifteenMinutes):
+            "Every 15 minutes"
+        case (.en, .thirtyMinutes):
+            "Every 30 minutes"
+        case (.en, .sixtyMinutes):
+            "Every 60 minutes"
+        case (.en, .manual):
+            "Manual only"
+        case (.ja, .fifteenMinutes):
+            "15 分ごと"
+        case (.ja, .thirtyMinutes):
+            "30 分ごと"
+        case (.ja, .sixtyMinutes):
+            "60 分ごと"
+        case (.ja, .manual):
+            "手動のみ"
+        default:
+            "每 30 分钟"
         }
     }
 

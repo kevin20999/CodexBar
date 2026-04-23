@@ -66,6 +66,10 @@ public struct TokenSpeedHistoryStore: Sendable {
     }
 
     public func load() throws -> [TokenSpeedSample] {
+        try self.load(limitToLatest: nil)
+    }
+
+    public func load(limitToLatest count: Int?) throws -> [TokenSpeedSample] {
         guard FileManager.default.fileExists(atPath: self.fileURL.path) else {
             return []
         }
@@ -79,7 +83,11 @@ public struct TokenSpeedHistoryStore: Sendable {
             return []
         }
 
-        return document.samples.sorted { $0.timestamp < $1.timestamp }
+        return Self.normalizedSamples(document.samples, keepingLatest: count)
+    }
+
+    public func save(samples: [TokenSpeedSample], keepingLatest count: Int? = nil) throws {
+        try self.write(samples: Self.normalizedSamples(samples, keepingLatest: count))
     }
 
     @discardableResult
@@ -91,8 +99,9 @@ public struct TokenSpeedHistoryStore: Sendable {
             samples.append(sample)
             samples.sort { $0.timestamp < $1.timestamp }
         }
-        try self.write(samples: samples)
-        return samples
+        let normalizedSamples = Self.normalizedSamples(samples, keepingLatest: nil)
+        try self.write(samples: normalizedSamples)
+        return normalizedSamples
     }
 
     private func write(samples: [TokenSpeedSample]) throws {
@@ -105,6 +114,19 @@ public struct TokenSpeedHistoryStore: Sendable {
         let data = try encoder.encode(TokenSpeedHistoryDocument(samples: samples))
         try data.write(to: self.fileURL, options: .atomic)
         try FileManager.default.setAttributes([.posixPermissions: 0o600], ofItemAtPath: self.fileURL.path)
+    }
+
+    private static func normalizedSamples(_ samples: [TokenSpeedSample], keepingLatest count: Int?) -> [TokenSpeedSample] {
+        var samplesByTimestamp: [Date: TokenSpeedSample] = [:]
+        for sample in samples {
+            samplesByTimestamp[TokenSpeedSample.secondStart(for: sample.timestamp)] = sample
+        }
+
+        let normalizedSamples = samplesByTimestamp.values.sorted { $0.timestamp < $1.timestamp }
+        guard let count, normalizedSamples.count > count else {
+            return normalizedSamples
+        }
+        return Array(normalizedSamples.suffix(count))
     }
 }
 

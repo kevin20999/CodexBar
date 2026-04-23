@@ -275,6 +275,9 @@ final class TokenDailyBoardStoreTests: XCTestCase {
         XCTAssertEqual(settings.conversationOnlyDebugTuning.bodyLineSpacing, 12, accuracy: 0.001)
         XCTAssertEqual(settings.conversationOnlyDebugTuning.metadataFontSize, 10.5, accuracy: 0.001)
         XCTAssertEqual(settings.conversationOnlyDebugTuning.metadataOpacity, 0.65, accuracy: 0.001)
+        XCTAssertEqual(settings.conversationOnlyDebugTuning.avatarEffectPreset, .avatar01)
+        XCTAssertEqual(settings.conversationOnlyDebugTuning.backgroundEffectPreset, .background01)
+        XCTAssertEqual(settings.conversationOnlyDebugTuning.textEffectPreset, .text01)
         XCTAssertEqual(settings.conversationOnlyDebugTuning, TokenDailyBoardConversationOnlyDebugRules.defaultTuning)
     }
 
@@ -308,7 +311,10 @@ final class TokenDailyBoardStoreTests: XCTestCase {
                 textColumnWidth: 410,
                 bodyLineSpacing: 5,
                 metadataFontSize: 16,
-                metadataOpacity: 0.45))
+                metadataOpacity: 0.45,
+                avatarEffectPreset: .avatar17,
+                backgroundEffectPreset: .background23,
+                textEffectPreset: .text09))
 
         let reloadedSettings = CodexDailySettingsStore(userDefaults: defaults)
         let reloadedStore = TokenDailyBoardStore(
@@ -319,6 +325,9 @@ final class TokenDailyBoardStoreTests: XCTestCase {
 
         XCTAssertEqual(reloadedSettings.conversationOnlyDebugTuning, store.conversationOnlyDebugTuning)
         XCTAssertEqual(reloadedStore.conversationOnlyDebugTuning, store.conversationOnlyDebugTuning)
+        XCTAssertEqual(reloadedStore.conversationOnlyDebugTuning.avatarEffectPreset, .avatar17)
+        XCTAssertEqual(reloadedStore.conversationOnlyDebugTuning.backgroundEffectPreset, .background23)
+        XCTAssertEqual(reloadedStore.conversationOnlyDebugTuning.textEffectPreset, .text09)
     }
 
     func test_storePersistsTitlebarControlsCollapsedAcrossReload() {

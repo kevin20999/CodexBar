@@ -31,7 +31,6 @@ final class CodexDailyAppDelegate: NSObject, NSApplicationDelegate, NSWindowDele
     private let dockIconAnimator = CodexDailyDockIconAnimator()
     private var window: NSWindow?
     private var windowHoverTracker: CodexDailyConversationOnlyWindowHoverTracker?
-    private var windowChromeAutoHideTask: Task<Void, Never>?
     private var displayModeAccessoryController: CodexDailyDisplayModeAccessoryController?
     private var debugPanelController: CodexDailyConversationOnlyDebugPanelController?
     private var debugPanelToggleObserver: NSObjectProtocol?
@@ -54,6 +53,14 @@ final class CodexDailyAppDelegate: NSObject, NSApplicationDelegate, NSWindowDele
 
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
         true
+    }
+
+    func applicationDidBecomeActive(_ notification: Notification) {
+        self.refreshConversationOnlyWindowHoverState(for: self.window)
+    }
+
+    func applicationDidResignActive(_ notification: Notification) {
+        self.refreshConversationOnlyWindowHoverState(forceHidden: true)
     }
 
     func applicationWillTerminate(_ notification: Notification) {
@@ -86,6 +93,7 @@ final class CodexDailyAppDelegate: NSObject, NSApplicationDelegate, NSWindowDele
             to: window,
             animated: false,
             tuning: self.store.conversationOnlyDebugTuning)
+        self.refreshConversationOnlyWindowHoverState(for: window)
         self.applyConversationOnlyPinStateIfNeeded(to: window)
         self.applyWindowChromeVisibilityIfNeeded(to: window)
         self.displayModeAccessoryController?.updateWindowWidth(window.frame.width)
@@ -93,20 +101,27 @@ final class CodexDailyAppDelegate: NSObject, NSApplicationDelegate, NSWindowDele
 
     func windowDidBecomeKey(_ notification: Notification) {
         guard let window = notification.object as? NSWindow, window === self.window else { return }
-        self.cancelWindowChromeAutoHide()
-        self.store.setWindowChromeVisible(true)
+        self.refreshConversationOnlyWindowHoverState(for: window)
         self.applyConversationOnlyPinStateIfNeeded(to: window)
+        self.applyWindowChromeVisibilityIfNeeded(to: window)
+    }
+
+    func windowDidResignKey(_ notification: Notification) {
+        guard let window = notification.object as? NSWindow, window === self.window else { return }
+        self.refreshConversationOnlyWindowHoverState(for: window, forceHidden: true)
         self.applyWindowChromeVisibilityIfNeeded(to: window)
     }
 
     func windowDidResize(_ notification: Notification) {
         guard let window = notification.object as? NSWindow, window === self.window else { return }
+        self.refreshConversationOnlyWindowHoverState(for: window)
         self.displayModeAccessoryController?.updateWindowWidth(window.frame.width)
     }
 
     func windowDidMove(_ notification: Notification) {
         guard let window = notification.object as? NSWindow, window === self.window else { return }
         self.persistWindowPosition(window)
+        self.refreshConversationOnlyWindowHoverState(for: window)
     }
 
     private func presentWindow() {
@@ -154,12 +169,11 @@ final class CodexDailyAppDelegate: NSObject, NSApplicationDelegate, NSWindowDele
             animated: false,
             tuning: self.store.conversationOnlyDebugTuning)
         self.applyConversationOnlyPinStateIfNeeded(to: window)
-        self.store.setWindowChromeVisible(true)
-        self.store.setConversationOnlyWindowHovered(true)
-        self.applyWindowChromeVisibilityIfNeeded(to: window)
         if !self.restoreSavedWindowPositionIfAvailable(window) {
             self.center(window)
         }
+        self.refreshConversationOnlyWindowHoverState(for: window)
+        self.applyWindowChromeVisibilityIfNeeded(to: window)
         self.window = window
         return window
     }
@@ -169,19 +183,30 @@ final class CodexDailyAppDelegate: NSObject, NSApplicationDelegate, NSWindowDele
         let screen = NSScreen.screens.first(where: { $0.frame.contains(mouseLocation) }) ?? NSScreen.main
         guard let screen else { return }
 
-        let targetFrame = TokenDailyBoardWindowLayout.centeredFrame(
-            for: window.frame,
-            in: screen.visibleFrame)
+        let targetFrame: CGRect = switch self.store.boardDisplayMode {
+        case .conversationOnly:
+            TokenDailyBoardWindowLayout.centeredFrame(
+                for: window.frame,
+                in: TokenDailyBoardWindowLayout.placementBounds(
+                    for: .conversationOnly,
+                    screen: screen))
+        case .conversationAndToday, .fullBoard:
+            TokenDailyBoardWindowLayout.centeredFrame(
+                for: window.frame,
+                in: TokenDailyBoardWindowLayout.placementBounds(
+                    for: self.store.boardDisplayMode,
+                    screen: screen))
+        }
         window.setFrame(targetFrame, display: true)
     }
 
     private func restoreSavedWindowPositionIfAvailable(_ window: NSWindow) -> Bool {
         guard let savedOrigin = self.store.windowOrigin else { return false }
-        let visibleFrame = TokenDailyBoardWindowLayout.resolvedVisibleFrame(for: window)
         let restoredFrame = TokenDailyBoardWindowLayout.restoredFrame(
             for: window.frame,
             savedOrigin: savedOrigin,
-            in: visibleFrame)
+            displayMode: self.store.boardDisplayMode,
+            fallbackWindow: window)
         window.setFrame(restoredFrame, display: true)
         return true
     }
@@ -211,9 +236,9 @@ final class CodexDailyAppDelegate: NSObject, NSApplicationDelegate, NSWindowDele
 
     private func installConversationOnlyHoverTracking(on window: NSWindow) {
         let tracker = self.windowHoverTracker
-            ?? CodexDailyConversationOnlyWindowHoverTracker { [weak self] isHovered in
+            ?? CodexDailyConversationOnlyWindowHoverTracker { [weak self] in
                 guard let self else { return }
-                self.handleConversationOnlyWindowHoverChange(isHovered)
+                self.refreshConversationOnlyWindowHoverState()
             }
         self.windowHoverTracker = tracker
         tracker.attach(to: window)
@@ -233,28 +258,30 @@ final class CodexDailyAppDelegate: NSObject, NSApplicationDelegate, NSWindowDele
             self.cancelWindowChromeAutoHide()
             self.store.setWindowChromeVisible(true)
         } else {
-            self.scheduleWindowChromeAutoHide()
-        }
-    }
-
-    private func scheduleWindowChromeAutoHide() {
-        self.cancelWindowChromeAutoHide()
-        self.windowChromeAutoHideTask = Task { @MainActor [weak self] in
-            try? await Task.sleep(for: TokenDailyBoardTitlebarAutoHideRules.delayedAutoHideDelay)
-            guard let self else { return }
-            guard TokenDailyBoardTitlebarAutoHideRules.shouldUseDelayedAutoHide(
-                displayMode: self.store.boardDisplayMode)
-            else {
-                return
-            }
-            guard !self.store.isConversationOnlyWindowHovered else { return }
             self.store.setWindowChromeVisible(false)
         }
     }
 
+    private func refreshConversationOnlyWindowHoverState(for window: NSWindow? = nil, forceHidden: Bool = false) {
+        guard TokenDailyBoardTitlebarAutoHideRules.shouldUseDelayedAutoHide(displayMode: self.store.boardDisplayMode)
+        else {
+            self.handleConversationOnlyWindowHoverChange(true)
+            return
+        }
+
+        guard !forceHidden, NSApp.isActive, let resolvedWindow = window ?? self.window else {
+            self.handleConversationOnlyWindowHoverChange(false)
+            return
+        }
+
+        let isHovered = TokenDailyBoardWindowHoverRules.isMouseInsideWindowFrame(
+            windowFrame: resolvedWindow.frame,
+            mouseLocation: NSEvent.mouseLocation)
+        self.handleConversationOnlyWindowHoverChange(isHovered)
+    }
+
     private func cancelWindowChromeAutoHide() {
-        self.windowChromeAutoHideTask?.cancel()
-        self.windowChromeAutoHideTask = nil
+        // No-op. Mode 1 chrome now hides immediately on mouse exit.
     }
 
     private func applyWindowChromeVisibilityIfNeeded(to window: NSWindow) {
@@ -299,10 +326,11 @@ final class CodexDailyAppDelegate: NSObject, NSApplicationDelegate, NSWindowDele
             Task { @MainActor [weak self] in
                 guard let self else { return }
                 self.cancelWindowChromeAutoHide()
-                self.store.setConversationOnlyWindowHovered(true)
-                self.store.setWindowChromeVisible(true)
                 if let window = self.window {
+                    self.refreshConversationOnlyWindowHoverState(for: window)
                     self.applyWindowChromeVisibilityIfNeeded(to: window)
+                } else {
+                    self.handleConversationOnlyWindowHoverChange(true)
                 }
                 self.observeTitlebarAutoHideState()
             }
@@ -369,44 +397,58 @@ final class CodexDailyAppDelegate: NSObject, NSApplicationDelegate, NSWindowDele
 
 @MainActor
 private final class CodexDailyConversationOnlyWindowHoverTracker: NSObject {
-    private let onHoverChange: (Bool) -> Void
-    private weak var trackedView: NSView?
-    private var trackingArea: NSTrackingArea?
+    private let onPointerActivity: () -> Void
+    private weak var trackedWindow: NSWindow?
+    private var localMonitor: Any?
+    private var globalMonitor: Any?
 
-    init(onHoverChange: @escaping (Bool) -> Void) {
-        self.onHoverChange = onHoverChange
+    init(onPointerActivity: @escaping () -> Void) {
+        self.onPointerActivity = onPointerActivity
     }
 
     func attach(to window: NSWindow) {
-        guard let trackedView = (window.contentView?.superview ?? window.contentView) else { return }
-        guard self.trackedView !== trackedView else { return }
+        guard self.trackedWindow !== window else {
+            self.refresh()
+            return
+        }
         self.detach()
-        let trackingArea = NSTrackingArea(
-            rect: .zero,
-            options: [.activeAlways, .inVisibleRect, .mouseEnteredAndExited],
-            owner: self,
-            userInfo: nil)
-        trackedView.addTrackingArea(trackingArea)
-        self.trackedView = trackedView
-        self.trackingArea = trackingArea
+        self.trackedWindow = window
+        window.acceptsMouseMovedEvents = true
+
+        let eventMask: NSEvent.EventTypeMask = [
+            .mouseMoved,
+            .leftMouseDragged,
+            .rightMouseDragged,
+            .otherMouseDragged,
+        ]
+
+        self.localMonitor = NSEvent.addLocalMonitorForEvents(matching: eventMask) { [weak self] event in
+            self?.refresh()
+            return event
+        }
+        self.globalMonitor = NSEvent.addGlobalMonitorForEvents(matching: eventMask) { [weak self] _ in
+            Task { @MainActor [weak self] in
+                self?.refresh()
+            }
+        }
+        self.refresh()
     }
 
     func detach() {
-        if let trackedView, let trackingArea {
-            trackedView.removeTrackingArea(trackingArea)
+        if let localMonitor {
+            NSEvent.removeMonitor(localMonitor)
         }
-        self.trackedView = nil
-        self.trackingArea = nil
+        if let globalMonitor {
+            NSEvent.removeMonitor(globalMonitor)
+        }
+        self.localMonitor = nil
+        self.globalMonitor = nil
+        self.trackedWindow = nil
     }
 
-    @objc
-    func mouseEntered(with event: NSEvent) {
-        self.onHoverChange(true)
-    }
-
-    @objc
-    func mouseExited(with event: NSEvent) {
-        self.onHoverChange(false)
+    func refresh() {
+        guard self.trackedWindow != nil else { return }
+        self.onPointerActivity()
     }
 }
 
@@ -867,9 +909,17 @@ private struct TitlebarCircleButtonStyleBody: View {
 
 private struct CodexDailyConversationOnlyPositionDebugPopover: View {
     @Bindable var store: TokenDailyBoardStore
+    @State private var previewTrigger = 1
 
     private var tuning: TokenDailyBoardConversationOnlyDebugTuning {
         self.store.conversationOnlyDebugTuning
+    }
+
+    private func updateTuning(_ mutate: (inout TokenDailyBoardConversationOnlyDebugTuning) -> Void) {
+        var tuning = self.store.conversationOnlyDebugTuning
+        mutate(&tuning)
+        self.store.setConversationOnlyDebugTuning(tuning)
+        self.previewTrigger += 1
     }
 
     private func binding(
@@ -879,10 +929,10 @@ private struct CodexDailyConversationOnlyPositionDebugPopover: View {
     {
         Binding(
             get: { Double(value(self.store.conversationOnlyDebugTuning)) },
-            set: {
-                var tuning = self.store.conversationOnlyDebugTuning
-                update(&tuning, CGFloat($0))
-                self.store.setConversationOnlyDebugTuning(tuning)
+            set: { newValue in
+                self.updateTuning { tuning in
+                    update(&tuning, CGFloat(newValue))
+                }
             })
     }
 
@@ -893,10 +943,10 @@ private struct CodexDailyConversationOnlyPositionDebugPopover: View {
     {
         Binding(
             get: { value(self.store.conversationOnlyDebugTuning) },
-            set: {
-                var tuning = self.store.conversationOnlyDebugTuning
-                update(&tuning, $0)
-                self.store.setConversationOnlyDebugTuning(tuning)
+            set: { newValue in
+                self.updateTuning { tuning in
+                    update(&tuning, newValue)
+                }
             })
     }
 
@@ -912,10 +962,11 @@ private struct CodexDailyConversationOnlyPositionDebugPopover: View {
             set: { $0.contentOffset.height = $1 })
     }
 
-    private var windowWidthBinding: Binding<Double> {
-        self.binding(
-            get: { $0.windowWidth },
-            set: { $0.windowWidth = $1 })
+    private var naturalWindowWidthText: String {
+        self.decimalFormatter(digits: 0)(
+            TokenDailyBoardConversationOnlyDebugRules.resolvedWindowAppearance(
+                self.store.conversationOnlyDebugTuning,
+                for: .conversationOnly).resolvedWindowWidth)
     }
 
     private var windowGlassOpacityBinding: Binding<Double> {
@@ -945,10 +996,40 @@ private struct CodexDailyConversationOnlyPositionDebugPopover: View {
     private var animationPresetBinding: Binding<TokenDailyBoardConversationOnlyAnimationPreset> {
         Binding(
             get: { self.store.conversationOnlyDebugTuning.animationPreset },
-            set: {
-                var tuning = self.store.conversationOnlyDebugTuning
-                tuning.animationPreset = $0
-                self.store.setConversationOnlyDebugTuning(tuning)
+            set: { newValue in
+                self.updateTuning { tuning in
+                    tuning.animationPreset = newValue
+                }
+            })
+    }
+
+    private var avatarEffectPresetBinding: Binding<TokenDailyBoardConversationOnlyAvatarEffectPreset> {
+        Binding(
+            get: { self.store.conversationOnlyDebugTuning.avatarEffectPreset },
+            set: { newValue in
+                self.updateTuning { tuning in
+                    tuning.avatarEffectPreset = newValue
+                }
+            })
+    }
+
+    private var backgroundEffectPresetBinding: Binding<TokenDailyBoardConversationOnlyBackgroundEffectPreset> {
+        Binding(
+            get: { self.store.conversationOnlyDebugTuning.backgroundEffectPreset },
+            set: { newValue in
+                self.updateTuning { tuning in
+                    tuning.backgroundEffectPreset = newValue
+                }
+            })
+    }
+
+    private var textEffectPresetBinding: Binding<TokenDailyBoardConversationOnlyTextEffectPreset> {
+        Binding(
+            get: { self.store.conversationOnlyDebugTuning.textEffectPreset },
+            set: { newValue in
+                self.updateTuning { tuning in
+                    tuning.textEffectPreset = newValue
+                }
             })
     }
 
@@ -1052,12 +1133,9 @@ private struct CodexDailyConversationOnlyPositionDebugPopover: View {
                 self.section(
                     "窗口",
                     content: Group {
-                        self.sliderRow(
+                        self.readOnlyValueRow(
                             title: "宽度",
-                            binding: self.windowWidthBinding,
-                            range: TokenDailyBoardConversationOnlyDebugRules.windowWidthRange,
-                            step: TokenDailyBoardConversationOnlyDebugRules.windowWidthStep,
-                            formatter: self.decimalFormatter(digits: 0))
+                            value: self.naturalWindowWidthText)
                         self.sliderRow(
                             title: "玻璃透明",
                             binding: self.windowGlassOpacityBinding,
@@ -1111,6 +1189,33 @@ private struct CodexDailyConversationOnlyPositionDebugPopover: View {
                             range: TokenDailyBoardConversationOnlyDebugRules.metadataTypewriterSpeedScaleRange,
                             step: TokenDailyBoardConversationOnlyDebugRules.metadataTypewriterSpeedScaleStep,
                             formatter: self.decimalFormatter(digits: 2))
+                    })
+
+                self.section(
+                    "效果",
+                    content: Group {
+                        self.effectPickerRow(
+                            title: "头像",
+                            selection: self.avatarEffectPresetBinding,
+                            cases: TokenDailyBoardConversationOnlyAvatarEffectPreset.allCases,
+                            label: self.effectTitle(for:))
+                        self.effectPickerRow(
+                            title: "背景",
+                            selection: self.backgroundEffectPresetBinding,
+                            cases: TokenDailyBoardConversationOnlyBackgroundEffectPreset.allCases,
+                            label: self.effectTitle(for:))
+                        self.effectPickerRow(
+                            title: "文字",
+                            selection: self.textEffectPresetBinding,
+                            cases: TokenDailyBoardConversationOnlyTextEffectPreset.allCases,
+                            label: self.effectTitle(for:))
+
+                        TokenDailyBoardConversationOnlyPreviewScene(
+                            tuning: self.store.conversationOnlyDebugTuning,
+                            avatarSlots: self.store.avatarResolvedSlots,
+                            previewTrigger: self.previewTrigger)
+                            .frame(maxWidth: .infinity, alignment: .center)
+                            .padding(.top, 4)
                     })
 
                 self.section(
@@ -1184,7 +1289,7 @@ private struct CodexDailyConversationOnlyPositionDebugPopover: View {
             }
         }
         .padding(14)
-        .frame(width: 320, height: 520)
+        .frame(width: 320, height: 720)
     }
 
     private func section(_ title: String, content: some View) -> some View {
@@ -1237,12 +1342,50 @@ private struct CodexDailyConversationOnlyPositionDebugPopover: View {
         }
     }
 
+    private func readOnlyValueRow(title: String, value: String) -> some View {
+        HStack(alignment: .center, spacing: 10) {
+            Text(title)
+                .font(.system(size: 12, weight: .medium))
+                .frame(width: 56, alignment: .leading)
+
+            Spacer(minLength: 0)
+
+            Text(value)
+                .font(.system(size: 12, weight: .medium))
+                .monospacedDigit()
+                .foregroundStyle(.secondary)
+        }
+    }
+
     private func toggleRow(title: String, isOn: Binding<Bool>) -> some View {
         Toggle(isOn: isOn) {
             Text(title)
                 .font(.system(size: 12, weight: .medium))
         }
         .toggleStyle(.switch)
+    }
+
+    private func effectPickerRow<Selection: Hashable>(
+        title: String,
+        selection: Binding<Selection>,
+        cases: [Selection],
+        label: @escaping (Selection) -> String)
+        -> some View
+    {
+        HStack(alignment: .center, spacing: 10) {
+            Text(title)
+                .font(.system(size: 12, weight: .medium))
+                .frame(width: 56, alignment: .leading)
+
+            Picker(title, selection: selection) {
+                ForEach(Array(cases.enumerated()), id: \.offset) { _, value in
+                    Text(label(value))
+                        .tag(value)
+                }
+            }
+            .labelsHidden()
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
     }
 
     private func decimalFormatter(digits: Int) -> (Double) -> String {
@@ -1260,5 +1403,21 @@ private struct CodexDailyConversationOnlyPositionDebugPopover: View {
         case .gentle:
             "轻稳"
         }
+    }
+
+    private func effectTitle(_ raw: String) -> String {
+        raw.suffix(2).description
+    }
+
+    private func effectTitle(for preset: TokenDailyBoardConversationOnlyAvatarEffectPreset) -> String {
+        self.effectTitle(preset.rawValue)
+    }
+
+    private func effectTitle(for preset: TokenDailyBoardConversationOnlyBackgroundEffectPreset) -> String {
+        self.effectTitle(preset.rawValue)
+    }
+
+    private func effectTitle(for preset: TokenDailyBoardConversationOnlyTextEffectPreset) -> String {
+        self.effectTitle(preset.rawValue)
     }
 }

@@ -40,4 +40,20 @@ public enum TokenHistoryRefreshExecutor {
                 firstError: result.errors.first)
         }.value
     }
+
+    public static func refreshMigrationBatch(
+        provider: CodexSessionTokenProvider,
+        historyStore: TokenHistoryStore,
+        maxRuntime: Duration,
+        priority: TaskPriority = .userInitiated)
+        async throws -> TokenHistoryRefreshExecutionResult
+    {
+        try await Task.detached(priority: priority) {
+            let result = try provider.refreshMigrationBatch(maxRuntime: maxRuntime)
+            let document = try historyStore.merge(refreshResult: result)
+            return TokenHistoryRefreshExecutionResult(
+                document: document,
+                firstError: result.errors.first)
+        }.value
+    }
 }

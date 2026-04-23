@@ -32,6 +32,55 @@ package struct TokenDailyBoardConversationOnlyDebugTuning: Equatable {
     package var bodyLineSpacing: CGFloat
     package var metadataFontSize: CGFloat
     package var metadataOpacity: CGFloat
+    package var avatarEffectPreset: TokenDailyBoardConversationOnlyAvatarEffectPreset
+    package var backgroundEffectPreset: TokenDailyBoardConversationOnlyBackgroundEffectPreset
+    package var textEffectPreset: TokenDailyBoardConversationOnlyTextEffectPreset
+
+    package init(
+        contentOffset: CGSize,
+        windowWidth: CGFloat,
+        windowGlassOpacity: CGFloat,
+        windowGlassBlur: CGFloat,
+        enablesPreNarrativeWindowPulse: Bool,
+        enablesAvatarReplacementAnimation: Bool,
+        animationPreset: TokenDailyBoardConversationOnlyAnimationPreset,
+        pulseDurationScale: CGFloat,
+        avatarIntensityScale: CGFloat,
+        bodyTypewriterSpeedScale: CGFloat,
+        metadataTypewriterSpeedScale: CGFloat,
+        avatarSize: CGFloat,
+        bodyFontSize: CGFloat,
+        textColumnOffset: CGSize,
+        textColumnWidth: CGFloat,
+        bodyLineSpacing: CGFloat,
+        metadataFontSize: CGFloat,
+        metadataOpacity: CGFloat,
+        avatarEffectPreset: TokenDailyBoardConversationOnlyAvatarEffectPreset = .avatar01,
+        backgroundEffectPreset: TokenDailyBoardConversationOnlyBackgroundEffectPreset = .background01,
+        textEffectPreset: TokenDailyBoardConversationOnlyTextEffectPreset = .text01)
+    {
+        self.contentOffset = contentOffset
+        self.windowWidth = windowWidth
+        self.windowGlassOpacity = windowGlassOpacity
+        self.windowGlassBlur = windowGlassBlur
+        self.enablesPreNarrativeWindowPulse = enablesPreNarrativeWindowPulse
+        self.enablesAvatarReplacementAnimation = enablesAvatarReplacementAnimation
+        self.animationPreset = animationPreset
+        self.pulseDurationScale = pulseDurationScale
+        self.avatarIntensityScale = avatarIntensityScale
+        self.bodyTypewriterSpeedScale = bodyTypewriterSpeedScale
+        self.metadataTypewriterSpeedScale = metadataTypewriterSpeedScale
+        self.avatarSize = avatarSize
+        self.bodyFontSize = bodyFontSize
+        self.textColumnOffset = textColumnOffset
+        self.textColumnWidth = textColumnWidth
+        self.bodyLineSpacing = bodyLineSpacing
+        self.metadataFontSize = metadataFontSize
+        self.metadataOpacity = metadataOpacity
+        self.avatarEffectPreset = avatarEffectPreset
+        self.backgroundEffectPreset = backgroundEffectPreset
+        self.textEffectPreset = textEffectPreset
+    }
 }
 
 package struct TokenDailyBoardConversationOnlyWindowAppearance: Equatable {
@@ -97,7 +146,10 @@ package enum TokenDailyBoardConversationOnlyDebugRules {
         textColumnWidth: 284,
         bodyLineSpacing: 12,
         metadataFontSize: 10.5,
-        metadataOpacity: 0.65)
+        metadataOpacity: 0.65,
+        avatarEffectPreset: .avatar01,
+        backgroundEffectPreset: .background01,
+        textEffectPreset: .text01)
     package static let defaultOffset = defaultTuning.contentOffset
     package static let defaultOffsetX = Double(defaultTuning.contentOffset.width)
     package static let defaultOffsetY = Double(defaultTuning.contentOffset.height)
@@ -145,12 +197,13 @@ package enum TokenDailyBoardConversationOnlyDebugRules {
         -> TokenDailyBoardConversationOnlyWindowAppearance
     {
         let resolvedTuning = self.resolvedTuning(tuning, for: displayMode)
+        let naturalWidth = TokenDailyBoardConversationOnlyLayoutRules.compactWindowSize(for: resolvedTuning).width
         let blur = resolvedTuning.windowGlassBlur
         let blurProgress = self.windowGlassBlurRange.upperBound > 0
             ? min(max(Double(blur) / self.windowGlassBlurRange.upperBound, 0), 1)
             : 0
         return TokenDailyBoardConversationOnlyWindowAppearance(
-            resolvedWindowWidth: resolvedTuning.windowWidth,
+            resolvedWindowWidth: naturalWidth,
             resolvedGlassOpacity: resolvedTuning.windowGlassOpacity,
             resolvedGlassBlur: blur,
             blurOverlayOpacity: CGFloat(blurProgress * 0.55))
@@ -186,7 +239,10 @@ package enum TokenDailyBoardConversationOnlyDebugRules {
             textColumnWidth: self.resolvedTextColumnWidth(tuning.textColumnWidth, avatarSize: avatarSize),
             bodyLineSpacing: self.clamp(tuning.bodyLineSpacing, to: self.bodyLineSpacingRange),
             metadataFontSize: self.clamp(tuning.metadataFontSize, to: self.metadataFontSizeRange),
-            metadataOpacity: self.clamp(tuning.metadataOpacity, to: self.metadataOpacityRange))
+            metadataOpacity: self.clamp(tuning.metadataOpacity, to: self.metadataOpacityRange),
+            avatarEffectPreset: tuning.avatarEffectPreset,
+            backgroundEffectPreset: tuning.backgroundEffectPreset,
+            textEffectPreset: tuning.textEffectPreset)
     }
 
     package static func clamp(_ value: Double, to range: ClosedRange<Double>) -> Double {
@@ -233,6 +289,9 @@ public final class CodexDailySettingsStore {
         static let conversationOnlyBodyLineSpacing = "conversationOnlyBodyLineSpacing"
         static let conversationOnlyMetadataFontSize = "conversationOnlyMetadataFontSize"
         static let conversationOnlyMetadataOpacity = "conversationOnlyMetadataOpacity"
+        static let conversationOnlyAvatarEffectPreset = "conversationOnlyAvatarEffectPreset"
+        static let conversationOnlyBackgroundEffectPreset = "conversationOnlyBackgroundEffectPreset"
+        static let conversationOnlyTextEffectPreset = "conversationOnlyTextEffectPreset"
     }
 
     private static let narrativeBodyFontScaleRange: ClosedRange<Double> = 0.7...1.3
@@ -547,7 +606,16 @@ public final class CodexDailySettingsStore {
                     defaults: defaults,
                     key: Keys.conversationOnlyMetadataOpacity,
                     defaultValue: defaultsTuning.metadataOpacity,
-                    range: TokenDailyBoardConversationOnlyDebugRules.metadataOpacityRange)))
+                    range: TokenDailyBoardConversationOnlyDebugRules.metadataOpacityRange),
+                avatarEffectPreset: TokenDailyBoardConversationOnlyAvatarEffectPreset(
+                    rawValue: defaults.string(forKey: Keys.conversationOnlyAvatarEffectPreset) ?? "")
+                    ?? defaultsTuning.avatarEffectPreset,
+                backgroundEffectPreset: TokenDailyBoardConversationOnlyBackgroundEffectPreset(
+                    rawValue: defaults.string(forKey: Keys.conversationOnlyBackgroundEffectPreset) ?? "")
+                    ?? defaultsTuning.backgroundEffectPreset,
+                textEffectPreset: TokenDailyBoardConversationOnlyTextEffectPreset(
+                    rawValue: defaults.string(forKey: Keys.conversationOnlyTextEffectPreset) ?? "")
+                    ?? defaultsTuning.textEffectPreset))
     }
 
     private func persistConversationOnlyDebugTuning(_ tuning: TokenDailyBoardConversationOnlyDebugTuning) {
@@ -577,6 +645,11 @@ public final class CodexDailySettingsStore {
         self.defaults.set(Double(tuning.bodyLineSpacing), forKey: Keys.conversationOnlyBodyLineSpacing)
         self.defaults.set(Double(tuning.metadataFontSize), forKey: Keys.conversationOnlyMetadataFontSize)
         self.defaults.set(Double(tuning.metadataOpacity), forKey: Keys.conversationOnlyMetadataOpacity)
+        self.defaults.set(tuning.avatarEffectPreset.rawValue, forKey: Keys.conversationOnlyAvatarEffectPreset)
+        self.defaults.set(
+            tuning.backgroundEffectPreset.rawValue,
+            forKey: Keys.conversationOnlyBackgroundEffectPreset)
+        self.defaults.set(tuning.textEffectPreset.rawValue, forKey: Keys.conversationOnlyTextEffectPreset)
     }
 
     private static func loadConversationOnlyTuningValue(

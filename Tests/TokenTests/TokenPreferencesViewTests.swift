@@ -163,6 +163,7 @@ final class TokenPreferencesViewTests: XCTestCase {
 
         context.settings.appLanguage = .zhHans
         context.settings.refreshFrequency = .manual
+        context.settings.usageStatisticsRefreshFrequency = .manual
 
         XCTAssertEqual(
             baseline,
@@ -174,6 +175,17 @@ final class TokenPreferencesViewTests: XCTestCase {
         let baseline = TokenSettingsPreviewMeasurementKey(settings: context.settings, store: context.store)
 
         context.settings.menuPopupStyle = .systemPopover
+
+        XCTAssertNotEqual(
+            baseline,
+            TokenSettingsPreviewMeasurementKey(settings: context.settings, store: context.store))
+    }
+
+    func test_previewMeasurementKeyChangesWhenMenuVisualThemeChanges() throws {
+        let context = try self.makeContext()
+        let baseline = TokenSettingsPreviewMeasurementKey(settings: context.settings, store: context.store)
+
+        context.settings.menuVisualTheme = .sakura
 
         XCTAssertNotEqual(
             baseline,

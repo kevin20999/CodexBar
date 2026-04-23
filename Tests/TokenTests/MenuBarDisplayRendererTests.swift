@@ -4,6 +4,58 @@ import XCTest
 
 @MainActor
 final class MenuBarDisplayRendererTests: XCTestCase {
+    override func setUp() {
+        super.setUp()
+        MenuBarDisplayRenderer.clearCacheForTesting()
+    }
+
+    override func tearDown() {
+        MenuBarDisplayRenderer.clearCacheForTesting()
+        super.tearDown()
+    }
+
+    func test_rendererCachesRepeatedInputs() throws {
+        let metrics = MenuBarDisplayMetrics(
+            inputText: "12.3k",
+            outputText: "987",
+            quotaPercentText: "56%",
+            quotaFraction: 0.56,
+            quotaIsStale: false)
+
+        let first = try XCTUnwrap(MenuBarDisplayRenderer.render(
+            mode: .quota5h,
+            metrics: metrics,
+            quotaStyle: .capsule,
+            targetHeight: 19))
+        let second = try XCTUnwrap(MenuBarDisplayRenderer.render(
+            mode: .quota5h,
+            metrics: metrics,
+            quotaStyle: .capsule,
+            targetHeight: 19))
+
+        XCTAssertTrue(first.image === second.image)
+        XCTAssertEqual(MenuBarDisplayRenderer.cacheCountForTesting(), 1)
+    }
+
+    func test_rendererCacheEvictsPastFixedLimit() {
+        for index in 0...MenuBarDisplayRenderer.cacheLimit {
+            let metrics = MenuBarDisplayMetrics(
+                inputText: "input-\(index)",
+                outputText: "output-\(index)",
+                quotaPercentText: "\(index)%",
+                quotaFraction: Double(index % 100) / 100,
+                quotaIsStale: index.isMultiple(of: 2))
+
+            XCTAssertNotNil(MenuBarDisplayRenderer.render(
+                mode: .quota5h,
+                metrics: metrics,
+                quotaStyle: .capsule,
+                targetHeight: 19))
+        }
+
+        XCTAssertEqual(MenuBarDisplayRenderer.cacheCountForTesting(), MenuBarDisplayRenderer.cacheLimit)
+    }
+
     func test_quotaRendererSupportsAllQuotaStylesAtSettingsPreviewHeight() {
         let metrics = MenuBarDisplayMetrics(
             inputText: "12.3k",

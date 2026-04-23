@@ -20,6 +20,7 @@ LEGACY_DAILY_BOARD_APP_PROCESS_PATTERN="CodexTokenBar Daily Board.app/Contents/M
 LEGACY_DAILY_BOARD_DEBUG_PROCESS_PATTERN="${ROOT_DIR}/.build/debug/CodexDailyBoard"
 LEGACY_DAILY_BOARD_RELEASE_PROCESS_PATTERN="${ROOT_DIR}/.build/release/CodexDailyBoard"
 LEGACY_DAILY_BOARD_EXECUTABLE_NAME="CodexDailyBoard"
+INCLUDE_DAILY="${CODEXBAR_INCLUDE_DAILY:-0}"
 LOCK_KEY="$(printf '%s' "${ROOT_DIR}" | shasum -a 256 | cut -c1-8)"
 LOCK_DIR="${TMPDIR:-/tmp}/codexbar-compile-and-run-${LOCK_KEY}"
 LOCK_PID_FILE="${LOCK_DIR}/pid"
@@ -144,18 +145,29 @@ kill_claude_probes() {
 
 kill_all_codexbar() {
   is_running() {
-    pgrep -f "${APP_PROCESS_PATTERN}" >/dev/null 2>&1 \
+    if pgrep -f "${APP_PROCESS_PATTERN}" >/dev/null 2>&1 \
       || pgrep -f "${DEBUG_PROCESS_PATTERN}" >/dev/null 2>&1 \
       || pgrep -f "${RELEASE_PROCESS_PATTERN}" >/dev/null 2>&1 \
-      || pgrep -x "${APP_EXECUTABLE_NAME}" >/dev/null 2>&1 \
-      || pgrep -f "${DAILY_BOARD_APP_PROCESS_PATTERN}" >/dev/null 2>&1 \
-      || pgrep -f "${DAILY_BOARD_DEBUG_PROCESS_PATTERN}" >/dev/null 2>&1 \
-      || pgrep -f "${DAILY_BOARD_RELEASE_PROCESS_PATTERN}" >/dev/null 2>&1 \
-      || pgrep -x "${DAILY_BOARD_EXECUTABLE_NAME}" >/dev/null 2>&1 \
-      || pgrep -f "${LEGACY_DAILY_BOARD_APP_PROCESS_PATTERN}" >/dev/null 2>&1 \
-      || pgrep -f "${LEGACY_DAILY_BOARD_DEBUG_PROCESS_PATTERN}" >/dev/null 2>&1 \
-      || pgrep -f "${LEGACY_DAILY_BOARD_RELEASE_PROCESS_PATTERN}" >/dev/null 2>&1 \
-      || pgrep -x "${LEGACY_DAILY_BOARD_EXECUTABLE_NAME}" >/dev/null 2>&1
+      || pgrep -x "${APP_EXECUTABLE_NAME}" >/dev/null 2>&1
+    then
+      return 0
+    fi
+
+    if [[ "${INCLUDE_DAILY}" == "1" ]]; then
+      if pgrep -f "${DAILY_BOARD_APP_PROCESS_PATTERN}" >/dev/null 2>&1 \
+        || pgrep -f "${DAILY_BOARD_DEBUG_PROCESS_PATTERN}" >/dev/null 2>&1 \
+        || pgrep -f "${DAILY_BOARD_RELEASE_PROCESS_PATTERN}" >/dev/null 2>&1 \
+        || pgrep -x "${DAILY_BOARD_EXECUTABLE_NAME}" >/dev/null 2>&1 \
+        || pgrep -f "${LEGACY_DAILY_BOARD_APP_PROCESS_PATTERN}" >/dev/null 2>&1 \
+        || pgrep -f "${LEGACY_DAILY_BOARD_DEBUG_PROCESS_PATTERN}" >/dev/null 2>&1 \
+        || pgrep -f "${LEGACY_DAILY_BOARD_RELEASE_PROCESS_PATTERN}" >/dev/null 2>&1 \
+        || pgrep -x "${LEGACY_DAILY_BOARD_EXECUTABLE_NAME}" >/dev/null 2>&1
+      then
+        return 0
+      fi
+    fi
+
+    return 1
   }
 
   # Phase 1: request termination (give the app time to exit cleanly).
@@ -164,14 +176,16 @@ kill_all_codexbar() {
     pkill -f "${DEBUG_PROCESS_PATTERN}" 2>/dev/null || true
     pkill -f "${RELEASE_PROCESS_PATTERN}" 2>/dev/null || true
     pkill -x "${APP_EXECUTABLE_NAME}" 2>/dev/null || true
-    pkill -f "${DAILY_BOARD_APP_PROCESS_PATTERN}" 2>/dev/null || true
-    pkill -f "${DAILY_BOARD_DEBUG_PROCESS_PATTERN}" 2>/dev/null || true
-    pkill -f "${DAILY_BOARD_RELEASE_PROCESS_PATTERN}" 2>/dev/null || true
-    pkill -x "${DAILY_BOARD_EXECUTABLE_NAME}" 2>/dev/null || true
-    pkill -f "${LEGACY_DAILY_BOARD_APP_PROCESS_PATTERN}" 2>/dev/null || true
-    pkill -f "${LEGACY_DAILY_BOARD_DEBUG_PROCESS_PATTERN}" 2>/dev/null || true
-    pkill -f "${LEGACY_DAILY_BOARD_RELEASE_PROCESS_PATTERN}" 2>/dev/null || true
-    pkill -x "${LEGACY_DAILY_BOARD_EXECUTABLE_NAME}" 2>/dev/null || true
+    if [[ "${INCLUDE_DAILY}" == "1" ]]; then
+      pkill -f "${DAILY_BOARD_APP_PROCESS_PATTERN}" 2>/dev/null || true
+      pkill -f "${DAILY_BOARD_DEBUG_PROCESS_PATTERN}" 2>/dev/null || true
+      pkill -f "${DAILY_BOARD_RELEASE_PROCESS_PATTERN}" 2>/dev/null || true
+      pkill -x "${DAILY_BOARD_EXECUTABLE_NAME}" 2>/dev/null || true
+      pkill -f "${LEGACY_DAILY_BOARD_APP_PROCESS_PATTERN}" 2>/dev/null || true
+      pkill -f "${LEGACY_DAILY_BOARD_DEBUG_PROCESS_PATTERN}" 2>/dev/null || true
+      pkill -f "${LEGACY_DAILY_BOARD_RELEASE_PROCESS_PATTERN}" 2>/dev/null || true
+      pkill -x "${LEGACY_DAILY_BOARD_EXECUTABLE_NAME}" 2>/dev/null || true
+    fi
     if ! is_running; then
       return 0
     fi
@@ -183,14 +197,16 @@ kill_all_codexbar() {
   pkill -9 -f "${DEBUG_PROCESS_PATTERN}" 2>/dev/null || true
   pkill -9 -f "${RELEASE_PROCESS_PATTERN}" 2>/dev/null || true
   pkill -9 -x "${APP_EXECUTABLE_NAME}" 2>/dev/null || true
-  pkill -9 -f "${DAILY_BOARD_APP_PROCESS_PATTERN}" 2>/dev/null || true
-  pkill -9 -f "${DAILY_BOARD_DEBUG_PROCESS_PATTERN}" 2>/dev/null || true
-  pkill -9 -f "${DAILY_BOARD_RELEASE_PROCESS_PATTERN}" 2>/dev/null || true
-  pkill -9 -x "${DAILY_BOARD_EXECUTABLE_NAME}" 2>/dev/null || true
-  pkill -9 -f "${LEGACY_DAILY_BOARD_APP_PROCESS_PATTERN}" 2>/dev/null || true
-  pkill -9 -f "${LEGACY_DAILY_BOARD_DEBUG_PROCESS_PATTERN}" 2>/dev/null || true
-  pkill -9 -f "${LEGACY_DAILY_BOARD_RELEASE_PROCESS_PATTERN}" 2>/dev/null || true
-  pkill -9 -x "${LEGACY_DAILY_BOARD_EXECUTABLE_NAME}" 2>/dev/null || true
+  if [[ "${INCLUDE_DAILY}" == "1" ]]; then
+    pkill -9 -f "${DAILY_BOARD_APP_PROCESS_PATTERN}" 2>/dev/null || true
+    pkill -9 -f "${DAILY_BOARD_DEBUG_PROCESS_PATTERN}" 2>/dev/null || true
+    pkill -9 -f "${DAILY_BOARD_RELEASE_PROCESS_PATTERN}" 2>/dev/null || true
+    pkill -9 -x "${DAILY_BOARD_EXECUTABLE_NAME}" 2>/dev/null || true
+    pkill -9 -f "${LEGACY_DAILY_BOARD_APP_PROCESS_PATTERN}" 2>/dev/null || true
+    pkill -9 -f "${LEGACY_DAILY_BOARD_DEBUG_PROCESS_PATTERN}" 2>/dev/null || true
+    pkill -9 -f "${LEGACY_DAILY_BOARD_RELEASE_PROCESS_PATTERN}" 2>/dev/null || true
+    pkill -9 -x "${LEGACY_DAILY_BOARD_EXECUTABLE_NAME}" 2>/dev/null || true
+  fi
 
   for _ in {1..25}; do
     if ! is_running; then
@@ -257,12 +273,12 @@ if [[ -n "${RELEASE_ARCHES}" ]]; then
   ARCHES_VALUE="${RELEASE_ARCHES}"
 fi
 if [[ "${DEBUG_LLDB}" == "1" ]]; then
-  run_step "package app" env CODEXBAR_ALLOW_LLDB=1 ARCHES="${ARCHES_VALUE}" "${ROOT_DIR}/Scripts/package_app.sh" debug
+  run_step "package app" env CODEXBAR_ALLOW_LLDB=1 CODEXBAR_PACKAGE_DAILY_APP="${INCLUDE_DAILY}" ARCHES="${ARCHES_VALUE}" "${ROOT_DIR}/Scripts/package_app.sh" debug
 else
   if [[ -n "${SIGNING_MODE}" ]]; then
-    run_step "package app" env CODEXBAR_SIGNING="${SIGNING_MODE}" ARCHES="${ARCHES_VALUE}" "${ROOT_DIR}/Scripts/package_app.sh"
+    run_step "package app" env CODEXBAR_SIGNING="${SIGNING_MODE}" CODEXBAR_PACKAGE_DAILY_APP="${INCLUDE_DAILY}" ARCHES="${ARCHES_VALUE}" "${ROOT_DIR}/Scripts/package_app.sh"
   else
-    run_step "package app" env ARCHES="${ARCHES_VALUE}" "${ROOT_DIR}/Scripts/package_app.sh"
+    run_step "package app" env CODEXBAR_PACKAGE_DAILY_APP="${INCLUDE_DAILY}" ARCHES="${ARCHES_VALUE}" "${ROOT_DIR}/Scripts/package_app.sh"
   fi
 fi
 

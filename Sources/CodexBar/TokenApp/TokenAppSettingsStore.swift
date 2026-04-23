@@ -4,6 +4,30 @@ import Observation
 
 typealias RefreshFrequency = TokenRefreshFrequency
 
+enum UsageStatisticsRefreshFrequency: String, CaseIterable, Codable, Sendable, Identifiable {
+    case fifteenMinutes
+    case thirtyMinutes
+    case sixtyMinutes
+    case manual
+
+    var id: String {
+        self.rawValue
+    }
+
+    var interval: TimeInterval? {
+        switch self {
+        case .fifteenMinutes:
+            15 * 60
+        case .thirtyMinutes:
+            30 * 60
+        case .sixtyMinutes:
+            60 * 60
+        case .manual:
+            nil
+        }
+    }
+}
+
 enum MenuBarDisplayMode: String, CaseIterable, Codable, Sendable, Identifiable {
     case todayIO
     case quota5h
@@ -151,6 +175,10 @@ final class SettingsStore {
         didSet { self.persistRefreshFrequency() }
     }
 
+    var usageStatisticsRefreshFrequency: UsageStatisticsRefreshFrequency {
+        didSet { self.persistUsageStatisticsRefreshFrequency() }
+    }
+
     var menuBarDisplayMode: MenuBarDisplayMode {
         didSet { self.persistMenuBarDisplayMode() }
     }
@@ -191,6 +219,13 @@ final class SettingsStore {
 
     var menuPopupStyle: MenuPopupStyle {
         didSet { self.persistMenuPopupStyle() }
+    }
+
+    var menuVisualTheme: MenuVisualTheme {
+        didSet {
+            MenuVisualThemeProvider.currentTheme = self.menuVisualTheme
+            self.persistMenuVisualTheme()
+        }
     }
 
     var launchAtLoginEnabled: Bool {
@@ -283,6 +318,7 @@ final class SettingsStore {
     private enum Keys {
         static let appLanguage = "tokenAppLanguage"
         static let refreshFrequency = "tokenRefreshFrequency"
+        static let usageStatisticsRefreshFrequency = "tokenUsageStatisticsRefreshFrequency"
         static let menuBarDisplayMode = "tokenMenuBarDisplayMode"
         static let menuBarQuotaStyle = "tokenMenuBarQuotaStyle"
         static let showsMenuBarTokenSpeedMeter = "tokenShowsMenuBarTokenSpeedMeter"
@@ -290,6 +326,8 @@ final class SettingsStore {
         static let recentFortyEightHourChartStyle = "tokenRecentFortyEightHourChartStyle"
         static let menuPanelVersion = "tokenMenuPanelVersion"
         static let menuPopupStyle = "tokenMenuPopupStyle"
+        static let menuVisualTheme = "tokenMenuVisualTheme"
+        static let refreshFrequencyMigratedToOneMinute = "tokenRefreshFrequencyMigratedToOneMinute"
         static let launchAtLoginEnabled = "tokenLaunchAtLoginEnabled"
         static let openAIWebAccessEnabled = "tokenOpenAIWebAccessEnabled"
         static let backgroundBrowserAutoImportEnabled = "tokenBackgroundBrowserAutoImportEnabled"
@@ -329,7 +367,9 @@ final class SettingsStore {
         self.launchAtLoginManager = launchAtLoginManager
         self.preferredLanguages = preferredLanguages
         self.appLanguage = Self.loadAppLanguage(defaults: defaults)
+        Self.migrateRefreshFrequencyIfNeeded(defaults: defaults)
         self.refreshFrequency = Self.loadRefreshFrequency(defaults: defaults)
+        self.usageStatisticsRefreshFrequency = Self.loadUsageStatisticsRefreshFrequency(defaults: defaults)
         self.menuBarDisplayMode = Self.loadDisplayMode(defaults: defaults)
         self.menuBarQuotaStyle = Self.loadMenuBarQuotaStyle(defaults: defaults)
         self.showsMenuBarTokenSpeedMeter = Self.loadBool(
@@ -340,6 +380,9 @@ final class SettingsStore {
         self.recentFortyEightHourChartStyle = Self.loadRecentFortyEightHourChartStyle(defaults: defaults)
         self.menuPanelVersion = Self.loadMenuPanelVersion(defaults: defaults)
         self.menuPopupStyle = Self.loadMenuPopupStyle(defaults: defaults)
+        let loadedMenuVisualTheme = Self.loadMenuVisualTheme(defaults: defaults)
+        self.menuVisualTheme = loadedMenuVisualTheme
+        MenuVisualThemeProvider.currentTheme = loadedMenuVisualTheme
         let savedLaunchAtLogin = defaults.object(forKey: Keys.launchAtLoginEnabled) as? Bool
         self.launchAtLoginEnabled = savedLaunchAtLogin ?? launchAtLoginManager.isEnabled()
         self.openAIWebAccessEnabled = Self.loadOpenAIWebAccessEnabled(defaults: defaults)
@@ -437,9 +480,40 @@ final class SettingsStore {
         guard let rawValue = defaults.string(forKey: Keys.refreshFrequency),
               let frequency = RefreshFrequency(rawValue: rawValue)
         else {
-            return .tenSeconds
+            return .oneMinute
         }
         return frequency
+    }
+
+    private static func loadUsageStatisticsRefreshFrequency(defaults: UserDefaults) -> UsageStatisticsRefreshFrequency {
+        guard let rawValue = defaults.string(forKey: Keys.usageStatisticsRefreshFrequency),
+              let frequency = UsageStatisticsRefreshFrequency(rawValue: rawValue)
+        else {
+            return .thirtyMinutes
+        }
+        return frequency
+    }
+
+    private static func migrateRefreshFrequencyIfNeeded(defaults: UserDefaults) {
+        guard !defaults.bool(forKey: Keys.refreshFrequencyMigratedToOneMinute) else {
+            return
+        }
+        defer {
+            defaults.set(true, forKey: Keys.refreshFrequencyMigratedToOneMinute)
+        }
+
+        guard let rawValue = defaults.string(forKey: Keys.refreshFrequency),
+              let frequency = RefreshFrequency(rawValue: rawValue)
+        else {
+            return
+        }
+
+        switch frequency {
+        case .fiveSeconds, .tenSeconds, .fifteenSeconds:
+            defaults.set(RefreshFrequency.oneMinute.rawValue, forKey: Keys.refreshFrequency)
+        case .oneMinute, .manual:
+            break
+        }
     }
 
     private static func loadDisplayMode(defaults: UserDefaults) -> MenuBarDisplayMode {
@@ -510,6 +584,15 @@ final class SettingsStore {
         return style
     }
 
+    private static func loadMenuVisualTheme(defaults: UserDefaults) -> MenuVisualTheme {
+        guard let rawValue = defaults.string(forKey: Keys.menuVisualTheme),
+              let theme = MenuVisualTheme(rawValue: rawValue)
+        else {
+            return .liquidGlassClassic
+        }
+        return theme
+    }
+
     private static func loadCodexCookieSource(defaults: UserDefaults) -> ProviderCookieSource {
         guard let rawValue = defaults.string(forKey: Keys.codexCookieSource),
               let source = ProviderCookieSource(rawValue: rawValue)
@@ -534,6 +617,12 @@ final class SettingsStore {
 
     private func persistRefreshFrequency() {
         self.defaults.set(self.refreshFrequency.rawValue, forKey: Keys.refreshFrequency)
+    }
+
+    private func persistUsageStatisticsRefreshFrequency() {
+        self.defaults.set(
+            self.usageStatisticsRefreshFrequency.rawValue,
+            forKey: Keys.usageStatisticsRefreshFrequency)
     }
 
     private func persistMenuBarDisplayMode() {
@@ -562,6 +651,10 @@ final class SettingsStore {
 
     private func persistMenuPopupStyle() {
         self.defaults.set(self.menuPopupStyle.rawValue, forKey: Keys.menuPopupStyle)
+    }
+
+    private func persistMenuVisualTheme() {
+        self.defaults.set(self.menuVisualTheme.rawValue, forKey: Keys.menuVisualTheme)
     }
 
     private func persistLaunchAtLoginPreference() {

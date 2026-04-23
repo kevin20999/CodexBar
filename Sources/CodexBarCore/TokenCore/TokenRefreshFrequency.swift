@@ -4,6 +4,7 @@ public enum TokenRefreshFrequency: String, CaseIterable, Codable, Sendable, Iden
     case fiveSeconds
     case tenSeconds
     case fifteenSeconds
+    case oneMinute
     case manual
 
     public var id: String {
@@ -18,6 +19,8 @@ public enum TokenRefreshFrequency: String, CaseIterable, Codable, Sendable, Iden
             10
         case .fifteenSeconds:
             15
+        case .oneMinute:
+            60
         case .manual:
             nil
         }
